@@ -16,6 +16,13 @@ export interface Instrument {
     scale: number;
     targetTension: number[];
     type: 'guitar' | 'bass' | 'other';
+    stringSets: StringSet[];
+}
+
+export interface StringSet {
+    name: string;
+    gauges: number[];
+    woundStrings: boolean[];
 }
 
 export interface Transpose {
@@ -31,4 +38,12 @@ interface InstrumentInputProps {
         bass: number[];
         other: number[];
     };
+    stringRange: [number, number];
+}
+
+interface TuningInputProps {
+    notes: string[];
+    presetTunings: Tuning[];
+    defaultTunings: { guitar: GuitarString[], bass: GuitarString[], other: GuitarString[] };
+    onSubmit: (tuning: Tuning) => void;
 }
