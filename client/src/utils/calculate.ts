@@ -11,7 +11,7 @@ export function tuningWeight(tuning: Tuning){
 export function stringAverage(tunings: Tuning[]){
     const sameType = checkStringMatch(tunings);
     if (!sameType) {
-        return null;
+        return ;
     }
     const avNoteValues = [];
     const amountStrings = tunings[0].strings.length;
@@ -87,36 +87,47 @@ export function getUnitWeight(noteValue: number, scale: number, tension: number)
     return (tension * 386.4) / Math.pow(2 * scale * frequency, 2);
 }
 
-export function stringGauge(noteValue: number, scale: number, tension: number, inst: string, wound: boolean) {
-    const uw = getUnitWeight(noteValue, scale, tension);
+export function stringGauge(uw: number, coefficient: number, power: number) {
     if (uw <= 0) {
         return 0;
     }
-    let coefficient = 10000000 * uw;
-    let power = 2;
-    switch (inst){
-        case 'guitar':
-            if (wound){
-                coefficient /= 2.07;
-                power = 1.97;
-            } else {
-                coefficient /= 2.215;
-            }
-            break;
-        case 'bass':
-            coefficient /= 2.939;
-            power = 1.89;
-            break;
-        default:
-            coefficient /= 2.215;
-    }
-    const gauge = Math.pow(coefficient, 1 / power);
+    const factor = (10000000 * uw) / coefficient;
+    // let power = 2;
+    // switch (inst){
+    //     case 'guitar':
+    //         if (wound){
+    //             factor /= 2.07;
+    //             power = 1.97;
+    //         } else {
+    //             factor /= 2.215;
+    //         }
+    //         break;
+    //     case 'bass':
+    //         factor /= 2.939;
+    //         power = 1.89;
+    //         break;
+    //     default:
+    //         factor /= 2.215;
+    // }
+    const gauge = Math.pow(factor, 1 / power);
 
     if (gauge < 13){
         return Math.round(gauge * 2) / 2;
     } else {
         return Math.round(gauge);
     }
+}
+
+export function tension(uw: number, noteValue: number, scale: number) {
+    const frequency = getFrequency(noteValue);
+    if (frequency <= 0){
+        return 0;
+    }
+    return (uw * Math.pow(2 * scale * frequency, 2)) / 386.4
+}
+
+export function uwFromGauge(gauge: number, coefficient: number, power: number) {
+    return (coefficient * Math.pow(gauge, power)) / 10000000
 }
 
 

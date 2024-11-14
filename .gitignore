@@ -12,7 +12,8 @@ dist
 dist-ssr
 *.local
 
-src/oldComponents/
+client/src/oldComponents/
+oldComponents
 
 # Editor directories and files
 .vscode/*

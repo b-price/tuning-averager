@@ -16,6 +16,7 @@ export const notes = [
 
 export const presetTunings: Tuning[] = [
     {
+        _id: '0',
         name: 'E Standard',
         strings: [
             { note: 'E4', noteValue: notes.indexOf('E4') },
@@ -28,6 +29,7 @@ export const presetTunings: Tuning[] = [
         type: 'guitar',
     },
     {
+        _id: '1',
         name: 'Eb Standard',
         strings: [
             { note: 'D#4', noteValue: notes.indexOf('D#4') },
@@ -40,6 +42,7 @@ export const presetTunings: Tuning[] = [
         type: 'guitar',
     },
     {
+        _id: '2',
         name: 'DADGAD',
         strings: [
             { note: 'D4', noteValue: notes.indexOf('D4') },
@@ -52,6 +55,7 @@ export const presetTunings: Tuning[] = [
         type: 'guitar',
     },
     {
+        _id: '3',
         name: 'AADGAD',
         strings: [
             { note: 'D4', noteValue: notes.indexOf('D4') },
@@ -64,6 +68,7 @@ export const presetTunings: Tuning[] = [
         type: 'guitar',
     },
     {
+        _id: '4',
         name: '7 String Standard',
         strings: [
             { note: 'E4', noteValue: notes.indexOf('E4') },
@@ -77,6 +82,7 @@ export const presetTunings: Tuning[] = [
         type: 'guitar',
     },
     {
+        _id: '5',
         name: 'E Standard',
         strings: [
             { note: 'G2', noteValue: notes.indexOf('G2') },
@@ -87,6 +93,7 @@ export const presetTunings: Tuning[] = [
         type: 'bass',
     },
     {
+        _id: '6',
         name: '5 String Standard',
         strings: [
             { note: 'G2', noteValue: notes.indexOf('G2') },
@@ -98,6 +105,7 @@ export const presetTunings: Tuning[] = [
         type: 'bass',
     },
     {
+        _id: '7',
         name: '6 String Standard',
         strings: [
             { note: 'C3', noteValue: notes.indexOf('C3') },
@@ -110,6 +118,7 @@ export const presetTunings: Tuning[] = [
         type: 'bass',
     },
     {
+        _id: '8',
         name: 'Ukulele Standard',
         strings: [
             { note: 'A4', noteValue: notes.indexOf('A4') },
@@ -159,3 +168,18 @@ export const defaultTensions = {
 export const stringRange: [number, number] = [3, 9]
 
 export const woundOverlap = [18, 22]
+
+export const stringTypeFactors = {
+    guitar: {
+        plain: {coeff: 2.215, power: 2},
+        wound: {coeff: 2.07, power: 1.97},
+    },
+    bass: {
+        plain: {coeff: 2.939, power: 1.89},
+        wound: {coeff: 2.939, power: 1.89},
+    },
+    other: {
+        plain: {coeff: 2.215, power: 2},
+        wound: {coeff: 2.215, power: 2},
+    },
+}

@@ -2,19 +2,21 @@ import React, { useState } from 'react';
 import TuningConfirm from "./TuningConfirm.tsx";
 import TuningInput from "./TuningInput.tsx";
 import InstrumentInput from "./InstrumentInput.tsx";
-import {defaultTensions, defaultTunings, notes, presetTunings, stringRange} from "../defaults.ts";
+import {defaultTensions, defaultTunings, notes, presetTunings, stringRange, stringTypeFactors} from "../defaults.ts";
 import {Instrument, StringSet, Tuning} from "../types.ts";
-import {stringAverage, stringGauge} from "../utils/calculate.ts";
+import {getUnitWeight, stringAverage, stringGauge} from "../utils/calculate.ts";
 import AverageStringSet from "./AverageStringSet.tsx";
 
 
 
 const instruments: Instrument[] = [
     {
+        _id: '0',
         name: 'Stratocaster',
         strings: 6,
         tunings: [
             {
+                _id: '0',
                 name: 'E Standard',
                 strings: [
                     { note: 'E4', noteValue: 52 },
@@ -27,6 +29,7 @@ const instruments: Instrument[] = [
                 type: 'guitar',
             },
             {
+                _id: '2',
                 name: 'DADGAD',
                 strings: [
                     { note: 'D4', noteValue: 50 },
@@ -43,14 +46,16 @@ const instruments: Instrument[] = [
         targetTension: [16.2, 15.4, 16.6, 18.4, 19, 16.9],
         type: 'guitar',
         stringSets: [
-            { name: '10-46', gauges: [10, 13, 17, 26, 36, 46], woundStrings: [false, false, false, true, true, true] },
+            { _id: '0', name: '10-46', gauges: [10, 13, 17, 26, 36, 46], woundStrings: [false, false, false, true, true, true] },
         ]
     },
     {
+        _id: '1',
         name: 'P Bass',
         strings: 4,
         tunings: [
             {
+                _id: '5',
                 name: 'E Standard',
                 strings: [
                     { note: 'G2', noteValue: 31 },
@@ -65,7 +70,7 @@ const instruments: Instrument[] = [
         targetTension: [42.5, 48.4, 40.1, 34.7],
         type: 'bass',
         stringSets: [
-            { name: '45-100', gauges: [45, 65, 80, 100], woundStrings: [true, true, true, true] },
+            { _id: '1', name: '45-100', gauges: [45, 65, 80, 100], woundStrings: [true, true, true, true] },
         ]
     }
 ];
@@ -83,11 +88,15 @@ const HomePage: React.FC<HomeProps> = () => {
     const [selectedInstrument, setSelectedInstrument] = useState<Instrument>(instruments[0]);
     const [selectedTuning, setSelectedTuning] = useState<Tuning>(instruments[0].tunings[0]);
     const [message, setMessage] = useState<string>('');
+    const [messageClass, setMessageClass] = useState<string>('text-blue-400');
     const [isTuningConfirmOpen, setIsTuningConfirmOpen] = useState(false);
     const [isTuningInputOpen, setIsTuningInputOpen] = useState(false);
     const [isInstInputOpen, setIsInstInputOpen] = useState(false);
     const [isStringSetOpen, setIsStringSetOpen] = useState(false);
     const [avStringSet, setAvStringSet] = useState<StringSet>(instruments[0].stringSets[0]);
+    const [averageTuning, setAverageTuning] = useState<number[]>([]);
+    const [unitWeights, setUnitWeights] = useState<number[]>([]);
+    const [isEdit, setIsEdit] = useState<boolean>(false);
 
     const handleOpenGetAv = () => {
         setIsTuningConfirmOpen(true);
@@ -101,26 +110,32 @@ const HomePage: React.FC<HomeProps> = () => {
         //     ...selectedInstrument,
         //     tunings: selectedTunings,
         // };
-        const averageTuning = stringAverage(selectedTunings);
-        console.log(averageTuning)
-        if (averageTuning) {
+        const avTuning = stringAverage(selectedTunings);
+        console.log(avTuning)
+        if (avTuning) {
+            setAverageTuning(avTuning);
             const stringSet: StringSet = {
                 gauges: [],
                 woundStrings: [],
                 name: ''
             };
-            averageTuning.forEach((note: number, index) => {
+            const UWs: number[] = [];
+            avTuning.forEach((note: number, index) => {
+                UWs[index] = getUnitWeight(note, selectedInstrument.scale, selectedInstrument.targetTension[index]);
                 let wound = true;
-                // This sucks, need a better way to figure out if it's wound
-                if (selectedInstrument.type === 'guitar' && index < 3) {
-                    if (index < 2 || !wound3rd) {
+                // Not ideal; should handle more wound vs. plain scenarios
+                if (selectedInstrument.type === 'guitar') {
+                    if (index < 2 || (!wound3rd && index === 2)) {
                         wound = false
                     }
                 }
+                const coeff = stringTypeFactors[selectedInstrument.type][wound? 'wound' : 'plain'].coeff;
+                const power = stringTypeFactors[selectedInstrument.type][wound? 'wound' : 'plain'].power;
 
-                stringSet.gauges.push(stringGauge(note, selectedInstrument.scale, selectedInstrument.targetTension[index], selectedInstrument.type, wound));
+                stringSet.gauges.push(stringGauge(UWs[index], coeff, power));
                 stringSet.woundStrings.push(wound);
             });
+            setUnitWeights(UWs);
             console.log(stringSet)
             setAvStringSet(stringSet);
         }
@@ -157,9 +172,27 @@ const HomePage: React.FC<HomeProps> = () => {
         console.log("New String Set Added: ", newStringSet);
     };
 
+    const handleEditInst = () => {
+        setIsEdit(true);
+        setIsInstInputOpen(true);
+    };
+
+    const handleEditTuning = () => {
+        setIsEdit(true);
+        setIsTuningInputOpen(true);
+    };
+
+    const handleDeleteInst = () => {
+        console.log("Instrument Deleted, to be implemented");
+    };
+
+    const handleDeleteTuning = () => {
+        console.log("Tuning Deleted, to be implemented");
+    };
+
     const handleInstrumentChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const instrumentName = event.target.value;
-        const instrument = instruments.find(i => i.name === instrumentName);
+        const instrumentID = event.target.value;
+        const instrument = instruments.find(i => i._id === instrumentID);
         if (instrument) {
             setSelectedInstrument(instrument);
             setSelectedTuning(instrument.tunings[0]);
@@ -167,8 +200,8 @@ const HomePage: React.FC<HomeProps> = () => {
     };
 
     const handleTuningChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const tuningName = event.target.value;
-        const tuning = presetTunings.find(t => t.name === tuningName);
+        const tuningID = event.target.value;
+        const tuning = presetTunings.find(t => t._id === tuningID);
         if (tuning) {
             setSelectedTuning(tuning);
         }
@@ -176,11 +209,13 @@ const HomePage: React.FC<HomeProps> = () => {
 
     const handleAddTuningToInstrument = () => {
         if (selectedInstrument.tunings.some(tuning => tuning.name === selectedTuning.name)) {
-            setMessage('This tuning already exists in the instrument.');
+            setMessageClass('text-red-500');
+            setMessage('Instrument already has this tuning!');
             return;
         }
         if (selectedInstrument.type !== selectedTuning.type || selectedInstrument.strings !== selectedTuning.strings.length) {
-            setMessage('This tuning does not match the instrument\'s type or string count.');
+            setMessageClass('text-red-500');
+            setMessage('Tuning does not match instrument\'s type or string count.');
             return;
         }
         const updatedInstrument = {
@@ -190,14 +225,14 @@ const HomePage: React.FC<HomeProps> = () => {
 
         setSelectedInstrument(updatedInstrument);
         instruments[instruments.findIndex(i => i.name === selectedInstrument.name)] = updatedInstrument;
-
+        setMessageClass('text-blue-400');
         setMessage('Tuning added successfully!');
     };
 
     return (
-        <div className="flex flex-col items-center justify-center p-6">
+        <div className="flex flex-col p-6">
             <div className="">
-                <h1 className="text-2xl font-bold mb-4">Instrument Tuning</h1>
+                <h1 className="text-2xl font-bold mb-4">Tuning Averager</h1>
 
                 {/*Instruments*/}
                 <div className="mb-7">
@@ -206,30 +241,49 @@ const HomePage: React.FC<HomeProps> = () => {
                     </label>
                     <select
                         id="instrument-select"
-                        value={selectedInstrument.name}
+                        value={selectedInstrument._id}
                         onChange={handleInstrumentChange}
                         className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                     >
                         {instruments.map((instrument, index) => (
-                            <option key={index} value={instrument.name}>
+                            <option key={index} value={instrument._id}>
                                 {instrument.name}
                             </option>
                         ))}
                     </select>
-                    <p className="text-lg font-medium">{selectedInstrument.name}</p>
-                    <p>Type: {capitalize(selectedInstrument.type)}</p>
-                    <p>Scale Length: {selectedInstrument.scale}"</p>
-                    <p>Target Tensions: {selectedInstrument.targetTension.slice(0, -1).map((tension, index) => (
-                        <span key={index}>{tension}, </span>
-                    ))}
-                        <span>{selectedInstrument.targetTension[selectedInstrument.targetTension.length - 1]}</span>
-                    </p>
-                    <label className="text-lg font-medium">Tunings:</label>
-                    <ul className="mb-3">
-                        {selectedInstrument.tunings.map((tuning, index) => (
-                            <li key={index}>{tuning.name}</li>
+                    <div className="flex-grow space-3">
+                        <p className="text-lg font-medium">{selectedInstrument.name}</p>
+                        <button
+                            className="bg-gray-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2"
+                            onClick={handleEditInst}
+                        >
+                            Edit
+                        </button>
+                        <button
+                            className="bg-red-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-red-400 focus:outline-none focus:ring-2"
+                            onClick={handleDeleteInst}
+                        >
+                            Delete
+                        </button>
+                    </div>
+                    <div className="justify-items-start">
+                        <p><strong>Type: </strong>{capitalize(selectedInstrument.type)}</p>
+                        <p><strong>Scale Length: </strong>{selectedInstrument.scale}"</p>
+                        <p><strong>Target
+                            Tensions: </strong>{selectedInstrument.targetTension.slice(0, -1).map((tension, index) => (
+                            <span key={index}>{tension} | </span>
                         ))}
-                    </ul>
+                            <span>{selectedInstrument.targetTension[selectedInstrument.targetTension.length - 1]}</span>
+                        </p>
+                        <label><b>Tunings:</b></label>
+                        <ul className="mb-3 justify-items-start">
+                            {selectedInstrument.tunings.map((tuning, index) => (
+                                <li className="cursor-pointer" onClick={() => setSelectedTuning(tuning)}
+                                    key={index}>{tuning.name}</li>
+                            ))}
+                        </ul>
+                    </div>
+
                     <div className="flex-grow space-4">
                         <button
                             className="bg-blue-600 text-white m-2 px-4 py-2 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2"
@@ -253,23 +307,42 @@ const HomePage: React.FC<HomeProps> = () => {
                     </label>
                     <select
                         id="tuning-select"
-                        value={selectedTuning.name}
+                        value={selectedTuning._id}
                         onChange={handleTuningChange}
                         className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                     >
                         {presetTunings.map((tuning, index) => (
-                            <option key={index} value={tuning.name}>
+                            <option key={index} value={tuning._id}>
                                 {capitalize(tuning.type)}: {tuning.name}
                             </option>
                         ))}
                     </select>
-                    <p className="text-lg font-medium">{selectedTuning.name}</p>
-                    <p>Type: {capitalize(selectedTuning.type)}</p>
-                    <ul className="mb-3">
-                        {selectedTuning.strings.map((string, index) => (
-                            <li key={index}>{index + 1}: {string.note}</li>
-                        ))}
-                    </ul>
+
+                    <div className="flex-grow space-3">
+                        <p className="text-lg font-medium">{selectedTuning.name}</p>
+                        <button
+                            className="bg-gray-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2"
+                            onClick={handleEditTuning}
+                        >
+                            Edit
+                        </button>
+                        <button
+                            className="bg-red-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-red-400 focus:outline-none focus:ring-2"
+                            onClick={handleDeleteTuning}
+                        >
+                            Delete
+                        </button>
+                    </div>
+                    <div className="justify-items-start">
+                        <p><strong>Type: </strong>{capitalize(selectedTuning.type)}</p>
+                        <ul className="mb-3">
+                            {selectedTuning.strings.map((string, index) => (
+                                <li key={index}><strong>{index + 1}: </strong>{string.note}</li>
+                            ))}
+                        </ul>
+                    </div>
+
+
                     <div className="flex-grow space-4">
                         <button
                             className="bg-blue-600 text-white m-2 px-4 py-2 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2"
@@ -286,7 +359,7 @@ const HomePage: React.FC<HomeProps> = () => {
                     </div>
                 </div>
 
-                {message && <p className="text-red-500 mt-4">{message}</p>}
+                {message && <p className={messageClass}>{message}</p>}
 
 
             </div>
@@ -319,6 +392,9 @@ const HomePage: React.FC<HomeProps> = () => {
                 isOpen={isStringSetOpen}
                 onClose={handleCloseStringSet}
                 onSubmit={handleSubmitStringSet}
+                averageTuning={averageTuning}
+                instrument={selectedInstrument}
+                unitWeights={unitWeights}
             />
 
         </div>

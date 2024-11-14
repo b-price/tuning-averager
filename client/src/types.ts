@@ -1,4 +1,5 @@
 export interface Tuning {
+    _id: string;
     name: string;
     strings: GuitarString[];
     type: 'guitar' | 'bass' | 'other';
@@ -10,6 +11,7 @@ export interface GuitarString {
 }
 
 export interface Instrument {
+    _id: string;
     name: string;
     strings: number;
     tunings: Tuning[];
@@ -20,6 +22,7 @@ export interface Instrument {
 }
 
 export interface StringSet {
+    _id: string;
     name: string;
     gauges: number[];
     woundStrings: boolean[];
