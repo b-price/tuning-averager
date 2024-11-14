@@ -3,7 +3,9 @@ import TuningConfirm from "./TuningConfirm.tsx";
 import TuningInput from "./TuningInput.tsx";
 import InstrumentInput from "./InstrumentInput.tsx";
 import {defaultTensions, defaultTunings, notes, presetTunings, stringRange} from "../defaults.ts";
-import {Instrument, Tuning} from "../types.ts";
+import {Instrument, StringSet, Tuning} from "../types.ts";
+import {stringAverage, stringGauge} from "../utils/calculate.ts";
+import AverageStringSet from "./AverageStringSet.tsx";
 
 
 
@@ -13,26 +15,26 @@ const instruments: Instrument[] = [
         strings: 6,
         tunings: [
             {
-                name: 'Guitar Standard',
+                name: 'E Standard',
                 strings: [
-                    { note: 'E4', noteValue: 51 },
-                    { note: 'B3', noteValue: 46 },
-                    { note: 'G3', noteValue: 42 },
-                    { note: 'D3', noteValue: 37 },
-                    { note: 'A2', noteValue: 32 },
-                    { note: 'E2', noteValue: 27 },
+                    { note: 'E4', noteValue: 52 },
+                    { note: 'B3', noteValue: 47 },
+                    { note: 'G3', noteValue: 43 },
+                    { note: 'D3', noteValue: 38 },
+                    { note: 'A2', noteValue: 33 },
+                    { note: 'E2', noteValue: 28 },
                 ],
                 type: 'guitar',
             },
             {
-                name: 'Guitar DADGAD',
+                name: 'DADGAD',
                 strings: [
-                    { note: 'D4', noteValue: 49 },
-                    { note: 'A3', noteValue: 44 },
-                    { note: 'G3', noteValue: 42 },
-                    { note: 'D3', noteValue: 37 },
-                    { note: 'A2', noteValue: 32 },
-                    { note: 'D2', noteValue: 25 },
+                    { note: 'D4', noteValue: 50 },
+                    { note: 'A3', noteValue: 45 },
+                    { note: 'G3', noteValue: 43 },
+                    { note: 'D3', noteValue: 38 },
+                    { note: 'A2', noteValue: 33 },
+                    { note: 'D2', noteValue: 26 },
                 ],
                 type: 'guitar',
             },
@@ -49,18 +51,18 @@ const instruments: Instrument[] = [
         strings: 4,
         tunings: [
             {
-                name: 'Bass Standard',
+                name: 'E Standard',
                 strings: [
-                    { note: 'G2', noteValue: 30 },
-                    { note: 'D2', noteValue: 25 },
-                    { note: 'A1', noteValue: 20 },
-                    { note: 'E1', noteValue: 15 },
+                    { note: 'G2', noteValue: 31 },
+                    { note: 'D2', noteValue: 26 },
+                    { note: 'A1', noteValue: 21 },
+                    { note: 'E1', noteValue: 16 },
                 ],
                 type: 'bass',
             },
         ],
         scale: 34,
-        targetTension: [42.5, 48.4, 40.1],
+        targetTension: [42.5, 48.4, 40.1, 34.7],
         type: 'bass',
         stringSets: [
             { name: '45-100', gauges: [45, 65, 80, 100], woundStrings: [true, true, true, true] },
@@ -68,17 +70,24 @@ const instruments: Instrument[] = [
     }
 ];
 
+interface HomeProps {
+    instruments: Instrument[];
+    tunings: Tuning[];
+}
+
 const capitalize = (word: string) => {
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
 }
 
-const HomePage: React.FC = () => {
+const HomePage: React.FC<HomeProps> = () => {
     const [selectedInstrument, setSelectedInstrument] = useState<Instrument>(instruments[0]);
     const [selectedTuning, setSelectedTuning] = useState<Tuning>(instruments[0].tunings[0]);
     const [message, setMessage] = useState<string>('');
     const [isTuningConfirmOpen, setIsTuningConfirmOpen] = useState(false);
     const [isTuningInputOpen, setIsTuningInputOpen] = useState(false);
     const [isInstInputOpen, setIsInstInputOpen] = useState(false);
+    const [isStringSetOpen, setIsStringSetOpen] = useState(false);
+    const [avStringSet, setAvStringSet] = useState<StringSet>(instruments[0].stringSets[0]);
 
     const handleOpenGetAv = () => {
         setIsTuningConfirmOpen(true);
@@ -86,8 +95,36 @@ const HomePage: React.FC = () => {
     const handleCloseGetAv = () => {
         setIsTuningConfirmOpen(false);
     };
-    const handleSubmitGetAv = (selectedTuningNames: string[]) => {
-        console.log("Selected Tunings:", selectedTuningNames);
+    const handleSubmitGetAv = (selectedTuningNames: string[], wound3rd: boolean) => {
+        const selectedTunings: Tuning[] = selectedInstrument.tunings.filter((tuning) => selectedTuningNames.includes(tuning.name));
+        // const inst: Instrument = {
+        //     ...selectedInstrument,
+        //     tunings: selectedTunings,
+        // };
+        const averageTuning = stringAverage(selectedTunings);
+        console.log(averageTuning)
+        if (averageTuning) {
+            const stringSet: StringSet = {
+                gauges: [],
+                woundStrings: [],
+                name: ''
+            };
+            averageTuning.forEach((note: number, index) => {
+                let wound = true;
+                // This sucks, need a better way to figure out if it's wound
+                if (selectedInstrument.type === 'guitar' && index < 3) {
+                    if (index < 2 || !wound3rd) {
+                        wound = false
+                    }
+                }
+
+                stringSet.gauges.push(stringGauge(note, selectedInstrument.scale, selectedInstrument.targetTension[index], selectedInstrument.type, wound));
+                stringSet.woundStrings.push(wound);
+            });
+            console.log(stringSet)
+            setAvStringSet(stringSet);
+        }
+        setIsStringSetOpen(true);
     };
 
     const handleOpenTuningInput = () => {
@@ -108,6 +145,16 @@ const HomePage: React.FC = () => {
     };
     const handleSubmitInstInput = (newInst: Instrument) => {
         console.log("New Instrument Added: ", newInst);
+    };
+
+    const handleOpenStringSet = () => {
+        setIsStringSetOpen(true);
+    };
+    const handleCloseStringSet = () => {
+        setIsStringSetOpen(false);
+    };
+    const handleSubmitStringSet = (newStringSet: StringSet) => {
+        console.log("New String Set Added: ", newStringSet);
     };
 
     const handleInstrumentChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -212,7 +259,7 @@ const HomePage: React.FC = () => {
                     >
                         {presetTunings.map((tuning, index) => (
                             <option key={index} value={tuning.name}>
-                                {tuning.name}
+                                {capitalize(tuning.type)}: {tuning.name}
                             </option>
                         ))}
                     </select>
@@ -248,6 +295,7 @@ const HomePage: React.FC = () => {
                 onClose={handleCloseGetAv}
                 onSubmit={handleSubmitGetAv}
                 tunings={selectedInstrument.tunings}
+                instrument={selectedInstrument.name}
                 defaultChecked={Array(selectedInstrument.tunings.length).fill(true)}
             />
             <TuningInput
@@ -265,6 +313,12 @@ const HomePage: React.FC = () => {
                 stringRange={stringRange}
                 isOpen={isInstInputOpen}
                 onClose={handleCloseInstInput}
+            />
+            <AverageStringSet
+                stringSet={avStringSet}
+                isOpen={isStringSetOpen}
+                onClose={handleCloseStringSet}
+                onSubmit={handleSubmitStringSet}
             />
 
         </div>

@@ -114,7 +114,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
             <div className="flex-col p-8 mx-auto bg-gray-600 rounded-xl shadow-md">
                 <h2 className="text-2xl font-bold mb-4">Instrument Input</h2>
 
-                <div className="grid sm:grid-cols-2 grid-cols-1 gap-4"> {/* Add vertical spacing between sections */}
+                <div className="grid sm:grid-cols-2 grid-cols-1 gap-4">
                     {/*Desktop Column 1*/}
                     <div className="space-y-2">
                         {/* Instrument Name */}

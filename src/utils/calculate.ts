@@ -110,8 +110,15 @@ export function stringGauge(noteValue: number, scale: number, tension: number, i
         default:
             coefficient /= 2.215;
     }
-    return Math.pow(coefficient, 1 / power);
+    const gauge = Math.pow(coefficient, 1 / power);
+
+    if (gauge < 13){
+        return Math.round(gauge * 2) / 2;
+    } else {
+        return Math.round(gauge);
+    }
 }
+
 
 /*
 To calculate the tension of a string in pounds use the formula below,

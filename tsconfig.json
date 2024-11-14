@@ -5,5 +5,8 @@
     { "path": "./tsconfig.node.json" }
   ],
   "types": ["node", "jest"],
-  "allowImportingTsExtensions": true
+  "compilerOptions": {
+    "allowImportingTsExtensions": true
+  },
+  "esModuleInterop": true,
 }

@@ -16,7 +16,7 @@ export const notes = [
 
 export const presetTunings: Tuning[] = [
     {
-        name: 'Guitar Standard',
+        name: 'E Standard',
         strings: [
             { note: 'E4', noteValue: notes.indexOf('E4') },
             { note: 'B3', noteValue: notes.indexOf('B3') },
@@ -28,7 +28,19 @@ export const presetTunings: Tuning[] = [
         type: 'guitar',
     },
     {
-        name: 'Guitar DADGAD',
+        name: 'Eb Standard',
+        strings: [
+            { note: 'D#4', noteValue: notes.indexOf('D#4') },
+            { note: 'A#3', noteValue: notes.indexOf('A#3') },
+            { note: 'F#3', noteValue: notes.indexOf('F#3') },
+            { note: 'C#3', noteValue: notes.indexOf('C#3') },
+            { note: 'G#2', noteValue: notes.indexOf('G#2') },
+            { note: 'D#2', noteValue: notes.indexOf('D#2') },
+        ],
+        type: 'guitar',
+    },
+    {
+        name: 'DADGAD',
         strings: [
             { note: 'D4', noteValue: notes.indexOf('D4') },
             { note: 'A3', noteValue: notes.indexOf('A3') },
@@ -40,7 +52,7 @@ export const presetTunings: Tuning[] = [
         type: 'guitar',
     },
     {
-        name: 'Guitar AADGAD',
+        name: 'AADGAD',
         strings: [
             { note: 'D4', noteValue: notes.indexOf('D4') },
             { note: 'A3', noteValue: notes.indexOf('A3') },
@@ -52,7 +64,7 @@ export const presetTunings: Tuning[] = [
         type: 'guitar',
     },
     {
-        name: 'Guitar 7 String',
+        name: '7 String Standard',
         strings: [
             { note: 'E4', noteValue: notes.indexOf('E4') },
             { note: 'B3', noteValue: notes.indexOf('B3') },
@@ -65,7 +77,7 @@ export const presetTunings: Tuning[] = [
         type: 'guitar',
     },
     {
-        name: 'Bass Standard',
+        name: 'E Standard',
         strings: [
             { note: 'G2', noteValue: notes.indexOf('G2') },
             { note: 'D2', noteValue: notes.indexOf('D2') },
@@ -75,7 +87,7 @@ export const presetTunings: Tuning[] = [
         type: 'bass',
     },
     {
-        name: 'Bass 5 String',
+        name: '5 String Standard',
         strings: [
             { note: 'G2', noteValue: notes.indexOf('G2') },
             { note: 'D2', noteValue: notes.indexOf('D2') },
@@ -86,7 +98,7 @@ export const presetTunings: Tuning[] = [
         type: 'bass',
     },
     {
-        name: 'Bass 6 String',
+        name: '6 String Standard',
         strings: [
             { note: 'C3', noteValue: notes.indexOf('C3') },
             { note: 'G2', noteValue: notes.indexOf('G2') },
@@ -145,3 +157,5 @@ export const defaultTensions = {
 }
 
 export const stringRange: [number, number] = [3, 9]
+
+export const woundOverlap = [18, 22]
