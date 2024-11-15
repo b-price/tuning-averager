@@ -1,4 +1,4 @@
-import {Tuning} from "../types";
+import {Tuning} from "../../../types.ts";
 
 export function tuningWeight(tuning: Tuning){
     let sum = 0;

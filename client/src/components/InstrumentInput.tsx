@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Instrument, Tuning } from "../types.ts";
+import { Instrument, Tuning } from "../../../types.ts";
 import Modal from "./Modal.tsx";
 
 interface InstrumentInputProps {

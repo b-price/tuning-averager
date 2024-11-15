@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
-import { Tuning } from '../types';
+import { Tuning } from '../../../types.ts';
 
 interface TuningConfirmProps {
     isOpen: boolean;

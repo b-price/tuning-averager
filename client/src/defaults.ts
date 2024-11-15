@@ -1,4 +1,4 @@
-import {Tuning} from "./types.ts";
+import {Instrument, Tuning, UserData} from "../../types.ts";
 
 
 export const notes = [
@@ -16,7 +16,7 @@ export const notes = [
 
 export const presetTunings: Tuning[] = [
     {
-        _id: '0',
+        id: '0',
         name: 'E Standard',
         strings: [
             { note: 'E4', noteValue: notes.indexOf('E4') },
@@ -29,7 +29,7 @@ export const presetTunings: Tuning[] = [
         type: 'guitar',
     },
     {
-        _id: '1',
+        id: '1',
         name: 'Eb Standard',
         strings: [
             { note: 'D#4', noteValue: notes.indexOf('D#4') },
@@ -42,7 +42,7 @@ export const presetTunings: Tuning[] = [
         type: 'guitar',
     },
     {
-        _id: '2',
+        id: '2',
         name: 'DADGAD',
         strings: [
             { note: 'D4', noteValue: notes.indexOf('D4') },
@@ -55,7 +55,7 @@ export const presetTunings: Tuning[] = [
         type: 'guitar',
     },
     {
-        _id: '3',
+        id: '3',
         name: 'AADGAD',
         strings: [
             { note: 'D4', noteValue: notes.indexOf('D4') },
@@ -68,7 +68,7 @@ export const presetTunings: Tuning[] = [
         type: 'guitar',
     },
     {
-        _id: '4',
+        id: '4',
         name: '7 String Standard',
         strings: [
             { note: 'E4', noteValue: notes.indexOf('E4') },
@@ -82,7 +82,7 @@ export const presetTunings: Tuning[] = [
         type: 'guitar',
     },
     {
-        _id: '5',
+        id: '5',
         name: 'E Standard',
         strings: [
             { note: 'G2', noteValue: notes.indexOf('G2') },
@@ -93,7 +93,7 @@ export const presetTunings: Tuning[] = [
         type: 'bass',
     },
     {
-        _id: '6',
+        id: '6',
         name: '5 String Standard',
         strings: [
             { note: 'G2', noteValue: notes.indexOf('G2') },
@@ -105,7 +105,7 @@ export const presetTunings: Tuning[] = [
         type: 'bass',
     },
     {
-        _id: '7',
+        id: '7',
         name: '6 String Standard',
         strings: [
             { note: 'C3', noteValue: notes.indexOf('C3') },
@@ -118,7 +118,7 @@ export const presetTunings: Tuning[] = [
         type: 'bass',
     },
     {
-        _id: '8',
+        id: '8',
         name: 'Ukulele Standard',
         strings: [
             { note: 'A4', noteValue: notes.indexOf('A4') },
@@ -129,6 +129,78 @@ export const presetTunings: Tuning[] = [
         type: 'other',
     },
 ]
+
+export const presetInstruments: Instrument[] = [
+    {
+        id: '0',
+        name: 'Stratocaster',
+        strings: 6,
+        tunings: [
+            {
+                id: '0',
+                name: 'E Standard',
+                strings: [
+                    { note: 'E4', noteValue: 52 },
+                    { note: 'B3', noteValue: 47 },
+                    { note: 'G3', noteValue: 43 },
+                    { note: 'D3', noteValue: 38 },
+                    { note: 'A2', noteValue: 33 },
+                    { note: 'E2', noteValue: 28 },
+                ],
+                type: 'guitar',
+            },
+            {
+                id: '2',
+                name: 'DADGAD',
+                strings: [
+                    { note: 'D4', noteValue: 50 },
+                    { note: 'A3', noteValue: 45 },
+                    { note: 'G3', noteValue: 43 },
+                    { note: 'D3', noteValue: 38 },
+                    { note: 'A2', noteValue: 33 },
+                    { note: 'D2', noteValue: 26 },
+                ],
+                type: 'guitar',
+            },
+        ],
+        scale: 25.5,
+        targetTension: [16.2, 15.4, 16.6, 18.4, 19, 16.9],
+        type: 'guitar',
+        stringSets: [
+            { id: '0', name: '10-46', gauges: [10, 13, 17, 26, 36, 46], woundStrings: [false, false, false, true, true, true] },
+        ]
+    },
+    {
+        id: '1',
+        name: 'P Bass',
+        strings: 4,
+        tunings: [
+            {
+                id: '5',
+                name: 'E Standard',
+                strings: [
+                    { note: 'G2', noteValue: 31 },
+                    { note: 'D2', noteValue: 26 },
+                    { note: 'A1', noteValue: 21 },
+                    { note: 'E1', noteValue: 16 },
+                ],
+                type: 'bass',
+            },
+        ],
+        scale: 34,
+        targetTension: [42.5, 48.4, 40.1, 34.7],
+        type: 'bass',
+        stringSets: [
+            { id: '1', name: '45-100', gauges: [45, 65, 80, 100], woundStrings: [true, true, true, true] },
+        ]
+    }
+];
+
+export const defaultUser: UserData = {
+    username: 'CoolGuy',
+    instruments: ['0', '1'],
+    tunings: ['0', '1', '2', '3', '4', '5', '6', '7', '8']
+}
 
 export const defaultTunings = {
     guitar: [

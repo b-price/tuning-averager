@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 
+.env
+
 client/src/oldComponents/
 oldComponents
 

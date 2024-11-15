@@ -2,78 +2,76 @@ import React, { useState } from 'react';
 import TuningConfirm from "./TuningConfirm.tsx";
 import TuningInput from "./TuningInput.tsx";
 import InstrumentInput from "./InstrumentInput.tsx";
-import {defaultTensions, defaultTunings, notes, presetTunings, stringRange, stringTypeFactors} from "../defaults.ts";
-import {Instrument, StringSet, Tuning} from "../types.ts";
+import {defaultTensions, defaultTunings, notes, stringRange, stringTypeFactors} from "../defaults.ts";
+import {Instrument, StringSet, Tuning} from "../../../types.ts";
 import {getUnitWeight, stringAverage, stringGauge} from "../utils/calculate.ts";
 import AverageStringSet from "./AverageStringSet.tsx";
 
-
-
-const instruments: Instrument[] = [
-    {
-        _id: '0',
-        name: 'Stratocaster',
-        strings: 6,
-        tunings: [
-            {
-                _id: '0',
-                name: 'E Standard',
-                strings: [
-                    { note: 'E4', noteValue: 52 },
-                    { note: 'B3', noteValue: 47 },
-                    { note: 'G3', noteValue: 43 },
-                    { note: 'D3', noteValue: 38 },
-                    { note: 'A2', noteValue: 33 },
-                    { note: 'E2', noteValue: 28 },
-                ],
-                type: 'guitar',
-            },
-            {
-                _id: '2',
-                name: 'DADGAD',
-                strings: [
-                    { note: 'D4', noteValue: 50 },
-                    { note: 'A3', noteValue: 45 },
-                    { note: 'G3', noteValue: 43 },
-                    { note: 'D3', noteValue: 38 },
-                    { note: 'A2', noteValue: 33 },
-                    { note: 'D2', noteValue: 26 },
-                ],
-                type: 'guitar',
-            },
-        ],
-        scale: 25.5,
-        targetTension: [16.2, 15.4, 16.6, 18.4, 19, 16.9],
-        type: 'guitar',
-        stringSets: [
-            { _id: '0', name: '10-46', gauges: [10, 13, 17, 26, 36, 46], woundStrings: [false, false, false, true, true, true] },
-        ]
-    },
-    {
-        _id: '1',
-        name: 'P Bass',
-        strings: 4,
-        tunings: [
-            {
-                _id: '5',
-                name: 'E Standard',
-                strings: [
-                    { note: 'G2', noteValue: 31 },
-                    { note: 'D2', noteValue: 26 },
-                    { note: 'A1', noteValue: 21 },
-                    { note: 'E1', noteValue: 16 },
-                ],
-                type: 'bass',
-            },
-        ],
-        scale: 34,
-        targetTension: [42.5, 48.4, 40.1, 34.7],
-        type: 'bass',
-        stringSets: [
-            { _id: '1', name: '45-100', gauges: [45, 65, 80, 100], woundStrings: [true, true, true, true] },
-        ]
-    }
-];
+// const instruments: Instrument[] = [
+//     {
+//         id: '0',
+//         name: 'Stratocaster',
+//         strings: 6,
+//         tunings: [
+//             {
+//                 id: '0',
+//                 name: 'E Standard',
+//                 strings: [
+//                     { note: 'E4', noteValue: 52 },
+//                     { note: 'B3', noteValue: 47 },
+//                     { note: 'G3', noteValue: 43 },
+//                     { note: 'D3', noteValue: 38 },
+//                     { note: 'A2', noteValue: 33 },
+//                     { note: 'E2', noteValue: 28 },
+//                 ],
+//                 type: 'guitar',
+//             },
+//             {
+//                 id: '2',
+//                 name: 'DADGAD',
+//                 strings: [
+//                     { note: 'D4', noteValue: 50 },
+//                     { note: 'A3', noteValue: 45 },
+//                     { note: 'G3', noteValue: 43 },
+//                     { note: 'D3', noteValue: 38 },
+//                     { note: 'A2', noteValue: 33 },
+//                     { note: 'D2', noteValue: 26 },
+//                 ],
+//                 type: 'guitar',
+//             },
+//         ],
+//         scale: 25.5,
+//         targetTension: [16.2, 15.4, 16.6, 18.4, 19, 16.9],
+//         type: 'guitar',
+//         stringSets: [
+//             { id: '0', name: '10-46', gauges: [10, 13, 17, 26, 36, 46], woundStrings: [false, false, false, true, true, true] },
+//         ]
+//     },
+//     {
+//         id: '1',
+//         name: 'P Bass',
+//         strings: 4,
+//         tunings: [
+//             {
+//                 id: '5',
+//                 name: 'E Standard',
+//                 strings: [
+//                     { note: 'G2', noteValue: 31 },
+//                     { note: 'D2', noteValue: 26 },
+//                     { note: 'A1', noteValue: 21 },
+//                     { note: 'E1', noteValue: 16 },
+//                 ],
+//                 type: 'bass',
+//             },
+//         ],
+//         scale: 34,
+//         targetTension: [42.5, 48.4, 40.1, 34.7],
+//         type: 'bass',
+//         stringSets: [
+//             { id: '1', name: '45-100', gauges: [45, 65, 80, 100], woundStrings: [true, true, true, true] },
+//         ]
+//     }
+// ];
 
 interface HomeProps {
     instruments: Instrument[];
@@ -84,7 +82,7 @@ const capitalize = (word: string) => {
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
 }
 
-const HomePage: React.FC<HomeProps> = () => {
+const HomePage: React.FC<HomeProps> = ({instruments, tunings}) => {
     const [selectedInstrument, setSelectedInstrument] = useState<Instrument>(instruments[0]);
     const [selectedTuning, setSelectedTuning] = useState<Tuning>(instruments[0].tunings[0]);
     const [message, setMessage] = useState<string>('');
@@ -192,7 +190,7 @@ const HomePage: React.FC<HomeProps> = () => {
 
     const handleInstrumentChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const instrumentID = event.target.value;
-        const instrument = instruments.find(i => i._id === instrumentID);
+        const instrument = instruments.find(i => i.id === instrumentID);
         if (instrument) {
             setSelectedInstrument(instrument);
             setSelectedTuning(instrument.tunings[0]);
@@ -201,7 +199,7 @@ const HomePage: React.FC<HomeProps> = () => {
 
     const handleTuningChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const tuningID = event.target.value;
-        const tuning = presetTunings.find(t => t._id === tuningID);
+        const tuning = tunings.find(t => t.id === tuningID);
         if (tuning) {
             setSelectedTuning(tuning);
         }
@@ -241,12 +239,12 @@ const HomePage: React.FC<HomeProps> = () => {
                     </label>
                     <select
                         id="instrument-select"
-                        value={selectedInstrument._id}
+                        value={selectedInstrument.id}
                         onChange={handleInstrumentChange}
                         className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                     >
                         {instruments.map((instrument, index) => (
-                            <option key={index} value={instrument._id}>
+                            <option key={index} value={instrument.id}>
                                 {instrument.name}
                             </option>
                         ))}
@@ -307,12 +305,12 @@ const HomePage: React.FC<HomeProps> = () => {
                     </label>
                     <select
                         id="tuning-select"
-                        value={selectedTuning._id}
+                        value={selectedTuning.id}
                         onChange={handleTuningChange}
                         className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                     >
-                        {presetTunings.map((tuning, index) => (
-                            <option key={index} value={tuning._id}>
+                        {tunings.map((tuning, index) => (
+                            <option key={index} value={tuning.id}>
                                 {capitalize(tuning.type)}: {tuning.name}
                             </option>
                         ))}
@@ -373,7 +371,7 @@ const HomePage: React.FC<HomeProps> = () => {
             />
             <TuningInput
                 notes={notes}
-                presetTunings={presetTunings}
+                presetTunings={tunings}
                 defaultTunings={defaultTunings}
                 onSubmit={handleSubmitTuningInput}
                 isOpen={isTuningInputOpen}
@@ -381,7 +379,7 @@ const HomePage: React.FC<HomeProps> = () => {
             />
             <InstrumentInput
                 onSubmit={handleSubmitInstInput}
-                tunings={presetTunings}
+                tunings={tunings}
                 targetTensions={defaultTensions}
                 stringRange={stringRange}
                 isOpen={isInstInputOpen}

@@ -1,4 +1,4 @@
-import {Instrument, StringSet} from "../types.ts";
+import {Instrument, StringSet} from "../../../types.ts";
 import React, {useEffect, useState} from "react";
 import Modal from "./Modal.tsx";
 import {tension, uwFromGauge} from "../utils/calculate.ts";

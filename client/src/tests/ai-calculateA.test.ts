@@ -1,4 +1,4 @@
-import { Tuning } from "../types";
+import { Tuning } from "../../../types.ts";
 import {
     tuningWeight,
     stringAverage,

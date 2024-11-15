@@ -1,6 +1,6 @@
 import React, { useState, } from 'react';
 import ArrowSelector from './ArrowSelector.tsx';
-import { GuitarString, Tuning, Transpose } from "../types.ts";
+import { GuitarString, Tuning, Transpose } from "../../../types.ts";
 import Modal from "./Modal.tsx";
 
 interface TuningInputProps {
