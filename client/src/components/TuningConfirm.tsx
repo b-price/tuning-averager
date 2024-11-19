@@ -22,6 +22,10 @@ const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit
         }
     }, [isOpen, tunings, defaultChecked]);
 
+    if (!isOpen){
+        return null;
+    }
+
     const handleSubmit = () => {
         onSubmit(selectedTunings, wound3rd);
         setWound3rd(false);

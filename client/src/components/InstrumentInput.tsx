@@ -85,6 +85,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
             stringSets: []
         };
         onSubmit(instrument);
+        onClose();
     };
 
     // Close dropdown when clicking outside

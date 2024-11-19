@@ -29,7 +29,7 @@ instrumentRouter.get("/:id", async (req: Request, res: Response) => {
             res.status(200).send(instrument);
         }
     } catch (error) {
-        res.status(404).send(`Unable to find matching document with id: ${req.params.id}`);
+        res.status(404).send(`Unable to find matching instrument with id: ${req.params.id}`);
     }
 });
 
@@ -39,8 +39,8 @@ instrumentRouter.post("/", async (req: Request, res: Response) => {
         const result = await collections?.instruments?.insertOne(newInstrument);
 
         result
-            ? res.status(201).send(`Successfully inserted document with id: ${result.insertedId}`)
-            : res.status(500).send("Failed to insert document!");
+            ? res.status(201).send({message: `Successfully inserted instrument with id: ${result.insertedId}`, id:result.insertedId})
+            : res.status(500).send("Failed to insert instrument!");
     } catch (error) {
         if (error instanceof Error) {
             console.error(error.message);
@@ -49,7 +49,7 @@ instrumentRouter.post("/", async (req: Request, res: Response) => {
     }
 });
 
-instrumentRouter.put("/:id", async (req: Request, res: Response) => {
+instrumentRouter.patch("/:id", async (req: Request, res: Response) => {
     const id = req?.params?.id;
 
     try {

@@ -4,11 +4,13 @@ import { userRouter } from "./routes/user.router";
 import process = require("node:process");
 import {tuningsRouter} from "./routes/tunings.router";
 import {instrumentRouter} from "./routes/instrumentsRouter";
+import cors from "cors";
 
 const app = express();
 const port = 8080;
 
 dbConnect().then(() => {
+    app.use(cors());
     app.use("/users", userRouter);
     app.use("/tunings", tuningsRouter);
     app.use("/instruments", instrumentRouter);

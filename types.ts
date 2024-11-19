@@ -5,6 +5,8 @@
 //     type: 'guitar' | 'bass' | 'other';
 // }
 
+import {ObjectId} from "mongodb";
+
 export class Tuning {
     constructor(
         public name: string,

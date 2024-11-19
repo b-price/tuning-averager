@@ -7,13 +7,27 @@ export const userRouter = express.Router();
 
 userRouter.use(express.json());
 
-userRouter.get("/", async (req, res: Response) => {
+interface QueryParams {
+    field?: string;
+    value?: string;
+}
+
+userRouter.get("/", async (req: Request<{}, {}, {}, QueryParams>, res: Response) => {
+    const { field, value } = req?.query;
+
+    let users;
     try {
-        const users = (await collections?.users?.find({}).toArray()) as UserData[];
+        if (field && value){
+            const query = { [field]: value };
+            users = (await collections?.users?.findOne(query)) as UserData;
+        }
+        // else {
+        //     users = (await collections?.users?.find({}).toArray()) as UserData[];
+        // }
         res.status(200).send(users);
     } catch (error) {
         if (error instanceof Error) {
-            res.status(500).send(error.message);
+            res.status(404).send(`Unable to find matching user with username: ${value}`);
         }
     }
 });
@@ -29,7 +43,7 @@ userRouter.get("/:id", async (req: Request, res: Response) => {
             res.status(200).send(user);
         }
     } catch (error) {
-        res.status(404).send(`Unable to find matching document with id: ${req.params.id}`);
+        res.status(404).send(`Unable to find matching user with id: ${req.params.id}`);
     }
 });
 
@@ -39,8 +53,8 @@ userRouter.post("/", async (req: Request, res: Response) => {
         const result = await collections?.users?.insertOne(newUser);
 
         result
-            ? res.status(201).send(`Successfully inserted document with id: ${result.insertedId}`)
-            : res.status(500).send("Failed to insert document!");
+            ? res.status(201).send(`Successfully inserted user with id: ${result.insertedId}`)
+            : res.status(500).send("Failed to insert user!");
     } catch (error) {
         if (error instanceof Error) {
             console.error(error.message);
@@ -49,7 +63,7 @@ userRouter.post("/", async (req: Request, res: Response) => {
     }
 });
 
-userRouter.put("/:id", async (req: Request, res: Response) => {
+userRouter.patch("/:id", async (req: Request, res: Response) => {
     const id = req?.params?.id;
 
     try {

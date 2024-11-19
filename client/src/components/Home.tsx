@@ -1,88 +1,30 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import TuningConfirm from "./TuningConfirm.tsx";
 import TuningInput from "./TuningInput.tsx";
 import InstrumentInput from "./InstrumentInput.tsx";
-import {defaultTensions, defaultTunings, notes, stringRange, stringTypeFactors} from "../defaults.ts";
-import {Instrument, StringSet, Tuning} from "../../../types.ts";
+import {defaultTensions, defaultTunings, notes, serverURL, stringRange, stringTypeFactors} from "../defaults.ts";
+import {Instrument, StringSet, Tuning, UserData} from "../../../types.ts";
 import {getUnitWeight, stringAverage, stringGauge} from "../utils/calculate.ts";
 import AverageStringSet from "./AverageStringSet.tsx";
-
-// const instruments: Instrument[] = [
-//     {
-//         id: '0',
-//         name: 'Stratocaster',
-//         strings: 6,
-//         tunings: [
-//             {
-//                 id: '0',
-//                 name: 'E Standard',
-//                 strings: [
-//                     { note: 'E4', noteValue: 52 },
-//                     { note: 'B3', noteValue: 47 },
-//                     { note: 'G3', noteValue: 43 },
-//                     { note: 'D3', noteValue: 38 },
-//                     { note: 'A2', noteValue: 33 },
-//                     { note: 'E2', noteValue: 28 },
-//                 ],
-//                 type: 'guitar',
-//             },
-//             {
-//                 id: '2',
-//                 name: 'DADGAD',
-//                 strings: [
-//                     { note: 'D4', noteValue: 50 },
-//                     { note: 'A3', noteValue: 45 },
-//                     { note: 'G3', noteValue: 43 },
-//                     { note: 'D3', noteValue: 38 },
-//                     { note: 'A2', noteValue: 33 },
-//                     { note: 'D2', noteValue: 26 },
-//                 ],
-//                 type: 'guitar',
-//             },
-//         ],
-//         scale: 25.5,
-//         targetTension: [16.2, 15.4, 16.6, 18.4, 19, 16.9],
-//         type: 'guitar',
-//         stringSets: [
-//             { id: '0', name: '10-46', gauges: [10, 13, 17, 26, 36, 46], woundStrings: [false, false, false, true, true, true] },
-//         ]
-//     },
-//     {
-//         id: '1',
-//         name: 'P Bass',
-//         strings: 4,
-//         tunings: [
-//             {
-//                 id: '5',
-//                 name: 'E Standard',
-//                 strings: [
-//                     { note: 'G2', noteValue: 31 },
-//                     { note: 'D2', noteValue: 26 },
-//                     { note: 'A1', noteValue: 21 },
-//                     { note: 'E1', noteValue: 16 },
-//                 ],
-//                 type: 'bass',
-//             },
-//         ],
-//         scale: 34,
-//         targetTension: [42.5, 48.4, 40.1, 34.7],
-//         type: 'bass',
-//         stringSets: [
-//             { id: '1', name: '45-100', gauges: [45, 65, 80, 100], woundStrings: [true, true, true, true] },
-//         ]
-//     }
-// ];
+import axios, {AxiosError} from "axios";
+import {addInstrument, deleteInstrument, updateInstrument, updateUser} from "../utils/serverFunctions.ts";
 
 interface HomeProps {
     instruments: Instrument[];
     tunings: Tuning[];
+    isLoading: boolean;
+    onUpdateInst: () => void;
+    userData: UserData;
 }
 
 const capitalize = (word: string) => {
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
 }
 
-const HomePage: React.FC<HomeProps> = ({instruments, tunings}) => {
+const HomePage: React.FC<HomeProps> = ({instruments, tunings, isLoading, onUpdateInst, userData}) => {
+
+    // const [currentTunings, setCurrentTunings] = useState<Tuning[]>(tunings);
+    // const [currentInstruments, setCurrentInstruments] = useState<Instrument[]>(instruments);
     const [selectedInstrument, setSelectedInstrument] = useState<Instrument>(instruments[0]);
     const [selectedTuning, setSelectedTuning] = useState<Tuning>(instruments[0].tunings[0]);
     const [message, setMessage] = useState<string>('');
@@ -96,8 +38,91 @@ const HomePage: React.FC<HomeProps> = ({instruments, tunings}) => {
     const [unitWeights, setUnitWeights] = useState<number[]>([]);
     const [isEdit, setIsEdit] = useState<boolean>(false);
 
+    if (isLoading || !instruments.length || !tunings.length || userData === undefined){
+        return <div>Loading...</div>
+    }
+
+    const onUpdateInstrument = async (changes: object, instID?: string) => {
+        updateInstrument(changes, instID).then(() => {
+            onUpdateInst();
+            setMessageClass('text-blue-400');
+            setMessage('Instrument updated successfully!');
+            setTimeout(() => {
+                setMessage('');
+            }, 2000);
+        }).catch((e) => {
+            console.error(e);
+            setMessageClass('text-red-400');
+            setMessage('Could not update instrument');
+            setTimeout(() => {
+                setMessage('');
+            }, 3000)
+        });
+    };
+
+    const onAddInstrument = async (newInst: Instrument) => {
+        const instrument = {...newInst, tunings: newInst.tunings.map((tuning: Tuning) => tuning.id)};
+        addInstrument(instrument)
+            .then((instID) => updateUser({instruments: [...userData.instruments, instID]}, userData.id))
+            .then(() => {
+                onUpdateInst();
+                setMessageClass('text-blue-400');
+                setMessage('Instrument added successfully!');
+                setTimeout(() => {
+                    setMessage('');
+                }, 2000);
+            }).catch((e) => {
+                console.error(e);
+                setMessageClass('text-red-400');
+                setMessage('Could not add instrument');
+                setTimeout(() => {
+                    setMessage('');
+                }, 3000)
+        })
+    };
+
+
+    const onUpdateTuning = async (changes: object, tuningID?: string) => {
+        try {
+            const response = await axios.patch(`${serverURL}/tunings/${tuningID}`, changes);
+            if (response.data.status === 200) {
+                setMessageClass('text-blue-400');
+                setMessage('Tuning updated successfully!');
+            }
+            return response;
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                setMessageClass('text-red-400');
+                setMessage('Could not update tuning');
+            }
+        }
+    };
+
+    const onAddTuning = async (tuning: object) => {
+        try {
+            const response = await axios.post(`${serverURL}/tunings/`, tuning);
+            if (response.data.status === 201) {
+                setMessageClass('text-blue-400');
+                setMessage('Tuning updated successfully!');
+            }
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                setMessageClass('text-red-400');
+                setMessage('Could not add tuning');
+            }
+        }
+    }
+
     const handleOpenGetAv = () => {
-        setIsTuningConfirmOpen(true);
+        if (selectedInstrument.tunings.length){
+            setIsTuningConfirmOpen(true);
+        } else {
+            setMessageClass('text-red-400');
+            setMessage('Instrument has no tunings!');
+            setTimeout(() => {
+                setMessage('');
+            }, 3000);
+        }
     };
     const handleCloseGetAv = () => {
         setIsTuningConfirmOpen(false);
@@ -146,6 +171,7 @@ const HomePage: React.FC<HomeProps> = ({instruments, tunings}) => {
     const handleCloseTuningInput = () => {
         setIsTuningInputOpen(false);
     };
+
     const handleSubmitTuningInput = (newTuning: Tuning) => {
         console.log("Tuning Added: ", newTuning);
     };
@@ -157,7 +183,13 @@ const HomePage: React.FC<HomeProps> = ({instruments, tunings}) => {
         setIsInstInputOpen(false);
     };
     const handleSubmitInstInput = (newInst: Instrument) => {
-        console.log("New Instrument Added: ", newInst);
+        const inst = {...newInst, tunings: newInst.tunings.map((tuning: Tuning) => tuning.id)};
+        onAddInstrument(inst).then((response) => {
+            console.log(response);
+            onUpdateInst();
+        }).catch((error: AxiosError) => {
+            console.log(error);
+        })
     };
 
     const handleOpenStringSet = () => {
@@ -167,7 +199,7 @@ const HomePage: React.FC<HomeProps> = ({instruments, tunings}) => {
         setIsStringSetOpen(false);
     };
     const handleSubmitStringSet = (newStringSet: StringSet) => {
-        console.log("New String Set Added: ", newStringSet);
+        onUpdateInstrument({stringSets: [...selectedInstrument.stringSets, newStringSet]}).then().catch((error: AxiosError) => {console.log(error)})
     };
 
     const handleEditInst = () => {
@@ -180,8 +212,14 @@ const HomePage: React.FC<HomeProps> = ({instruments, tunings}) => {
         setIsTuningInputOpen(true);
     };
 
-    const handleDeleteInst = () => {
-        console.log("Instrument Deleted, to be implemented");
+    const handleDeleteInst = (instID: string) => {
+        const updatedInstruments = instruments
+            .filter((inst: Instrument) => inst.id !== instID)
+            .map((inst: Instrument) => inst.id);
+        deleteInstrument(instID)
+            .then(() => updateUser({instruments: updatedInstruments}, userData.id))
+            .then(() => onUpdateInst())
+            .catch((e) => console.error(e));
     };
 
     const handleDeleteTuning = () => {
@@ -193,7 +231,9 @@ const HomePage: React.FC<HomeProps> = ({instruments, tunings}) => {
         const instrument = instruments.find(i => i.id === instrumentID);
         if (instrument) {
             setSelectedInstrument(instrument);
-            setSelectedTuning(instrument.tunings[0]);
+            if (instrument.tunings.length) {
+                setSelectedTuning(instrument.tunings[0]);
+            }
         }
     };
 
@@ -205,7 +245,7 @@ const HomePage: React.FC<HomeProps> = ({instruments, tunings}) => {
         }
     };
 
-    const handleAddTuningToInstrument = () => {
+    const handleAddTuningToInstrument = async () => {
         if (selectedInstrument.tunings.some(tuning => tuning.name === selectedTuning.name)) {
             setMessageClass('text-red-500');
             setMessage('Instrument already has this tuning!');
@@ -216,21 +256,25 @@ const HomePage: React.FC<HomeProps> = ({instruments, tunings}) => {
             setMessage('Tuning does not match instrument\'s type or string count.');
             return;
         }
+        const newTuningIDs = [...selectedInstrument.tunings, selectedTuning].map((tuning) => tuning.id);
         const updatedInstrument = {
             ...selectedInstrument,
             tunings: [...selectedInstrument.tunings, selectedTuning]
         };
+        onUpdateInstrument({tunings: newTuningIDs}, selectedInstrument.id).then((response) => {
+            console.log(response);
 
-        setSelectedInstrument(updatedInstrument);
-        instruments[instruments.findIndex(i => i.name === selectedInstrument.name)] = updatedInstrument;
-        setMessageClass('text-blue-400');
-        setMessage('Tuning added successfully!');
+        }).catch((error: AxiosError) => {
+            console.log(error);
+        })
+
+
     };
 
     return (
         <div className="flex flex-col p-6">
             <div className="">
-                <h1 className="text-2xl font-bold mb-4">Tuning Averager</h1>
+                <h1 className="text-2xl font-bold mb-4">{userData.username}</h1>
 
                 {/*Instruments*/}
                 <div className="mb-7">
@@ -378,7 +422,7 @@ const HomePage: React.FC<HomeProps> = ({instruments, tunings}) => {
                 onClose={handleCloseTuningInput}
             />
             <InstrumentInput
-                onSubmit={handleSubmitInstInput}
+                onSubmit={onAddInstrument}
                 tunings={tunings}
                 targetTensions={defaultTensions}
                 stringRange={stringRange}

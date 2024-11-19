@@ -29,7 +29,7 @@ tuningsRouter.get("/:id", async (req: Request, res: Response) => {
             res.status(200).send(tuning);
         }
     } catch (error) {
-        res.status(404).send(`Unable to find matching document with id: ${req.params.id}`);
+        res.status(404).send(`Unable to find matching tuning with id: ${req.params.id}`);
     }
 });
 
@@ -39,8 +39,8 @@ tuningsRouter.post("/", async (req: Request, res: Response) => {
         const result = await collections?.tunings?.insertOne(newTuning);
 
         result
-            ? res.status(201).send(`Successfully inserted document with id: ${result.insertedId}`)
-            : res.status(500).send("Failed to insert document!");
+            ? res.status(201).send(`Successfully inserted tuning with id: ${result.insertedId}`)
+            : res.status(500).send("Failed to insert tuning!");
     } catch (error) {
         if (error instanceof Error) {
             console.error(error.message);
@@ -49,7 +49,7 @@ tuningsRouter.post("/", async (req: Request, res: Response) => {
     }
 });
 
-tuningsRouter.put("/:id", async (req: Request, res: Response) => {
+tuningsRouter.patch("/:id", async (req: Request, res: Response) => {
     const id = req?.params?.id;
 
     try {

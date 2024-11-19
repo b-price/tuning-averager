@@ -172,7 +172,7 @@ export const presetInstruments: Instrument[] = [
     },
     {
         id: '1',
-        name: 'P Bass',
+        name: 'J Bass',
         strings: 4,
         tunings: [
             {
@@ -255,3 +255,5 @@ export const stringTypeFactors = {
         wound: {coeff: 2.215, power: 2},
     },
 }
+
+export const serverURL = 'http://localhost:8080'
