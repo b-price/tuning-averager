@@ -76,17 +76,9 @@ const TARouter: React.FC = () => {
     // };
 
     useEffect(() => {
-        // @ts-ignore
+
         getUser(username)
-            .then((userData) => {
-                setUser(userData);
-                return getTunings(userData);
-            })
-            .then((data) => {
-                setTunings(data.userTunings);
-                return getInstruments(data);
-            })
-            .then((insts) => setInstruments(insts))
+            .then((userData) => setUser(userData))
             .then(() => setIsLoading(false))
             .catch((e) => console.error(e));
 
@@ -108,7 +100,8 @@ const TARouter: React.FC = () => {
 
     return (
         <>
-            <Home instruments={instruments} tunings={tunings} isLoading={isLoading} onUpdateInst={onUpdateInst} userData={user} />
+            {isLoading ? <div>Loading...</div> : <Home onUpdateInst={onUpdateInst} userData={user} />}
+
         </>
     )
 }

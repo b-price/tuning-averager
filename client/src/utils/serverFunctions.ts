@@ -1,6 +1,6 @@
 import axios, {AxiosError} from "axios";
-import {serverURL} from "../defaults.ts";
-import {Instrument, Tuning, UserData} from "../../../types.ts";
+import {serverURL} from "../defaults";
+import {Instrument, Tuning, UserData} from "../../../types";
 
 // user CRUD
 export const getUser = async (username: string) => {
@@ -141,6 +141,7 @@ export const updateInstrument = async (changes: object, instID?: string) => {
 export const addInstrument = async (instrument: object) => {
     try {
         const response = await axios.post(`${serverURL}/instruments/`, instrument);
+        console.log(response.data.id);
         return response.data.id;
     } catch (error) {
         if (error instanceof AxiosError) {

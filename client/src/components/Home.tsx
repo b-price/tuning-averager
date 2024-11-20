@@ -1,18 +1,30 @@
 import React, {useEffect, useState} from 'react';
-import TuningConfirm from "./TuningConfirm.tsx";
-import TuningInput from "./TuningInput.tsx";
-import InstrumentInput from "./InstrumentInput.tsx";
-import {defaultTensions, defaultTunings, notes, serverURL, stringRange, stringTypeFactors} from "../defaults.ts";
-import {Instrument, StringSet, Tuning, UserData} from "../../../types.ts";
-import {getUnitWeight, stringAverage, stringGauge} from "../utils/calculate.ts";
-import AverageStringSet from "./AverageStringSet.tsx";
+import TuningConfirm from "./TuningConfirm";
+import TuningInput from "./TuningInput";
+import InstrumentInput from "./InstrumentInput";
+import {
+    defaultTensions,
+    defaultTunings,
+    notes, presetInstruments,
+    presetTunings,
+    serverURL,
+    stringRange,
+    stringTypeFactors
+} from "../defaults";
+import {Instrument, StringSet, Tuning, UserData} from "../../../types";
+import {getUnitWeight, stringAverage, stringGauge} from "../utils/calculate";
+import AverageStringSet from "./AverageStringSet";
 import axios, {AxiosError} from "axios";
-import {addInstrument, deleteInstrument, updateInstrument, updateUser} from "../utils/serverFunctions.ts";
+import {
+    addInstrument,
+    deleteInstrument,
+    getInstruments,
+    getTunings,
+    updateInstrument,
+    updateUser
+} from "../utils/serverFunctions";
 
 interface HomeProps {
-    instruments: Instrument[];
-    tunings: Tuning[];
-    isLoading: boolean;
     onUpdateInst: () => void;
     userData: UserData;
 }
@@ -21,10 +33,10 @@ const capitalize = (word: string) => {
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
 }
 
-const HomePage: React.FC<HomeProps> = ({instruments, tunings, isLoading, onUpdateInst, userData}) => {
+const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
 
-    // const [currentTunings, setCurrentTunings] = useState<Tuning[]>(tunings);
-    // const [currentInstruments, setCurrentInstruments] = useState<Instrument[]>(instruments);
+    const [tunings, setTunings] = useState<Tuning[]>(presetTunings);
+    const [instruments, setInstruments] = useState<Instrument[]>(presetInstruments);
     const [selectedInstrument, setSelectedInstrument] = useState<Instrument>(instruments[0]);
     const [selectedTuning, setSelectedTuning] = useState<Tuning>(instruments[0].tunings[0]);
     const [message, setMessage] = useState<string>('');
@@ -36,15 +48,33 @@ const HomePage: React.FC<HomeProps> = ({instruments, tunings, isLoading, onUpdat
     const [avStringSet, setAvStringSet] = useState<StringSet>(instruments[0].stringSets[0]);
     const [averageTuning, setAverageTuning] = useState<number[]>([]);
     const [unitWeights, setUnitWeights] = useState<number[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
     const [isEdit, setIsEdit] = useState<boolean>(false);
+
+    useEffect(() => {
+        setIsLoading(true);
+        getTunings(userData)
+            .then((data) => {
+                setTunings(data.userTunings);
+                setSelectedTuning(data.userTunings[0])
+                return getInstruments(data);
+            })
+            .then((insts) => {
+                setInstruments(insts);
+                setSelectedInstrument(insts[0]);
+            })
+            .then(() => setIsLoading(false))
+            .catch((e) => console.error(e));
+    },[])
 
     if (isLoading || !instruments.length || !tunings.length || userData === undefined){
         return <div>Loading...</div>
     }
 
-    const onUpdateInstrument = async (changes: object, instID?: string) => {
-        updateInstrument(changes, instID).then(() => {
-            onUpdateInst();
+    const onUpdateInstrument = async (changes: object, updatedInst: Instrument) => {
+        updateInstrument(changes, updatedInst.id).then(() => {
+            setInstruments(instruments.map((inst) => {return inst.id === updatedInst.id? updatedInst : inst}));
+            setSelectedInstrument(updatedInst);
             setMessageClass('text-blue-400');
             setMessage('Instrument updated successfully!');
             setTimeout(() => {
@@ -63,9 +93,16 @@ const HomePage: React.FC<HomeProps> = ({instruments, tunings, isLoading, onUpdat
     const onAddInstrument = async (newInst: Instrument) => {
         const instrument = {...newInst, tunings: newInst.tunings.map((tuning: Tuning) => tuning.id)};
         addInstrument(instrument)
-            .then((instID) => updateUser({instruments: [...userData.instruments, instID]}, userData.id))
+            .then((instID) => {
+                newInst.id = instID;
+                updateUser({instruments: [...userData.instruments, instID]}, userData.id);
+            })
             .then(() => {
-                onUpdateInst();
+                setInstruments([...instruments, newInst]);
+                setSelectedInstrument(newInst);
+                if (newInst.tunings.length > 0) {
+                    setSelectedTuning(newInst.tunings[0]);
+                }
                 setMessageClass('text-blue-400');
                 setMessage('Instrument added successfully!');
                 setTimeout(() => {
@@ -218,7 +255,9 @@ const HomePage: React.FC<HomeProps> = ({instruments, tunings, isLoading, onUpdat
             .map((inst: Instrument) => inst.id);
         deleteInstrument(instID)
             .then(() => updateUser({instruments: updatedInstruments}, userData.id))
-            .then(() => onUpdateInst())
+            .then(() => {
+                setInstruments(updatedInstruments)
+            })
             .catch((e) => console.error(e));
     };
 
@@ -261,7 +300,7 @@ const HomePage: React.FC<HomeProps> = ({instruments, tunings, isLoading, onUpdat
             ...selectedInstrument,
             tunings: [...selectedInstrument.tunings, selectedTuning]
         };
-        onUpdateInstrument({tunings: newTuningIDs}, selectedInstrument.id).then((response) => {
+        onUpdateInstrument({tunings: newTuningIDs}, updatedInstrument).then((response) => {
             console.log(response);
 
         }).catch((error: AxiosError) => {
@@ -288,7 +327,7 @@ const HomePage: React.FC<HomeProps> = ({instruments, tunings, isLoading, onUpdat
                         className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                     >
                         {instruments.map((instrument, index) => (
-                            <option key={index} value={instrument.id}>
+                            <option key={instrument.id} value={instrument.id}>
                                 {instrument.name}
                             </option>
                         ))}
