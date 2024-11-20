@@ -256,4 +256,6 @@ export const stringTypeFactors = {
     },
 }
 
-export const serverURL = 'http://localhost:8080'
+export const serverURL = 'http://localhost:8080';
+
+export const DECIMAL_POINTS = 2

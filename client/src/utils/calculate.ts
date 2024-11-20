@@ -130,6 +130,11 @@ export function uwFromGauge(gauge: number, coefficient: number, power: number) {
     return (coefficient * Math.pow(gauge, power)) / 10000000
 }
 
+export function round(num: number, precision: number) {
+    const factor = Math.pow(10, precision);
+    return Math.round(num * factor) / factor;
+}
+
 
 /*
 To calculate the tension of a string in pounds use the formula below,

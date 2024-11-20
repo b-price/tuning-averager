@@ -3,6 +3,7 @@ import TuningConfirm from "./TuningConfirm";
 import TuningInput from "./TuningInput";
 import InstrumentInput from "./InstrumentInput";
 import {
+    DECIMAL_POINTS,
     defaultTensions,
     defaultTunings,
     notes, presetInstruments,
@@ -12,7 +13,7 @@ import {
     stringTypeFactors
 } from "../defaults";
 import {Instrument, StringSet, Tuning, UserData} from "../../../types";
-import {getUnitWeight, stringAverage, stringGauge} from "../utils/calculate";
+import {getUnitWeight, round, stringAverage, stringGauge} from "../utils/calculate";
 import AverageStringSet from "./AverageStringSet";
 import axios, {AxiosError} from "axios";
 import {
@@ -23,6 +24,7 @@ import {
     updateInstrument,
     updateUser
 } from "../utils/serverFunctions";
+import DeleteConfirm from "./DeleteConfirm.tsx";
 
 interface HomeProps {
     onUpdateInst: () => void;
@@ -49,6 +51,8 @@ const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
     const [averageTuning, setAverageTuning] = useState<number[]>([]);
     const [unitWeights, setUnitWeights] = useState<number[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [isInstDeleteOpen, setIsInstDeleteOpen] = useState(false);
+    const [isTuningDeleteOpen, setIsTuningDeleteOpen] = useState(false);
     const [isEdit, setIsEdit] = useState<boolean>(false);
 
     useEffect(() => {
@@ -218,6 +222,7 @@ const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
     };
     const handleCloseInstInput = () => {
         setIsInstInputOpen(false);
+        setIsEdit(false);
     };
     const handleSubmitInstInput = (newInst: Instrument) => {
         const inst = {...newInst, tunings: newInst.tunings.map((tuning: Tuning) => tuning.id)};
@@ -252,13 +257,28 @@ const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
     const handleDeleteInst = (instID: string) => {
         const updatedInstruments = instruments
             .filter((inst: Instrument) => inst.id !== instID)
-            .map((inst: Instrument) => inst.id);
         deleteInstrument(instID)
-            .then(() => updateUser({instruments: updatedInstruments}, userData.id))
+            .then(() => updateUser({instruments: updatedInstruments.map((inst: Instrument) => inst.id)}, userData.id))
             .then(() => {
-                setInstruments(updatedInstruments)
+                setInstruments(updatedInstruments);
+                setSelectedInstrument(updatedInstruments[0]);
+                if (updatedInstruments[0].tunings.length) {
+                    setSelectedTuning(updatedInstruments[0].tunings[0]);
+                }
+                setMessageClass('text-blue-400');
+                setMessage('Instrument successfully deleted');
+                setTimeout(() => {
+                    setMessage('');
+                }, 2000);
             })
-            .catch((e) => console.error(e));
+            .catch((e) => {
+                console.error(e);
+                setMessageClass('text-red-400');
+                setMessage('Error deleting instrument!');
+                setTimeout(() => {
+                    setMessage('');
+                }, 3000);
+            });
     };
 
     const handleDeleteTuning = () => {
@@ -306,8 +326,6 @@ const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
         }).catch((error: AxiosError) => {
             console.log(error);
         })
-
-
     };
 
     return (
@@ -342,7 +360,7 @@ const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
                         </button>
                         <button
                             className="bg-red-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-red-400 focus:outline-none focus:ring-2"
-                            onClick={handleDeleteInst}
+                            onClick={() => setIsInstDeleteOpen(true)}
                         >
                             Delete
                         </button>
@@ -352,9 +370,9 @@ const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
                         <p><strong>Scale Length: </strong>{selectedInstrument.scale}"</p>
                         <p><strong>Target
                             Tensions: </strong>{selectedInstrument.targetTension.slice(0, -1).map((tension, index) => (
-                            <span key={index}>{tension} | </span>
+                            <span key={index}>{round(tension, DECIMAL_POINTS)} | </span>
                         ))}
-                            <span>{selectedInstrument.targetTension[selectedInstrument.targetTension.length - 1]}</span>
+                            <span>{round(selectedInstrument.targetTension[selectedInstrument.targetTension.length - 1], DECIMAL_POINTS)}</span>
                         </p>
                         <label><b>Tunings:</b></label>
                         <ul className="mb-3 justify-items-start">
@@ -462,11 +480,14 @@ const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
             />
             <InstrumentInput
                 onSubmit={onAddInstrument}
+                onEdit={onUpdateInstrument}
                 tunings={tunings}
                 targetTensions={defaultTensions}
                 stringRange={stringRange}
                 isOpen={isInstInputOpen}
                 onClose={handleCloseInstInput}
+                isEdit={isEdit}
+                editInstrument={selectedInstrument}
             />
             <AverageStringSet
                 stringSet={avStringSet}
@@ -477,7 +498,11 @@ const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
                 instrument={selectedInstrument}
                 unitWeights={unitWeights}
             />
-
+            <DeleteConfirm
+                isOpen={isInstDeleteOpen}
+                onClose={() => setIsInstDeleteOpen(false)}
+                deleteFunction={() => handleDeleteInst(selectedInstrument.id)}
+            />
         </div>
     );
 };

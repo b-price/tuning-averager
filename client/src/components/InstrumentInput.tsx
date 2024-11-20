@@ -2,8 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Instrument, Tuning } from "../../../types.ts";
 import Modal from "./Modal.tsx";
 
+const defaultState = {
+    name: '',
+    selectedTunings: [],
+    scale: 25.5,
+    targetTension: [],
+    type: 'guitar'
+}
+
 interface InstrumentInputProps {
-    onSubmit: (instrument: Instrument) => void;
+    onSubmit: ( instrument: Instrument ) => void;
     tunings: Tuning[];
     targetTensions: {
         guitar: number[];
@@ -13,6 +21,9 @@ interface InstrumentInputProps {
     stringRange: [number, number];
     isOpen: boolean;
     onClose: () => void;
+    isEdit: boolean;
+    editInstrument?: Instrument;
+    onEdit: ( changes: object, instrument: Instrument ) => void;
 }
 
 const InstrumentInput: React.FC<InstrumentInputProps> = ({
@@ -20,18 +31,23 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
      targetTensions,
      stringRange,
      isOpen,
-     onClose
+     onClose,
+     isEdit,
+     editInstrument,
+     onEdit
 }) => {
-    const [name, setName] = useState('');
-    const [selectedTunings, setSelectedTunings] = useState<Tuning[]>([]);
-    const [scale, setScale] = useState(25.5); // Default scale length
-    const [targetTension, setTargetTension] = useState<number[]>([]);
+    const [name, setName] = useState(defaultState.name);
+    const [selectedTunings, setSelectedTunings] = useState<Tuning[]>(defaultState.selectedTunings);
+    const [scale, setScale] = useState(defaultState.scale);
+    const [targetTension, setTargetTension] = useState<number[]>(defaultState.targetTension);
     const [type, setType] = useState<'guitar' | 'bass' | 'other'>('guitar');
     const [useAverageTension, setUseAverageTension] = useState(false);
     const [averageTension, setAverageTension] = useState(0);
     const [isTuningDropdownOpen, setIsTuningDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const [strings, setStringsInternal] = useState(6); // Default to 6 strings
+    const [strings, setStringsInternal] = useState(6);
+    const [titleText, setTitleText] = useState('New Instrument');
+    const [buttonText, setButtonText] = useState('Submit');
 
     const setStrings = (value: number) => {
         const [minStrings, maxStrings] = stringRange;
@@ -39,6 +55,27 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
             setStringsInternal(value);
         }
     }
+
+    useEffect(() => {
+        if (isEdit && editInstrument) {
+            setName(editInstrument.name);
+            setSelectedTunings(editInstrument.tunings);
+            setScale(editInstrument.scale);
+            setTargetTension(editInstrument.targetTension);
+            setType(editInstrument.type);
+            setTitleText(`Editing ${editInstrument.name}`);
+            setButtonText('Save Changes');
+        } else {
+            setName(defaultState.name);
+            setSelectedTunings(defaultState.selectedTunings);
+            setScale(defaultState.scale);
+            setTargetTension(targetTensions[type].slice(0, strings));
+            setType('guitar');
+            setTitleText('New Instrument');
+            setButtonText('Submit');
+        }
+    }, [isEdit]);
+
     useEffect(() => {
         // Update default target tensions and average when strings or type change
         const defaultTensions = targetTensions[type].slice(0, strings);
@@ -84,7 +121,12 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
             type: type,
             stringSets: []
         };
-        onSubmit(instrument);
+        if (isEdit && editInstrument) {
+            instrument.id = editInstrument.id;
+            onEdit(instrument, instrument);
+        } else {
+            onSubmit(instrument);
+        }
         onClose();
     };
 
@@ -113,7 +155,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <div className="flex-col p-8 mx-auto bg-gray-600 rounded-xl shadow-md">
-                <h2 className="text-2xl font-bold mb-4">Instrument Input</h2>
+                <h2 className="text-2xl font-bold mb-4">{titleText}</h2>
 
                 <div className="grid sm:grid-cols-2 grid-cols-1 gap-4">
                     {/*Desktop Column 1*/}
@@ -179,7 +221,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                                     {
                                         getFilteredTunings().length > 0 ? (
                                             getFilteredTunings().map((tuning) => (
-                                                <label key={tuning.name} className="flex items-center px-4 py-2">
+                                                <label key={tuning.name} className="flex items-center px-4 ">
                                                     <input
                                                         type="checkbox"
                                                         checked={selectedTunings.includes(tuning)}
@@ -250,7 +292,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
 
                 {/* Submit Button */}
                 <button onClick={handleSubmit}
-                        className="mt-6 w-full py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Submit
+                        className="mt-6 w-full py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">{buttonText}
                 </button>
             </div>
         </Modal>
