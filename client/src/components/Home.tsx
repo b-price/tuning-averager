@@ -13,29 +13,24 @@ import {
     stringTypeFactors
 } from "../defaults";
 import {Instrument, StringSet, Tuning, UserData} from "../../../types";
-import {getUnitWeight, round, stringAverage, stringGauge} from "../utils/calculate";
+import {capitalize, getUnitWeight, round, stringAverage, stringGauge} from "../utils/calculate";
 import AverageStringSet from "./AverageStringSet";
 import axios, {AxiosError} from "axios";
 import {
-    addInstrument,
-    deleteInstrument,
+    addInstrument, addTuning,
+    deleteInstrument, deleteTuning,
     getInstruments,
     getTunings,
-    updateInstrument,
+    updateInstrument, updateTuning,
     updateUser
 } from "../utils/serverFunctions";
 import DeleteConfirm from "./DeleteConfirm.tsx";
 
 interface HomeProps {
-    onUpdateInst: () => void;
     userData: UserData;
 }
 
-const capitalize = (word: string) => {
-    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-}
-
-const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
+const HomePage: React.FC<HomeProps> = ({ userData }) => {
 
     const [tunings, setTunings] = useState<Tuning[]>(presetTunings);
     const [instruments, setInstruments] = useState<Instrument[]>(presetInstruments);
@@ -123,35 +118,48 @@ const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
     };
 
 
-    const onUpdateTuning = async (changes: object, tuningID?: string) => {
-        try {
-            const response = await axios.patch(`${serverURL}/tunings/${tuningID}`, changes);
-            if (response.data.status === 200) {
+    const onUpdateTuning = async (changes: object, updatedTuning: Tuning) => {
+        updateTuning(changes, updatedTuning.id)
+            .then(() => {
+                setTunings(tunings.map((tuning) => {return tuning.id === updatedTuning.id? updatedTuning : tuning}));
+                setSelectedTuning(updatedTuning);
                 setMessageClass('text-blue-400');
                 setMessage('Tuning updated successfully!');
-            }
-            return response;
-        } catch (error) {
-            if (error instanceof AxiosError) {
+                setTimeout(() => {
+                    setMessage('');
+                }, 2000);})
+            .catch((e) => {
+                console.error(e);
                 setMessageClass('text-red-400');
                 setMessage('Could not update tuning');
-            }
-        }
+                setTimeout(() => {
+                    setMessage('');
+                }, 3000)
+        });
     };
 
-    const onAddTuning = async (tuning: object) => {
-        try {
-            const response = await axios.post(`${serverURL}/tunings/`, tuning);
-            if (response.data.status === 201) {
+    const onAddTuning = async (newTuning: Tuning) => {
+        addTuning(newTuning)
+            .then((tuningID) => {
+                newTuning.id = tuningID;
+                updateUser({tunings: [...userData.tunings, tuningID]}, userData.id);
+            })
+            .then(() => {
+                setTunings([...tunings, newTuning]);
+                setSelectedTuning(newTuning);
                 setMessageClass('text-blue-400');
-                setMessage('Tuning updated successfully!');
-            }
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                setMessageClass('text-red-400');
-                setMessage('Could not add tuning');
-            }
-        }
+                setMessage('Tuning added successfully!');
+                setTimeout(() => {
+                    setMessage('');
+                }, 2000);
+            }).catch((e) => {
+            console.error(e);
+            setMessageClass('text-red-400');
+            setMessage('Could not add tuning');
+            setTimeout(() => {
+                setMessage('');
+            }, 3000)
+        })
     }
 
     const handleOpenGetAv = () => {
@@ -211,10 +219,7 @@ const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
     };
     const handleCloseTuningInput = () => {
         setIsTuningInputOpen(false);
-    };
-
-    const handleSubmitTuningInput = (newTuning: Tuning) => {
-        console.log("Tuning Added: ", newTuning);
+        setIsEdit(false);
     };
 
     const handleOpenInstInput = () => {
@@ -223,15 +228,6 @@ const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
     const handleCloseInstInput = () => {
         setIsInstInputOpen(false);
         setIsEdit(false);
-    };
-    const handleSubmitInstInput = (newInst: Instrument) => {
-        const inst = {...newInst, tunings: newInst.tunings.map((tuning: Tuning) => tuning.id)};
-        onAddInstrument(inst).then((response) => {
-            console.log(response);
-            onUpdateInst();
-        }).catch((error: AxiosError) => {
-            console.log(error);
-        })
     };
 
     const handleOpenStringSet = () => {
@@ -281,8 +277,59 @@ const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
             });
     };
 
-    const handleDeleteTuning = () => {
-        console.log("Tuning Deleted, to be implemented");
+    const handleDeleteTuning = (tuningID: string) => {
+        const updatedInstruments: Instrument[] = [];
+        const instsToUpdate: Instrument[] = [];
+        let currentInstHasTuning = false;
+        let currentInst: Instrument;
+        instruments.forEach((inst: Instrument) => {
+            const updateInst = {...inst, tunings: inst.tunings.filter((tuning: Tuning) => {
+                    if (tuning.id !== tuningID){
+                        return true;
+                    } else {
+                        if (inst.id === selectedInstrument.id) {
+                            currentInstHasTuning = true;
+                        }
+                        instsToUpdate.push(inst);
+                        return false;
+                    }
+                })};
+            if (currentInstHasTuning) {
+                currentInst = updateInst;
+            }
+            updatedInstruments.push(updateInst);
+        });
+        const updatedTunings = tunings
+            .filter((tuning: Tuning) => tuning.id !== tuningID);
+        deleteTuning(tuningID)
+            .then(() => updateUser({tunings: updatedTunings.map((tuning: Tuning) => tuning.id)}, userData.id))
+            .then(() => {
+                instsToUpdate.forEach((inst: Instrument) => {
+                    updateInstrument({tunings: inst.tunings.map((tuning: Tuning) => tuning.id)}, userData.id)
+                        .catch((e) => console.error(e));
+                })
+            })
+            .then(() => {
+                setInstruments(updatedInstruments);
+                if (currentInstHasTuning && currentInst){
+                    setSelectedInstrument(currentInst);
+                }
+                setTunings(updatedTunings);
+                setSelectedTuning(updatedTunings[0]);
+                setMessageClass('text-blue-400');
+                setMessage('Tuning successfully deleted');
+                setTimeout(() => {
+                    setMessage('');
+                }, 2000);
+            })
+            .catch((e) => {
+                console.error(e);
+                setMessageClass('text-red-400');
+                setMessage('Error deleting tuning!');
+                setTimeout(() => {
+                    setMessage('');
+                }, 3000);
+            });
     };
 
     const handleInstrumentChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -305,14 +352,20 @@ const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
     };
 
     const handleAddTuningToInstrument = async () => {
-        if (selectedInstrument.tunings.some(tuning => tuning.name === selectedTuning.name)) {
+        if (selectedInstrument.tunings.some(tuning => tuning.id === selectedTuning.id)) {
             setMessageClass('text-red-500');
             setMessage('Instrument already has this tuning!');
+            setTimeout(() => {
+                setMessage('');
+            }, 3000);
             return;
         }
         if (selectedInstrument.type !== selectedTuning.type || selectedInstrument.strings !== selectedTuning.strings.length) {
             setMessageClass('text-red-500');
             setMessage('Tuning does not match instrument\'s type or string count.');
+            setTimeout(() => {
+                setMessage('');
+            }, 3000);
             return;
         }
         const newTuningIDs = [...selectedInstrument.tunings, selectedTuning].map((tuning) => tuning.id);
@@ -320,10 +373,7 @@ const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
             ...selectedInstrument,
             tunings: [...selectedInstrument.tunings, selectedTuning]
         };
-        onUpdateInstrument({tunings: newTuningIDs}, updatedInstrument).then((response) => {
-            console.log(response);
-
-        }).catch((error: AxiosError) => {
+        onUpdateInstrument({tunings: newTuningIDs}, updatedInstrument).catch((error: AxiosError) => {
             console.log(error);
         })
     };
@@ -344,7 +394,7 @@ const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
                         onChange={handleInstrumentChange}
                         className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                     >
-                        {instruments.map((instrument, index) => (
+                        {instruments.map((instrument) => (
                             <option key={instrument.id} value={instrument.id}>
                                 {instrument.name}
                             </option>
@@ -376,9 +426,9 @@ const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
                         </p>
                         <label><b>Tunings:</b></label>
                         <ul className="mb-3 justify-items-start">
-                            {selectedInstrument.tunings.map((tuning, index) => (
+                            {selectedInstrument.tunings.map((tuning) => (
                                 <li className="cursor-pointer" onClick={() => setSelectedTuning(tuning)}
-                                    key={index}>{tuning.name}</li>
+                                    key={tuning.id}>{tuning.name}</li>
                             ))}
                         </ul>
                     </div>
@@ -410,8 +460,8 @@ const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
                         onChange={handleTuningChange}
                         className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                     >
-                        {tunings.map((tuning, index) => (
-                            <option key={index} value={tuning.id}>
+                        {tunings.map((tuning) => (
+                            <option key={tuning.id} value={tuning.id}>
                                 {capitalize(tuning.type)}: {tuning.name}
                             </option>
                         ))}
@@ -427,7 +477,7 @@ const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
                         </button>
                         <button
                             className="bg-red-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-red-400 focus:outline-none focus:ring-2"
-                            onClick={handleDeleteTuning}
+                            onClick={() => setIsTuningDeleteOpen(true)}
                         >
                             Delete
                         </button>
@@ -474,9 +524,12 @@ const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
                 notes={notes}
                 presetTunings={tunings}
                 defaultTunings={defaultTunings}
-                onSubmit={handleSubmitTuningInput}
+                onSubmit={onAddTuning}
                 isOpen={isTuningInputOpen}
                 onClose={handleCloseTuningInput}
+                isEdit={isEdit}
+                editTuning={selectedTuning}
+                onEdit={onUpdateTuning}
             />
             <InstrumentInput
                 onSubmit={onAddInstrument}
@@ -502,6 +555,11 @@ const HomePage: React.FC<HomeProps> = ({ onUpdateInst, userData}) => {
                 isOpen={isInstDeleteOpen}
                 onClose={() => setIsInstDeleteOpen(false)}
                 deleteFunction={() => handleDeleteInst(selectedInstrument.id)}
+            />
+            <DeleteConfirm
+                isOpen={isTuningDeleteOpen}
+                onClose={() => setIsTuningDeleteOpen(false)}
+                deleteFunction={() => handleDeleteTuning(selectedTuning.id)}
             />
         </div>
     );

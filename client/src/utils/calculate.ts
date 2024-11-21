@@ -1,4 +1,4 @@
-import {Tuning} from "../../../types.ts";
+import {Tuning} from "../../../types";
 
 export function tuningWeight(tuning: Tuning){
     let sum = 0;
@@ -135,7 +135,9 @@ export function round(num: number, precision: number) {
     return Math.round(num * factor) / factor;
 }
 
-
+export const capitalize = (word: string) => {
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+}
 /*
 To calculate the tension of a string in pounds use the formula below,
 inserting the three variables described above:

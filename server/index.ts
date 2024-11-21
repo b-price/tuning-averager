@@ -3,7 +3,7 @@ import { dbConnect } from "./services/database.service";
 import { userRouter } from "./routes/user.router";
 import process = require("node:process");
 import {tuningsRouter} from "./routes/tunings.router";
-import {instrumentRouter} from "./routes/instrumentsRouter";
+import {instrumentRouter} from "./routes/instruments.router";
 import cors from "cors";
 
 const app = express();

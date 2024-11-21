@@ -39,7 +39,10 @@ tuningsRouter.post("/", async (req: Request, res: Response) => {
         const result = await collections?.tunings?.insertOne(newTuning);
 
         result
-            ? res.status(201).send(`Successfully inserted tuning with id: ${result.insertedId}`)
+            ? res.status(201).send({
+                message: `Successfully inserted tuning with id: ${result.insertedId}`,
+                id: result.insertedId
+            })
             : res.status(500).send("Failed to insert tuning!");
     } catch (error) {
         if (error instanceof Error) {
