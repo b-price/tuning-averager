@@ -52,6 +52,8 @@ export interface StringSet {
     name: string;
     gauges: number[];
     woundStrings: boolean[];
+    tensions: number[];
+    noteValues: number[];
 }
 
 export interface Transpose {

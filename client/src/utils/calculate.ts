@@ -1,4 +1,5 @@
 import {Tuning} from "../../../types";
+import {notes} from "../defaults.ts";
 
 export function tuningWeight(tuning: Tuning){
     let sum = 0;
@@ -58,6 +59,24 @@ export function convertToNoteValue(note: string){
             return 0;
     }
     return octave + letterValue + sharp;
+}
+
+export function convertToNote(noteValue: number){
+    if (noteValue <= 0 || noteValue >= notes.length){
+        return {note: 'invalid', cents: ''};
+        //return 'invalid note';
+    }
+    const intNote = Math.round(noteValue);
+    const remainder = ((noteValue - intNote) * 100);
+    let cents = ``;
+    if (remainder < 0) {
+        cents = `${remainder.toFixed()}`;
+    } else if (remainder > 0){
+        cents = `+${remainder.toFixed()}`;
+    }
+    return {note: notes[intNote], cents: cents};
+    //return `${notes[intNote]}${cents}`
+
 }
 
 function checkStringMatch(tunings: Tuning[]){

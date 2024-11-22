@@ -8,12 +8,11 @@ import {
     defaultTunings,
     notes, presetInstruments,
     presetTunings,
-    serverURL,
     stringRange,
     stringTypeFactors
 } from "../defaults";
 import {Instrument, StringSet, Tuning, UserData} from "../../../types";
-import {capitalize, getUnitWeight, round, stringAverage, stringGauge} from "../utils/calculate";
+import {capitalize, getUnitWeight, round, stringAverage, stringGauge, tension, uwFromGauge} from "../utils/calculate";
 import AverageStringSet from "./AverageStringSet";
 import axios, {AxiosError} from "axios";
 import {
@@ -202,10 +201,6 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
     };
     const handleSubmitGetAv = (selectedTuningNames: string[], wound3rd: boolean) => {
         const selectedTunings: Tuning[] = selectedInstrument.tunings.filter((tuning) => selectedTuningNames.includes(tuning.name));
-        // const inst: Instrument = {
-        //     ...selectedInstrument,
-        //     tunings: selectedTunings,
-        // };
         const avTuning = stringAverage(selectedTunings);
         console.log(avTuning)
         if (avTuning) {
@@ -213,7 +208,9 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
             const stringSet: StringSet = {
                 gauges: [],
                 woundStrings: [],
-                name: ''
+                name: '',
+                tensions: [],
+                noteValues: avTuning
             };
             const UWs: number[] = [];
             avTuning.forEach((note: number, index) => {
@@ -227,9 +224,11 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 }
                 const coeff = stringTypeFactors[selectedInstrument.type][wound? 'wound' : 'plain'].coeff;
                 const power = stringTypeFactors[selectedInstrument.type][wound? 'wound' : 'plain'].power;
+                const gauge = stringGauge(UWs[index], coeff, power);
 
-                stringSet.gauges.push(stringGauge(UWs[index], coeff, power));
+                stringSet.gauges.push(gauge);
                 stringSet.woundStrings.push(wound);
+                stringSet.tensions.push(tension(uwFromGauge(gauge, coeff, power), note, selectedInstrument.scale));
             });
             setUnitWeights(UWs);
             console.log(stringSet)
@@ -261,7 +260,8 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
         setIsStringSetOpen(false);
     };
     const handleSubmitStringSet = (newStringSet: StringSet) => {
-        onUpdateInstrument({stringSets: [...selectedInstrument.stringSets, newStringSet]}).then().catch((error: AxiosError) => {console.log(error)})
+        const updatedInstrument = {...selectedInstrument, stringSets: [...selectedInstrument.stringSets, newStringSet]};
+        onUpdateInstrument({stringSets: updatedInstrument.stringSets}, updatedInstrument).catch((e) => console.error(e));
     };
 
     const handleEditInst = () => {
@@ -443,16 +443,23 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                         <p><strong>Type: </strong>{capitalize(selectedInstrument.type)}</p>
                         <p><strong>Scale Length: </strong>{selectedInstrument.scale}"</p>
                         <p><strong>Target
-                            Tensions: </strong>{selectedInstrument.targetTension.slice(0, -1).map((tension, index) => (
-                            <span key={index}>{round(tension, DECIMAL_POINTS)} | </span>
+                            Tensions: </strong>{selectedInstrument.targetTension.map((tension, index) => (
+                            <span key={index}>{round(tension, DECIMAL_POINTS)} {index < selectedInstrument.targetTension.length -1 ? "| " : ""} </span>
                         ))}
-                            <span>{round(selectedInstrument.targetTension[selectedInstrument.targetTension.length - 1], DECIMAL_POINTS)}</span>
                         </p>
-                        <label><b>Tunings:</b></label>
+                        <label><strong>Tunings:</strong></label>
                         <ul className="mb-3 justify-items-start">
                             {selectedInstrument.tunings.map((tuning) => (
                                 <li className="cursor-pointer" onClick={() => setSelectedTuning(tuning)}
                                     key={tuning.id}>{tuning.name}</li>
+                            ))}
+                        </ul>
+                        <label><strong>String Sets:</strong></label>
+                        <ul className="mb-3 justify-items-start">
+                            {selectedInstrument.stringSets.map((set) => (
+                                <li key={set.id}><em>{set.name}: </em>{set.gauges.map((gauge, index) => (
+                                        <span key={index}>{gauge}{!set.woundStrings[index]? "p" : ""} {index < set.gauges.length - 1 ? "| " : ""} </span>
+                                ))}</li>
                             ))}
                         </ul>
                     </div>

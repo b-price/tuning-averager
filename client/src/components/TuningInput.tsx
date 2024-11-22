@@ -34,6 +34,7 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultT
             setStringCount(editTuning.strings.length);
             setTitleText(`Editing ${editTuning.name}`);
             setButtonText('Save Changes');
+            setTunings(presetTunings);
         } else {
             setStrings(defaultTunings.guitar.slice(0, -3));
             setName('');
@@ -41,6 +42,7 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultT
             setStringCount(6);
             setTitleText('New Tuning');
             setButtonText('Submit');
+            setTunings(presetTunings);
         }
     }, [isEdit]);
 
@@ -98,7 +100,7 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultT
     };
 
     const handlePresetChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedTuning = tunings.find(t => t.name === e.target.value);
+        const selectedTuning = tunings.find(t => t.id === e.target.value);
         if (selectedTuning) {
             setStrings(selectedTuning.strings);
             setType(selectedTuning.type);
