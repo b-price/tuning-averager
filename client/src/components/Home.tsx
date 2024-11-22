@@ -119,10 +119,34 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
 
 
     const onUpdateTuning = async (changes: object, updatedTuning: Tuning) => {
+        const updatedInstruments: Instrument[] = [];
+        let currentInstHasTuning = false;
+        let currentInst: Instrument;
+        instruments.forEach((inst: Instrument) => {
+            const updateInst: Instrument = {...inst, tunings: inst.tunings.map((tuning: Tuning) => {
+                if (tuning.id === updatedTuning.id) {
+                    if (inst.id === selectedInstrument.id) {
+                        currentInstHasTuning = true;
+                    }
+                    return updatedTuning;
+                } else {
+                    return tuning;
+                }
+                })};
+            if (currentInstHasTuning) {
+                currentInst = updateInst;
+            }
+            updatedInstruments.push(updateInst);
+        });
+
         updateTuning(changes, updatedTuning.id)
             .then(() => {
                 setTunings(tunings.map((tuning) => {return tuning.id === updatedTuning.id? updatedTuning : tuning}));
                 setSelectedTuning(updatedTuning);
+                setInstruments(updatedInstruments);
+                if (currentInstHasTuning) {
+                    setSelectedInstrument(currentInst);
+                }
                 setMessageClass('text-blue-400');
                 setMessage('Tuning updated successfully!');
                 setTimeout(() => {
