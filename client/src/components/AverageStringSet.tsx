@@ -11,7 +11,6 @@ interface AverageStringSetProps {
     onSubmit: (newStringSet: StringSet) => void;
     averageTuning: number[];
     instrument: Instrument;
-    unitWeights: number[];
 }
 
 interface Note {
@@ -19,7 +18,7 @@ interface Note {
     cents: string;
 }
 
-const AverageStringSet: React.FC<AverageStringSetProps> = ({stringSet, isOpen, onClose, onSubmit, averageTuning, instrument, unitWeights}) => {
+const AverageStringSet: React.FC<AverageStringSetProps> = ({stringSet, isOpen, onClose, onSubmit, averageTuning, instrument}) => {
     const [newGauges, setNewGauges] = useState<number[]>([]);
     const [woundStrings, setWoundStrings] = useState<boolean[]>([]);
     const [name, setName] = useState<string>('');

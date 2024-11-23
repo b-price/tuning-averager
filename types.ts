@@ -1,12 +1,3 @@
-// export interface Tuning {
-//     _id?: string;
-//     name: string;
-//     strings: GuitarString[];
-//     type: 'guitar' | 'bass' | 'other';
-// }
-
-import {ObjectId} from "mongodb";
-
 export class Tuning {
     constructor(
         public name: string,
@@ -21,17 +12,6 @@ export interface GuitarString {
     note: string;
     noteValue: number;
 }
-
-// export interface Instrument {
-//     _id?: string;
-//     name: string;
-//     strings: number;
-//     tunings: Tuning[];
-//     scale: number;
-//     targetTension: number[];
-//     type: 'guitar' | 'bass' | 'other';
-//     stringSets: StringSet[];
-// }
 
 export class Instrument {
     constructor(
@@ -61,13 +41,6 @@ export interface Transpose {
     current: number;
 }
 
-// export interface UserData {
-//     id?: string;
-//     username: string;
-//     instruments: Instrument[];
-//     tunings: Tuning[];
-// }
-
 export class UserData {
     constructor(
         public username: string,
@@ -76,22 +49,4 @@ export class UserData {
         public id?: string,
     ) {
     }
-}
-
-interface InstrumentInputProps {
-    onSubmit: (instrument: Instrument) => void;
-    tunings: Tuning[];
-    targetTensions: {
-        guitar: number[];
-        bass: number[];
-        other: number[];
-    };
-    stringRange: [number, number];
-}
-
-interface TuningInputProps {
-    notes: string[];
-    presetTunings: Tuning[];
-    defaultTunings: { guitar: GuitarString[], bass: GuitarString[], other: GuitarString[] };
-    onSubmit: (tuning: Tuning) => void;
 }

@@ -6,8 +6,6 @@ import {Instrument, Tuning, UserData} from "../../../types";
 export const getUser = async (username: string) => {
     try {
         const response = await axios.get(`${serverURL}/users/?field=username&value=${username}`);
-        console.log("got user:",response.data);
-
         return {...response.data, id: response.data._id};
     }
     catch (error) {
@@ -51,15 +49,17 @@ export const deleteUser = async (userID: string) => {
 }
 
 // tunings CRUD
-export const getTunings = async (userData: UserData) => {
+export const getTunings = async (userData?: UserData) => {
     const userTunings = [];
 
     try {
+        if (!userData){
+            throw new Error('No user data found.');
+        }
         for (const tuning of userData.tunings) {
             const response = await axios.get(`${serverURL}/tunings/${tuning}`);
             userTunings.push({...response.data, id: response.data._id});
         }
-        console.log("got tunings: ", userTunings);
         const data = {userData: userData, userTunings: userTunings}
         return data;
     }
@@ -92,8 +92,11 @@ export const updateTuning = async (changes: object, tuningID?: string) => {
     }
 }
 
-export const deleteTuning = async (tuningID: string) => {
+export const deleteTuning = async (tuningID?: string) => {
     try {
+        if (!tuningID){
+            throw new Error('No tuning id found.');
+        }
         const response = await axios.delete(`${serverURL}/tunings/${tuningID}`);
         return response;
     } catch (error) {
@@ -104,10 +107,13 @@ export const deleteTuning = async (tuningID: string) => {
 }
 
 // instruments CRUD
-export const getInstruments = async (data: { userData: UserData, userTunings: Tuning[] }) => {
+export const getInstruments = async (data?: { userData: UserData, userTunings: Tuning[] }) => {
     const userInstruments: Instrument[] = [];
 
     try {
+        if (!data) {
+            throw new Error('No user data found.');
+        }
         for (const instrument of data.userData.instruments) {
             const response = await axios.get(`${serverURL}/instruments/${instrument}`);
             const instTunings = data.userTunings.filter((tuning) => {
@@ -117,7 +123,6 @@ export const getInstruments = async (data: { userData: UserData, userTunings: Tu
             });
             userInstruments.push({...response.data, id: response.data._id, tunings: instTunings});
         }
-        console.log("got instruments: ", userInstruments);
         return userInstruments;
     }
     catch (error) {
@@ -141,7 +146,6 @@ export const updateInstrument = async (changes: object, instID?: string) => {
 export const addInstrument = async (instrument: object) => {
     try {
         const response = await axios.post(`${serverURL}/instruments/`, instrument);
-        console.log(response.data.id);
         return response.data.id;
     } catch (error) {
         if (error instanceof AxiosError) {
@@ -150,8 +154,11 @@ export const addInstrument = async (instrument: object) => {
     }
 };
 
-export const deleteInstrument = async (instrumentId: string) => {
+export const deleteInstrument = async (instrumentId?: string) => {
     try {
+        if (!instrumentId) {
+            throw new Error('No instrument id found.');
+        }
         const response = await axios.delete(`${serverURL}/instruments/${instrumentId}`);
         return response;
     } catch (error) {

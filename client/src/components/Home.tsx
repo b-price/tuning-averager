@@ -14,7 +14,6 @@ import {
 import {Instrument, StringSet, Tuning, UserData} from "../../../types";
 import {capitalize, getUnitWeight, round, stringAverage, stringGauge, tension, uwFromGauge} from "../utils/calculate";
 import AverageStringSet from "./AverageStringSet";
-import axios, {AxiosError} from "axios";
 import {
     addInstrument, addTuning,
     deleteInstrument, deleteTuning,
@@ -40,26 +39,31 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
     const [isTuningConfirmOpen, setIsTuningConfirmOpen] = useState(false);
     const [isTuningInputOpen, setIsTuningInputOpen] = useState(false);
     const [isInstInputOpen, setIsInstInputOpen] = useState(false);
-    const [isStringSetOpen, setIsStringSetOpen] = useState(false);
+    const [isAveragerOpen, setIsAveragerOpen] = useState(false);
     const [avStringSet, setAvStringSet] = useState<StringSet>(instruments[0].stringSets[0]);
     const [averageTuning, setAverageTuning] = useState<number[]>([]);
-    const [unitWeights, setUnitWeights] = useState<number[]>([]);
+    //const [unitWeights, setUnitWeights] = useState<number[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isInstDeleteOpen, setIsInstDeleteOpen] = useState(false);
     const [isTuningDeleteOpen, setIsTuningDeleteOpen] = useState(false);
     const [isEdit, setIsEdit] = useState<boolean>(false);
 
+    // On mount
     useEffect(() => {
         setIsLoading(true);
         getTunings(userData)
             .then((data) => {
-                setTunings(data.userTunings);
-                setSelectedTuning(data.userTunings[0])
+                if (data) {
+                    setTunings(data.userTunings);
+                    setSelectedTuning(data.userTunings[0]);
+                }
                 return getInstruments(data);
             })
             .then((insts) => {
-                setInstruments(insts);
-                setSelectedInstrument(insts[0]);
+                if (insts) {
+                    setInstruments(insts);
+                    setSelectedInstrument(insts[0]);
+                }
             })
             .then(() => setIsLoading(false))
             .catch((e) => console.error(e));
@@ -69,6 +73,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
         return <div>Loading...</div>
     }
 
+    // Instrument functions
     const onUpdateInstrument = async (changes: object, updatedInst: Instrument) => {
         updateInstrument(changes, updatedInst.id).then(() => {
             setInstruments(instruments.map((inst) => {return inst.id === updatedInst.id? updatedInst : inst}));
@@ -116,7 +121,34 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
         })
     };
 
+    const handleDeleteInst = (instID?: string) => {
+        const updatedInstruments = instruments
+            .filter((inst: Instrument) => inst.id !== instID)
+        deleteInstrument(instID)
+            .then(() => updateUser({instruments: updatedInstruments.map((inst: Instrument) => inst.id)}, userData.id))
+            .then(() => {
+                setInstruments(updatedInstruments);
+                setSelectedInstrument(updatedInstruments[0]);
+                if (updatedInstruments[0].tunings.length) {
+                    setSelectedTuning(updatedInstruments[0].tunings[0]);
+                }
+                setMessageClass('text-blue-400');
+                setMessage('Instrument successfully deleted');
+                setTimeout(() => {
+                    setMessage('');
+                }, 2000);
+            })
+            .catch((e) => {
+                console.error(e);
+                setMessageClass('text-red-400');
+                setMessage('Error deleting instrument!');
+                setTimeout(() => {
+                    setMessage('');
+                }, 3000);
+            });
+    };
 
+    // Tuning functions
     const onUpdateTuning = async (changes: object, updatedTuning: Tuning) => {
         const updatedInstruments: Instrument[] = [];
         let currentInstHasTuning = false;
@@ -137,7 +169,6 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
             }
             updatedInstruments.push(updateInst);
         });
-
         updateTuning(changes, updatedTuning.id)
             .then(() => {
                 setTunings(tunings.map((tuning) => {return tuning.id === updatedTuning.id? updatedTuning : tuning}));
@@ -185,123 +216,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
         })
     }
 
-    const handleOpenGetAv = () => {
-        if (selectedInstrument.tunings.length){
-            setIsTuningConfirmOpen(true);
-        } else {
-            setMessageClass('text-red-400');
-            setMessage('Instrument has no tunings!');
-            setTimeout(() => {
-                setMessage('');
-            }, 3000);
-        }
-    };
-    const handleCloseGetAv = () => {
-        setIsTuningConfirmOpen(false);
-    };
-    const handleSubmitGetAv = (selectedTuningNames: string[], wound3rd: boolean) => {
-        const selectedTunings: Tuning[] = selectedInstrument.tunings.filter((tuning) => selectedTuningNames.includes(tuning.name));
-        const avTuning = stringAverage(selectedTunings);
-        console.log(avTuning)
-        if (avTuning) {
-            setAverageTuning(avTuning);
-            const stringSet: StringSet = {
-                gauges: [],
-                woundStrings: [],
-                name: '',
-                tensions: [],
-                noteValues: avTuning
-            };
-            const UWs: number[] = [];
-            avTuning.forEach((note: number, index) => {
-                UWs[index] = getUnitWeight(note, selectedInstrument.scale, selectedInstrument.targetTension[index]);
-                let wound = true;
-                // Not ideal; should handle more wound vs. plain scenarios
-                if (selectedInstrument.type === 'guitar') {
-                    if (index < 2 || (!wound3rd && index === 2)) {
-                        wound = false
-                    }
-                }
-                const coeff = stringTypeFactors[selectedInstrument.type][wound? 'wound' : 'plain'].coeff;
-                const power = stringTypeFactors[selectedInstrument.type][wound? 'wound' : 'plain'].power;
-                const gauge = stringGauge(UWs[index], coeff, power);
-
-                stringSet.gauges.push(gauge);
-                stringSet.woundStrings.push(wound);
-                stringSet.tensions.push(tension(uwFromGauge(gauge, coeff, power), note, selectedInstrument.scale));
-            });
-            setUnitWeights(UWs);
-            console.log(stringSet)
-            setAvStringSet(stringSet);
-        }
-        setIsStringSetOpen(true);
-    };
-
-    const handleOpenTuningInput = () => {
-        setIsTuningInputOpen(true);
-    };
-    const handleCloseTuningInput = () => {
-        setIsTuningInputOpen(false);
-        setIsEdit(false);
-    };
-
-    const handleOpenInstInput = () => {
-        setIsInstInputOpen(true);
-    };
-    const handleCloseInstInput = () => {
-        setIsInstInputOpen(false);
-        setIsEdit(false);
-    };
-
-    const handleOpenStringSet = () => {
-        setIsStringSetOpen(true);
-    };
-    const handleCloseStringSet = () => {
-        setIsStringSetOpen(false);
-    };
-    const handleSubmitStringSet = (newStringSet: StringSet) => {
-        const updatedInstrument = {...selectedInstrument, stringSets: [...selectedInstrument.stringSets, newStringSet]};
-        onUpdateInstrument({stringSets: updatedInstrument.stringSets}, updatedInstrument).catch((e) => console.error(e));
-    };
-
-    const handleEditInst = () => {
-        setIsEdit(true);
-        setIsInstInputOpen(true);
-    };
-
-    const handleEditTuning = () => {
-        setIsEdit(true);
-        setIsTuningInputOpen(true);
-    };
-
-    const handleDeleteInst = (instID: string) => {
-        const updatedInstruments = instruments
-            .filter((inst: Instrument) => inst.id !== instID)
-        deleteInstrument(instID)
-            .then(() => updateUser({instruments: updatedInstruments.map((inst: Instrument) => inst.id)}, userData.id))
-            .then(() => {
-                setInstruments(updatedInstruments);
-                setSelectedInstrument(updatedInstruments[0]);
-                if (updatedInstruments[0].tunings.length) {
-                    setSelectedTuning(updatedInstruments[0].tunings[0]);
-                }
-                setMessageClass('text-blue-400');
-                setMessage('Instrument successfully deleted');
-                setTimeout(() => {
-                    setMessage('');
-                }, 2000);
-            })
-            .catch((e) => {
-                console.error(e);
-                setMessageClass('text-red-400');
-                setMessage('Error deleting instrument!');
-                setTimeout(() => {
-                    setMessage('');
-                }, 3000);
-            });
-    };
-
-    const handleDeleteTuning = (tuningID: string) => {
+    const handleDeleteTuning = (tuningID?: string) => {
         const updatedInstruments: Instrument[] = [];
         const instsToUpdate: Instrument[] = [];
         let currentInstHasTuning = false;
@@ -356,25 +271,6 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
             });
     };
 
-    const handleInstrumentChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const instrumentID = event.target.value;
-        const instrument = instruments.find(i => i.id === instrumentID);
-        if (instrument) {
-            setSelectedInstrument(instrument);
-            if (instrument.tunings.length) {
-                setSelectedTuning(instrument.tunings[0]);
-            }
-        }
-    };
-
-    const handleTuningChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const tuningID = event.target.value;
-        const tuning = tunings.find(t => t.id === tuningID);
-        if (tuning) {
-            setSelectedTuning(tuning);
-        }
-    };
-
     const handleAddTuningToInstrument = async () => {
         if (selectedInstrument.tunings.some(tuning => tuning.id === selectedTuning.id)) {
             setMessageClass('text-red-500');
@@ -397,10 +293,107 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
             ...selectedInstrument,
             tunings: [...selectedInstrument.tunings, selectedTuning]
         };
-        onUpdateInstrument({tunings: newTuningIDs}, updatedInstrument).catch((error: AxiosError) => {
+        onUpdateInstrument({tunings: newTuningIDs}, updatedInstrument).catch((error) => {
             console.log(error);
         })
     };
+
+    // Averager functions
+    const handleOpenGetAv = () => {
+        if (selectedInstrument.tunings.length){
+            setIsTuningConfirmOpen(true);
+        } else {
+            setMessageClass('text-red-400');
+            setMessage('Instrument has no tunings!');
+            setTimeout(() => {
+                setMessage('');
+            }, 3000);
+        }
+    };
+
+    const handleSubmitGetAv = (selectedTuningNames: string[], wound3rd: boolean) => {
+        const selectedTunings: Tuning[] = selectedInstrument.tunings.filter((tuning) => selectedTuningNames.includes(tuning.name));
+        const avTuning = stringAverage(selectedTunings);
+        console.log(avTuning)
+        if (avTuning) {
+            setAverageTuning(avTuning);
+            const stringSet: StringSet = {
+                gauges: [],
+                woundStrings: [],
+                name: '',
+                tensions: [],
+                noteValues: avTuning
+            };
+            const UWs: number[] = [];
+            avTuning.forEach((note: number, index) => {
+                UWs[index] = getUnitWeight(note, selectedInstrument.scale, selectedInstrument.targetTension[index]);
+                let wound = true;
+                // Not ideal; should handle more wound vs. plain scenarios
+                if (selectedInstrument.type === 'guitar') {
+                    if (index < 2 || (!wound3rd && index === 2)) {
+                        wound = false
+                    }
+                }
+                const coeff = stringTypeFactors[selectedInstrument.type][wound? 'wound' : 'plain'].coeff;
+                const power = stringTypeFactors[selectedInstrument.type][wound? 'wound' : 'plain'].power;
+                const gauge = stringGauge(UWs[index], coeff, power);
+
+                stringSet.gauges.push(gauge);
+                stringSet.woundStrings.push(wound);
+                stringSet.tensions.push(tension(uwFromGauge(gauge, coeff, power), note, selectedInstrument.scale));
+            });
+            //setUnitWeights(UWs);
+            console.log(stringSet)
+            setAvStringSet(stringSet);
+        }
+        setIsAveragerOpen(true);
+    };
+
+    const handleSubmitStringSet = (newStringSet: StringSet) => {
+        const updatedInstrument = {...selectedInstrument, stringSets: [...selectedInstrument.stringSets, newStringSet]};
+        onUpdateInstrument({stringSets: updatedInstrument.stringSets}, updatedInstrument).catch((e) => console.error(e));
+    };
+
+    // UI handlers
+    const handleCloseTuningInput = () => {
+        setIsTuningInputOpen(false);
+        setIsEdit(false);
+    };
+
+    const handleCloseInstInput = () => {
+        setIsInstInputOpen(false);
+        setIsEdit(false);
+    };
+
+    const handleEditInst = () => {
+        setIsEdit(true);
+        setIsInstInputOpen(true);
+    };
+
+    const handleEditTuning = () => {
+        setIsEdit(true);
+        setIsTuningInputOpen(true);
+    };
+
+    const handleInstrumentChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const instrumentID = event.target.value;
+        const instrument = instruments.find(i => i.id === instrumentID);
+        if (instrument) {
+            setSelectedInstrument(instrument);
+            if (instrument.tunings.length) {
+                setSelectedTuning(instrument.tunings[0]);
+            }
+        }
+    };
+
+    const handleTuningChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const tuningID = event.target.value;
+        const tuning = tunings.find(t => t.id === tuningID);
+        if (tuning) {
+            setSelectedTuning(tuning);
+        }
+    };
+
 
     return (
         <div className="flex flex-col p-6">
@@ -456,8 +449,8 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                         </ul>
                         <label><strong>String Sets:</strong></label>
                         <ul className="mb-3 justify-items-start">
-                            {selectedInstrument.stringSets.map((set) => (
-                                <li key={set.id}><em>{set.name}: </em>{set.gauges.map((gauge, index) => (
+                            {selectedInstrument.stringSets.map((set, idx) => (
+                                <li key={idx}><em>{set.name}: </em>{set.gauges.map((gauge, index) => (
                                         <span key={index}>{gauge}{!set.woundStrings[index]? "p" : ""} {index < set.gauges.length - 1 ? "| " : ""} </span>
                                 ))}</li>
                             ))}
@@ -467,7 +460,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                     <div className="flex-grow space-4">
                         <button
                             className="bg-blue-600 text-white m-2 px-4 py-2 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2"
-                            onClick={handleOpenInstInput}
+                            onClick={() => setIsInstInputOpen(true)}
                         >
                             New Instrument
                         </button>
@@ -526,7 +519,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                     <div className="flex-grow space-4">
                         <button
                             className="bg-blue-600 text-white m-2 px-4 py-2 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2"
-                            onClick={handleOpenTuningInput}
+                            onClick={() => setIsTuningInputOpen(true)}
                         >
                             New Tuning
                         </button>
@@ -545,7 +538,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
             </div>
             <TuningConfirm
                 isOpen={isTuningConfirmOpen}
-                onClose={handleCloseGetAv}
+                onClose={() => setIsTuningConfirmOpen(false)}
                 onSubmit={handleSubmitGetAv}
                 tunings={selectedInstrument.tunings}
                 instrument={selectedInstrument.name}
@@ -575,12 +568,11 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
             />
             <AverageStringSet
                 stringSet={avStringSet}
-                isOpen={isStringSetOpen}
-                onClose={handleCloseStringSet}
+                isOpen={isAveragerOpen}
+                onClose={() => setIsAveragerOpen(false)}
                 onSubmit={handleSubmitStringSet}
                 averageTuning={averageTuning}
                 instrument={selectedInstrument}
-                unitWeights={unitWeights}
             />
             <DeleteConfirm
                 isOpen={isInstDeleteOpen}

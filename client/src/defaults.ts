@@ -167,7 +167,14 @@ export const presetInstruments: Instrument[] = [
         targetTension: [16.2, 15.4, 16.6, 18.4, 19, 16.9],
         type: 'guitar',
         stringSets: [
-            { id: '0', name: '10-46', gauges: [10, 13, 17, 26, 36, 46], woundStrings: [false, false, false, true, true, true] },
+            {
+                id: '0',
+                name: '10-46',
+                gauges: [10, 13, 17, 26, 36, 46],
+                woundStrings: [false, false, false, true, true, true],
+                tensions: [16.2, 15.4, 16.6, 18.4, 19, 16.9],
+                noteValues: [28, 33, 38, 43, 47, 53]
+            },
         ]
     },
     {
@@ -191,7 +198,14 @@ export const presetInstruments: Instrument[] = [
         targetTension: [42.5, 48.4, 40.1, 34.7],
         type: 'bass',
         stringSets: [
-            { id: '1', name: '45-100', gauges: [45, 65, 80, 100], woundStrings: [true, true, true, true] },
+            {
+                id: '1',
+                name: '45-100',
+                gauges: [45, 65, 80, 100],
+                woundStrings: [true, true, true, true],
+                tensions: [42.5, 48.4, 40.1, 34.7],
+                noteValues: [31, 26, 21, 16]
+            },
         ]
     }
 ];

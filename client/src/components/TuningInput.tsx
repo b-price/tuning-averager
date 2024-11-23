@@ -168,7 +168,6 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultT
                                     options={[...Array(25).keys()].map(i => i - 12)}
                                     initialValue={transpose.current}
                                     onChange={(value) => handleTranspose(value)}
-                                    disabled={isEdit}
                                 />
                             </div>
                         </div>

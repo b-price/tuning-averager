@@ -9,6 +9,7 @@ export function tuningWeight(tuning: Tuning){
     })
     return sum / tuning.strings.length;
 }
+
 export function stringAverage(tunings: Tuning[]){
     const sameType = checkStringMatch(tunings);
     if (!sameType) {
@@ -111,23 +112,6 @@ export function stringGauge(uw: number, coefficient: number, power: number) {
         return 0;
     }
     const factor = (10000000 * uw) / coefficient;
-    // let power = 2;
-    // switch (inst){
-    //     case 'guitar':
-    //         if (wound){
-    //             factor /= 2.07;
-    //             power = 1.97;
-    //         } else {
-    //             factor /= 2.215;
-    //         }
-    //         break;
-    //     case 'bass':
-    //         factor /= 2.939;
-    //         power = 1.89;
-    //         break;
-    //     default:
-    //         factor /= 2.215;
-    // }
     const gauge = Math.pow(factor, 1 / power);
 
     if (gauge < 13){
