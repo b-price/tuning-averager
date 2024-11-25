@@ -2,6 +2,8 @@ import express, { Request, Response } from "express";
 import { ObjectId } from "mongodb";
 import {collections} from "../services/database.service";
 import {UserData} from "../../types";
+import {Webhook} from "svix";
+import bodyParser from 'body-parser';
 
 export const userRouter = express.Router();
 
@@ -36,7 +38,7 @@ userRouter.get("/:id", async (req: Request, res: Response) => {
     const id = req?.params?.id;
 
     try {
-        const query = { _id: new ObjectId(id) };
+        const query = { id: id };
         const user = (await collections?.users?.findOne(query)) as UserData;
 
         if (user) {
@@ -87,7 +89,7 @@ userRouter.delete("/:id", async (req: Request, res: Response) => {
     const id = req?.params?.id;
 
     try {
-        const query = { _id: new ObjectId(id) };
+        const query = { id: id };
         const result = await collections?.users?.deleteOne(query);
 
         if (result && result.deletedCount) {
@@ -104,3 +106,4 @@ userRouter.delete("/:id", async (req: Request, res: Response) => {
         }
     }
 });
+

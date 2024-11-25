@@ -3,7 +3,22 @@ import {serverURL} from "../defaults";
 import {Instrument, Tuning, UserData} from "../../../types";
 
 // user CRUD
-export const getUser = async (username: string) => {
+export const getUser = async (userID?: string | null) => {
+    try {
+        if (!userID){
+            throw new Error("No user ID");
+        }
+        const response = await axios.get(`${serverURL}/users/${userID}`);
+        return {...response.data, id: response.data._id};
+    }
+    catch (error) {
+        if (error instanceof AxiosError) {
+            console.log(error.response);
+        }
+    }
+};
+
+export const getUserByUsername = async (username: string) => {
     try {
         const response = await axios.get(`${serverURL}/users/?field=username&value=${username}`);
         return {...response.data, id: response.data._id};
