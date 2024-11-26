@@ -6,9 +6,9 @@ interface TuningConfirmProps {
     isOpen: boolean;
     onClose: () => void;
     onSubmit: (selectedTuningNames: string[], wound3rd: boolean) => void;
-    tunings: Tuning[];
-    defaultChecked: boolean[];
-    instrument: string;
+    tunings?: Tuning[];
+    defaultChecked?: boolean[];
+    instrument?: string;
 }
 
 const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit, tunings, defaultChecked, instrument }) => {
@@ -17,12 +17,12 @@ const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit
 
     useEffect(() => {
         // Set the initial state based on the defaultChecked prop
-        if (isOpen) {
+        if (isOpen && tunings && tunings.length && defaultChecked && defaultChecked.length) {
             setSelectedTunings(tunings.filter((_, index) => defaultChecked[index]).map(tuning => tuning.name));
         }
     }, [isOpen, tunings, defaultChecked]);
 
-    if (!isOpen){
+    if (!isOpen || !tunings || !tunings.length || !defaultChecked || !defaultChecked.length || !instrument) {
         return null;
     }
 

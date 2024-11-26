@@ -3,7 +3,22 @@ import {serverURL} from "../defaults";
 import {Instrument, Tuning, UserData} from "../../../types";
 
 // user CRUD
-export const getUser = async (username: string) => {
+export const getUser = async (userID?: string | null) => {
+    try {
+        if (!userID){
+            throw new Error("No user ID");
+        }
+        const response = await axios.get(`${serverURL}/users/${userID}`);
+        return {...response.data, id: response.data._id};
+    }
+    catch (error) {
+        if (error instanceof AxiosError) {
+            console.log(error.response);
+        }
+    }
+};
+
+export const getUserByUsername = async (username: string) => {
     try {
         const response = await axios.get(`${serverURL}/users/?field=username&value=${username}`);
         return {...response.data, id: response.data._id};
@@ -55,6 +70,9 @@ export const getTunings = async (userData?: UserData) => {
     try {
         if (!userData){
             throw new Error('No user data found.');
+        }
+        if (!userData.tunings){
+            return {userData: userData, userTunings: []};
         }
         for (const tuning of userData.tunings) {
             const response = await axios.get(`${serverURL}/tunings/${tuning}`);
@@ -113,6 +131,9 @@ export const getInstruments = async (data?: { userData: UserData, userTunings: T
     try {
         if (!data) {
             throw new Error('No user data found.');
+        }
+        if (!data.userData.instruments){
+            return userInstruments;
         }
         for (const instrument of data.userData.instruments) {
             const response = await axios.get(`${serverURL}/instruments/${instrument}`);

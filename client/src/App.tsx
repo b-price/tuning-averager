@@ -1,20 +1,20 @@
 import './App.css'
 import TARouter from "./components/TARouter.tsx";
-import { ClerkProvider } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 
 
 function App() {
-
-    const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
-
-    if (!PUBLISHABLE_KEY) {
-        throw new Error("Missing Publishable Key")
-    }
   return (
       <>
-          <TARouter />
-
-
+          <header>
+              <SignedOut>
+                  <SignInButton/>
+              </SignedOut>
+              <SignedIn>
+                  <TARouter/>
+                  <UserButton/>
+              </SignedIn>
+          </header>
       </>
   )
 }

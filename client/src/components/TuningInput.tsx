@@ -6,7 +6,7 @@ import {capitalize} from "../utils/calculate.ts";
 
 interface TuningInputProps {
     notes: string[];
-    presetTunings: Tuning[];
+    presetTunings?: Tuning[];
     defaultTunings: { guitar: GuitarString[], bass: GuitarString[], other: GuitarString[] };
     onSubmit: (tuning: Tuning) => void;
     isOpen: boolean;
@@ -22,7 +22,7 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultT
     const [type, setType] = useState<'guitar' | 'bass' | 'other'>('guitar');
     const [stringCount, setStringCount] = useState<number>(6);
     const [transpose, setTranspose] = useState<Transpose>({prev: 0, current: 0});
-    const [tunings, setTunings] = useState<Tuning[]>(presetTunings);
+    const [tunings, setTunings] = useState<Tuning[]>(presetTunings ? presetTunings : []);
     const [titleText, setTitleText] = useState('New Tuning');
     const [buttonText, setButtonText] = useState('Submit');
 
@@ -34,7 +34,6 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultT
             setStringCount(editTuning.strings.length);
             setTitleText(`Editing ${editTuning.name}`);
             setButtonText('Save Changes');
-            setTunings(presetTunings);
         } else {
             setStrings(defaultTunings.guitar.slice(0, -3));
             setName('');
@@ -42,6 +41,10 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultT
             setStringCount(6);
             setTitleText('New Tuning');
             setButtonText('Submit');
+        }
+        if (!presetTunings || !presetTunings.length){
+            setTunings([])
+        } else {
             setTunings(presetTunings);
         }
     }, [isEdit]);
@@ -192,6 +195,7 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultT
                             <label className="block text-sm font-medium">Preset</label>
                             <select
                                 onChange={handlePresetChange}
+                                disabled={!presetTunings || presetTunings.length === 0}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             >
                                 {isEdit && editTuning ? (tunings.filter((tuning) => tuning.type === editTuning.type && tuning.strings.length === editTuning.strings.length).map((t) => (
