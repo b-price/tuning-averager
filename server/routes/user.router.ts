@@ -2,8 +2,6 @@ import express, { Request, Response } from "express";
 import { ObjectId } from "mongodb";
 import {collections} from "../services/database.service";
 import {UserData} from "../../types";
-import {Webhook} from "svix";
-import bodyParser from 'body-parser';
 
 export const userRouter = express.Router();
 

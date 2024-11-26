@@ -6,15 +6,13 @@ export default function SignedInLayout() {
     const { userId, isLoaded } = useAuth()
     const navigate = useNavigate()
 
-    console.log('test', userId)
-
     React.useEffect(() => {
         if (isLoaded && !userId) {
             navigate('/sign-in')
         }
     }, [isLoaded])
 
-    if (!isLoaded) return 'Loading...'
+    if (!isLoaded) return 'Loading.'
 
     return <Outlet />
 }

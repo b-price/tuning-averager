@@ -23,6 +23,7 @@ import {
     updateUser
 } from "../utils/serverFunctions";
 import DeleteConfirm from "./DeleteConfirm.tsx";
+import {UserButton} from '@clerk/clerk-react';
 
 interface HomeProps {
     userData: UserData;
@@ -30,17 +31,17 @@ interface HomeProps {
 
 const HomePage: React.FC<HomeProps> = ({ userData }) => {
 
-    const [tunings, setTunings] = useState<Tuning[]>(presetTunings);
-    const [instruments, setInstruments] = useState<Instrument[]>(presetInstruments);
-    const [selectedInstrument, setSelectedInstrument] = useState<Instrument>(instruments[0]);
-    const [selectedTuning, setSelectedTuning] = useState<Tuning>(instruments[0].tunings[0]);
+    const [tunings, setTunings] = useState<Tuning[]>([]);
+    const [instruments, setInstruments] = useState<Instrument[]>([]);
+    const [selectedInstrument, setSelectedInstrument] = useState<Instrument>(instruments.length? instruments[0] : presetInstruments[0]);
+    const [selectedTuning, setSelectedTuning] = useState<Tuning>(instruments.length && instruments[0].tunings.length? instruments[0].tunings[0] : presetTunings[0]);
     const [message, setMessage] = useState<string>('');
     const [messageClass, setMessageClass] = useState<string>('text-blue-400');
     const [isTuningConfirmOpen, setIsTuningConfirmOpen] = useState(false);
     const [isTuningInputOpen, setIsTuningInputOpen] = useState(false);
     const [isInstInputOpen, setIsInstInputOpen] = useState(false);
     const [isAveragerOpen, setIsAveragerOpen] = useState(false);
-    const [avStringSet, setAvStringSet] = useState<StringSet>(instruments[0].stringSets[0]);
+    const [avStringSet, setAvStringSet] = useState<StringSet>(instruments.length && instruments[0].stringSets.length? instruments[0].stringSets[0]: presetInstruments[0].stringSets[0]);
     const [averageTuning, setAverageTuning] = useState<number[]>([]);
     //const [unitWeights, setUnitWeights] = useState<number[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -53,7 +54,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
         setIsLoading(true);
         getTunings(userData)
             .then((data) => {
-                if (data) {
+                if (data && data.userData && data.userTunings) {
                     setTunings(data.userTunings);
                     setSelectedTuning(data.userTunings[0]);
                 }
@@ -69,8 +70,8 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
             .catch((e) => console.error(e));
     },[])
 
-    if (isLoading || !instruments.length || !tunings.length || userData === undefined){
-        return <div>Loading...</div>
+    if (isLoading || userData === undefined){
+        return <div>Loading.....!</div>
     }
 
     // Instrument functions
@@ -398,64 +399,79 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
     return (
         <div className="flex flex-col p-6">
             <div className="">
-                <h1 className="text-2xl font-bold mb-4">{userData.username}</h1>
+                <div className="flex items-center mb-4 gap-4 ">
+                    <UserButton afterSignOutUrl='sign-in' />
+                    <h1 className="text-2xl font-bold">{userData.username}</h1>
+                </div>
 
                 {/*Instruments*/}
                 <div className="mb-7">
                     <label htmlFor="instrument-select" className="block text-xl font-semibold">
                         Instruments
                     </label>
-                    <select
-                        id="instrument-select"
-                        value={selectedInstrument.id}
-                        onChange={handleInstrumentChange}
-                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                    >
-                        {instruments.map((instrument) => (
-                            <option key={instrument.id} value={instrument.id}>
-                                {instrument.name}
-                            </option>
-                        ))}
-                    </select>
-                    <div className="flex-grow space-3">
-                        <p className="text-lg font-medium">{selectedInstrument.name}</p>
-                        <button
-                            className="bg-gray-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2"
-                            onClick={handleEditInst}
-                        >
-                            Edit
-                        </button>
-                        <button
-                            className="bg-red-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-red-400 focus:outline-none focus:ring-2"
-                            onClick={() => setIsInstDeleteOpen(true)}
-                        >
-                            Delete
-                        </button>
-                    </div>
-                    <div className="justify-items-start">
-                        <p><strong>Type: </strong>{capitalize(selectedInstrument.type)}</p>
-                        <p><strong>Scale Length: </strong>{selectedInstrument.scale}"</p>
-                        <p><strong>Target
-                            Tensions: </strong>{selectedInstrument.targetTension.map((tension, index) => (
-                            <span key={index}>{round(tension, DECIMAL_POINTS)} {index < selectedInstrument.targetTension.length -1 ? "| " : ""} </span>
-                        ))}
-                        </p>
-                        <label><strong>Tunings:</strong></label>
-                        <ul className="mb-3 justify-items-start">
-                            {selectedInstrument.tunings.map((tuning) => (
-                                <li className="cursor-pointer" onClick={() => setSelectedTuning(tuning)}
-                                    key={tuning.id}>{tuning.name}</li>
-                            ))}
-                        </ul>
-                        <label><strong>String Sets:</strong></label>
-                        <ul className="mb-3 justify-items-start">
-                            {selectedInstrument.stringSets.map((set, idx) => (
-                                <li key={idx}><em>{set.name}: </em>{set.gauges.map((gauge, index) => (
-                                        <span key={index}>{gauge}{!set.woundStrings[index]? "p" : ""} {index < set.gauges.length - 1 ? "| " : ""} </span>
-                                ))}</li>
-                            ))}
-                        </ul>
-                    </div>
+                    {
+                        instruments.length ?
+                            (<div>
+                                <select
+                                    id="instrument-select"
+                                    value={selectedInstrument.id}
+                                    onChange={handleInstrumentChange}
+                                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                                >
+                                    {instruments.map((instrument) => (
+                                        <option key={instrument.id} value={instrument.id}>
+                                            {instrument.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <div className="flex-grow space-3">
+                                    <p className="text-lg font-medium">{selectedInstrument.name}</p>
+                                    <button
+                                        className="bg-gray-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2"
+                                        onClick={handleEditInst}
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        className="bg-red-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-red-400 focus:outline-none focus:ring-2"
+                                        onClick={() => setIsInstDeleteOpen(true)}
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                                <div className="justify-items-start">
+                                    <p><strong>Type: </strong>{capitalize(selectedInstrument.type)}</p>
+                                    <p><strong>Scale Length: </strong>{selectedInstrument.scale}"</p>
+                                    <p><strong>Target
+                                        Tensions: </strong>{selectedInstrument.targetTension.map((tension, index) => (
+                                        <span
+                                            key={index}>{round(tension, DECIMAL_POINTS)} {index < selectedInstrument.targetTension.length - 1 ? "| " : ""} </span>
+                                    ))}
+                                    </p>
+                                    <label><strong>Tunings:</strong></label>
+                                    <ul className="mb-3 justify-items-start">
+                                        {selectedInstrument.tunings.map((tuning) => (
+                                            <li className="cursor-pointer" onClick={() => setSelectedTuning(tuning)}
+                                                key={tuning.id}>{tuning.name}</li>
+                                        ))}
+                                    </ul>
+                                    <label><strong>String Sets:</strong></label>
+                                    <ul className="mb-3 justify-items-start">
+                                        {selectedInstrument.stringSets.map((set, idx) => (
+                                            <li key={idx}><em>{set.name}: </em>{set.gauges.map((gauge, index) => (
+                                                <span
+                                                    key={index}>{gauge}{!set.woundStrings[index] ? "p" : ""} {index < set.gauges.length - 1 ? "| " : ""} </span>
+                                            ))}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>)
+                            : (<div>
+                                    Please add an instrument.
+                                </div>
+                            )
+                    }
+
 
                     <div className="flex-grow space-4">
                         <button
@@ -467,6 +483,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                         <button
                             className="bg-indigo-600 text-white m-2 px-4 py-2 rounded-md hover:bg-indigo-500 focus:outline-none focus:ring-2"
                             onClick={handleOpenGetAv}
+                            disabled={instruments.length < 1}
                         >
                             Get Av. String Set
                         </button>
@@ -478,42 +495,52 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                     <label htmlFor="tuning-select" className="block text-xl font-semibold">
                         Tunings
                     </label>
-                    <select
-                        id="tuning-select"
-                        value={selectedTuning.id}
-                        onChange={handleTuningChange}
-                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                    >
-                        {tunings.map((tuning) => (
-                            <option key={tuning.id} value={tuning.id}>
-                                {capitalize(tuning.type)}: {tuning.name}
-                            </option>
-                        ))}
-                    </select>
+                    {
+                        tunings.length ? (
+                            <div>
+                                <select
+                                    id="tuning-select"
+                                    value={selectedTuning.id}
+                                    onChange={handleTuningChange}
+                                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                                >
+                                    {tunings.map((tuning) => (
+                                        <option key={tuning.id} value={tuning.id}>
+                                            {capitalize(tuning.type)}: {tuning.name}
+                                        </option>
+                                    ))}
+                                </select>
 
-                    <div className="flex-grow space-3">
-                        <p className="text-lg font-medium">{selectedTuning.name}</p>
-                        <button
-                            className="bg-gray-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2"
-                            onClick={handleEditTuning}
-                        >
-                            Edit
-                        </button>
-                        <button
-                            className="bg-red-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-red-400 focus:outline-none focus:ring-2"
-                            onClick={() => setIsTuningDeleteOpen(true)}
-                        >
-                            Delete
-                        </button>
-                    </div>
-                    <div className="justify-items-start">
-                        <p><strong>Type: </strong>{capitalize(selectedTuning.type)}</p>
-                        <ul className="mb-3">
-                            {selectedTuning.strings.map((string, index) => (
-                                <li key={index}><strong>{index + 1}: </strong>{string.note}</li>
-                            ))}
-                        </ul>
-                    </div>
+                                <div className="flex-grow space-3">
+                                    <p className="text-lg font-medium">{selectedTuning.name}</p>
+                                    <button
+                                        className="bg-gray-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2"
+                                        onClick={handleEditTuning}
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        className="bg-red-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-red-400 focus:outline-none focus:ring-2"
+                                        onClick={() => setIsTuningDeleteOpen(true)}
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                                <div className="justify-items-start">
+                                    <p><strong>Type: </strong>{capitalize(selectedTuning.type)}</p>
+                                    <ul className="mb-3">
+                                        {selectedTuning.strings.map((string, index) => (
+                                            <li key={index}><strong>{index + 1}: </strong>{string.note}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        ) : (
+                            <div>
+                                Please add a tuning.
+                            </div>
+                        )
+                    }
 
 
                     <div className="flex-grow space-4">
@@ -526,6 +553,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                         <button
                             className="bg-indigo-600 text-white m-2 px-4 py-2 rounded-md hover:bg-indigo-500 focus:outline-none focus:ring-2"
                             onClick={handleAddTuningToInstrument}
+                            disabled={instruments.length < 1 || tunings.length < 1}
                         >
                             Add to Current Inst.
                         </button>
@@ -540,9 +568,9 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 isOpen={isTuningConfirmOpen}
                 onClose={() => setIsTuningConfirmOpen(false)}
                 onSubmit={handleSubmitGetAv}
-                tunings={selectedInstrument.tunings}
-                instrument={selectedInstrument.name}
-                defaultChecked={Array(selectedInstrument.tunings.length).fill(true)}
+                tunings={selectedInstrument?.tunings}
+                instrument={selectedInstrument?.name}
+                defaultChecked={Array(selectedInstrument?.tunings.length).fill(true)}
             />
             <TuningInput
                 notes={notes}

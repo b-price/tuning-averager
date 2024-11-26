@@ -10,7 +10,7 @@ interface AverageStringSetProps {
     onClose: () => void;
     onSubmit: (newStringSet: StringSet) => void;
     averageTuning: number[];
-    instrument: Instrument;
+    instrument?: Instrument;
 }
 
 interface Note {
@@ -43,11 +43,13 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({stringSet, isOpen, o
         })
         setTensions((prevTensions) => {
             const newTensions = [...prevTensions]
-            newTensions[stringIndex] = tension(uwFromGauge(
-                gauge,
-                stringTypeFactors[instrument.type][woundStrings[stringIndex] ? 'wound' : 'plain'].coeff,
-                stringTypeFactors[instrument.type][woundStrings[stringIndex] ? 'wound' : 'plain'].power
-            ), averageTuning[stringIndex], instrument.scale);
+            if (instrument) {
+                newTensions[stringIndex] = tension(uwFromGauge(
+                    gauge,
+                    stringTypeFactors[instrument.type][woundStrings[stringIndex] ? 'wound' : 'plain'].coeff,
+                    stringTypeFactors[instrument.type][woundStrings[stringIndex] ? 'wound' : 'plain'].power
+                ), averageTuning[stringIndex], instrument.scale);
+            }
             return newTensions;
         })
     }
@@ -68,7 +70,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({stringSet, isOpen, o
         <Modal isOpen={isOpen} onClose={onClose}>
             <div className="flex-col p-8 mx-auto bg-gray-600 rounded-xl shadow-md">
                 <h2 className="text-2xl font-bold mb-2">Average String Set</h2>
-                <h3 className="text-md font-semibold mb-4">for {instrument.name}</h3>
+                {instrument ? <h3 className="text-md font-semibold mb-4">for {instrument.name}</h3> : <></>}
 
                 {/* String Set Name */}
                 <div className="mb-4">
