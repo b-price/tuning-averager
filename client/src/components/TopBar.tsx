@@ -8,9 +8,9 @@ interface TopBarProps {
 const TopBar: React.FC<TopBarProps> = ({ loggedIn, linkURL}) => {
 
     return (
-        <div className="flex items-center my-4">
+        <div className="flex items-center justify-between my-4">
             <Link to="/">
-                <h1 className='mx-4 text-gray-200'>Ideal Strings</h1>
+                <h1 className='mx-4 text-gray-200 text-3xl md:text-4xl'>Ideal Strings</h1>
             </Link>
 
             {loggedIn && linkURL ? (

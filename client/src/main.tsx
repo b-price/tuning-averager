@@ -20,7 +20,7 @@ const router = createBrowserRouter([
                 path: '',
                 children: [
                     { path: '/', element: <TARouter />},
-                    // { path: '/app/settings', element: <Settings />}
+                    { path: '/settings', element: <Settings />}
                 ]
             }
         ]
