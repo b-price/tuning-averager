@@ -398,11 +398,12 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
 
     return (
         <div className="flex flex-col p-6">
-            <div className="">
-                <div className="flex items-center mb-4 gap-4 ">
-                    <UserButton afterSignOutUrl='sign-in' />
-                    <h1 className="text-2xl font-bold">{userData.username}</h1>
-                </div>
+            <div className="flex items-center mb-4 gap-4 ">
+                <UserButton afterSignOutUrl='sign-in'/>
+                <h1 className="text-2xl font-bold">{userData.username}</h1>
+            </div>
+            <div className="flex flex-wrap gap-10">
+
 
                 {/*Instruments*/}
                 <div className="mb-7">
@@ -559,11 +560,8 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                         </button>
                     </div>
                 </div>
-
-                {message && <p className={messageClass}>{message}</p>}
-
-
             </div>
+            {message && <p className={messageClass}>{message}</p>}
             <TuningConfirm
                 isOpen={isTuningConfirmOpen}
                 onClose={() => setIsTuningConfirmOpen(false)}

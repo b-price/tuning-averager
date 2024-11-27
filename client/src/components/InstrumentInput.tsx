@@ -125,7 +125,13 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
         };
         if (isEdit && editInstrument) {
             instrument.id = editInstrument.id;
-            onEdit(instrument, instrument);
+            instrument.stringSets = editInstrument.stringSets;
+            const changes = {
+                name: name,
+                tunings: selectedTunings.map((tuning: Tuning) => tuning.id),
+                targetTension: finalTargetTension,
+            }
+            onEdit(changes, instrument);
         } else {
             onSubmit(instrument);
         }
@@ -178,6 +184,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                             <label className="block text-sm font-medium">Instrument Type</label>
                             <select
                                 value={type}
+                                disabled={isEdit}
                                 onChange={(e) => setType(e.target.value as 'guitar' | 'bass' | 'other')}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             >
@@ -193,6 +200,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                             <input
                                 type="number"
                                 value={strings}
+                                disabled={isEdit}
                                 onChange={(e) => setStrings(parseInt(e.target.value))}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             />
@@ -203,6 +211,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                             <label className="block text-sm font-medium">Scale Length</label>
                             <input
                                 type="number"
+                                disabled={isEdit}
                                 value={scale}
                                 onChange={(e) => setScale(parseFloat(e.target.value))}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
