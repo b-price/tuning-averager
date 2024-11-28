@@ -1,6 +1,6 @@
 import React, {useEffect, useState,} from 'react';
 import ArrowSelector from './ArrowSelector.tsx';
-import {GuitarString, Tuning, Transpose} from "../../../types.ts";
+import {GuitarString, Tuning, Transpose, InstType} from "../../../types.ts";
 import Modal from "./Modal.tsx";
 import {capitalize} from "../utils/calculate.ts";
 
@@ -19,7 +19,7 @@ interface TuningInputProps {
 const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultTunings, onSubmit, isOpen, onClose, isEdit, editTuning, onEdit}) => {
     const [strings, setStrings] = useState<GuitarString[]>(defaultTunings.guitar.slice(0, -3));
     const [name, setName] = useState<string>('');
-    const [type, setType] = useState<'guitar' | 'bass' | 'other'>('guitar');
+    const [type, setType] = useState<InstType>('guitar');
     const [stringCount, setStringCount] = useState<number>(6);
     const [transpose, setTranspose] = useState<Transpose>({prev: 0, current: 0});
     const [tunings, setTunings] = useState<Tuning[]>(presetTunings ? presetTunings : []);
@@ -71,7 +71,7 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultT
         onClose();
     };
 
-    const handleStringCountChange = (count: number | string, newType: 'guitar' | 'bass' | 'other') => {
+    const handleStringCountChange = (count: number | string, newType: InstType) => {
         if (isEdit){
             console.log('Cannot change string count');
         } else {
@@ -83,7 +83,7 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultT
         }
     };
 
-    const handleTypeChange = (newType: 'guitar' | 'bass' | 'other') => {
+    const handleTypeChange = (newType: InstType) => {
         if (isEdit){
             console.log('Cannot change instrument type');
         } else {
@@ -180,7 +180,7 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultT
                             <select
                                 value={type}
                                 onChange={(e) => {
-                                    handleTypeChange(e.target.value as 'guitar' | 'bass' | 'other')
+                                    handleTypeChange(e.target.value as InstType)
                                 }}
                                 className="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 disabled={isEdit}

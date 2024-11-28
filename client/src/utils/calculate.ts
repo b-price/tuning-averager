@@ -27,6 +27,29 @@ export function stringAverage(tunings: Tuning[]){
     return avNoteValues;
 }
 
+export function stringAverageUnweighted(tunings: Tuning[]){
+    if (!checkStringMatch(tunings)) {
+        return ;
+    }
+    const avNoteValues = [];
+    const amountStrings = tunings[0].strings.length;
+    for (let i = 0; i < amountStrings; i++){
+        let sum = 0;
+        let unique = 0;
+        const notes: number[] = [];
+        tunings.forEach((tuning) => {
+            const value = tuning.strings[i].noteValue;
+            if (!notes.includes(value)){
+                sum += value;
+                unique++;
+            }
+            notes.push(value);
+        })
+        avNoteValues.push(sum / unique);
+    }
+    return avNoteValues;
+}
+
 export function convertToNoteValue(note: string){
     if (note.length != 3 || (note[1] !== ' ' && note[1] !== '#'))
         return 0;
@@ -64,18 +87,18 @@ export function convertToNoteValue(note: string){
 
 export function convertToNote(noteValue: number){
     if (noteValue <= 0 || noteValue >= notes.length){
-        return {note: 'invalid', cents: ''};
+        return {note: 'invalid', cents: 0, noteValue: noteValue};
         //return 'invalid note';
     }
-    const intNote = Math.round(noteValue);
-    const remainder = ((noteValue - intNote) * 100);
-    let cents = ``;
-    if (remainder < 0) {
-        cents = `${remainder.toFixed()}`;
-    } else if (remainder > 0){
-        cents = `+${remainder.toFixed()}`;
-    }
-    return {note: notes[intNote], cents: cents};
+    const intNote = Math.floor(noteValue);
+    const cents = Math.round(((noteValue - intNote) * 100));
+    // let cents = ``;
+    // if (remainder < 0) {
+    //     cents = `${remainder.toFixed()}`;
+    // } else if (remainder > 0){
+    //     cents = `+${remainder.toFixed()}`;
+    // }
+    return {note: notes[intNote], cents: cents, noteValue: noteValue};
     //return `${notes[intNote]}${cents}`
 
 }
@@ -139,7 +162,11 @@ export function round(num: number, precision: number) {
 }
 
 export const capitalize = (word: string) => {
-    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+}
+
+export const getCents = (noteValue: number) => {
+    return Math.round(noteValue * 100) - (Math.round(noteValue) * 100);
 }
 /*
 To calculate the tension of a string in pounds use the formula below,

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Instrument, Tuning } from "../../../types.ts";
+import {Instrument, InstType, Tuning} from "../../../types.ts";
 import Modal from "./Modal.tsx";
 import {round} from "../utils/calculate.ts";
-import {DECIMAL_POINTS} from "../defaults.ts";
+import {DECIMAL_POINTS, defaultScales, defaultStrings} from "../defaults.ts";
 
 const defaultState = {
     name: '',
@@ -42,12 +42,12 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
     const [selectedTunings, setSelectedTunings] = useState<Tuning[]>(defaultState.selectedTunings);
     const [scale, setScale] = useState(defaultState.scale);
     const [targetTension, setTargetTension] = useState<number[]>(defaultState.targetTension);
-    const [type, setType] = useState<'guitar' | 'bass' | 'other'>('guitar');
+    const [type, setType] = useState<InstType>('guitar');
     const [useAverageTension, setUseAverageTension] = useState(false);
     const [averageTension, setAverageTension] = useState(0);
     const [isTuningDropdownOpen, setIsTuningDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const [strings, setStringsInternal] = useState(6);
+    const [strings, setStringsInternal] = useState(defaultStrings.guitar);
     const [titleText, setTitleText] = useState('New Instrument');
     const [buttonText, setButtonText] = useState('Submit');
 
@@ -101,6 +101,12 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
             setAverageTension(avg);
         }
     };
+
+    const handleTypeChange = (type: InstType) => {
+        setType(type);
+        setStrings(defaultStrings[type]);
+        setScale(defaultScales[type]);
+    }
 
     const handleTuningChange = (tuning: Tuning, checked: boolean) => {
         setSelectedTunings((prevTunings) =>
@@ -185,7 +191,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                             <select
                                 value={type}
                                 disabled={isEdit}
-                                onChange={(e) => setType(e.target.value as 'guitar' | 'bass' | 'other')}
+                                onChange={(e) => handleTypeChange(e.target.value as InstType)}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             >
                                 <option value="guitar">Guitar</option>

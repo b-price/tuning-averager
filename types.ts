@@ -2,7 +2,7 @@ export class Tuning {
     constructor(
         public name: string,
         public strings: GuitarString[],
-        public type: 'guitar' | 'bass' | 'other',
+        public type: InstType,
         public id?: string,
     ) {
     }
@@ -20,7 +20,7 @@ export class Instrument {
         public tunings: Tuning[],
         public scale: number,
         public targetTension: number[],
-        public type: 'guitar' | 'bass' | 'other',
+        public type: InstType,
         public stringSets: StringSet[],
         public id?: string,
     ) {
@@ -46,7 +46,20 @@ export class UserData {
         public username: string,
         public instruments: string[],
         public tunings: string[],
+        public settings: UserSettings,
         public id?: string,
     ) {
     }
 }
+
+export class UserSettings {
+    constructor(
+        public weightedMode: boolean,
+        public stringCoeff: number,
+        public stringPower: number,
+        public darkMode: boolean,
+    ) {
+    }
+}
+
+export type InstType = 'guitar' | 'bass' | 'other';

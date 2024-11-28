@@ -210,12 +210,6 @@ export const presetInstruments: Instrument[] = [
     }
 ];
 
-export const defaultUser: UserData = {
-    username: 'CoolGuy',
-    instruments: ['0', '1'],
-    tunings: ['0', '1', '2', '3', '4', '5', '6', '7', '8']
-}
-
 export const defaultTunings = {
     guitar: [
         { note: 'E4', noteValue: notes.indexOf('E4') },
@@ -273,3 +267,29 @@ export const stringTypeFactors = {
 export const serverURL = 'http://localhost:8080';
 
 export const DECIMAL_POINTS = 2
+
+export const defaultSettings = {
+    weightedMode: true,
+    darkMode: false,
+    stringCoeff: 0,
+    stringPower: 0,
+}
+
+export const defaultUser: UserData = {
+    username: 'CoolGuy',
+    instruments: ['0', '1'],
+    tunings: ['0', '1', '2', '3', '4', '5', '6', '7', '8'],
+    settings: defaultSettings
+}
+
+export const defaultStrings = {
+    guitar: 6,
+    bass: 4,
+    other: 4
+}
+
+export const defaultScales = {
+    guitar: 25.5,
+    bass: 34,
+    other: 13
+}

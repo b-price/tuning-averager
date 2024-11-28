@@ -12,7 +12,16 @@ import {
     stringTypeFactors
 } from "../defaults";
 import {Instrument, StringSet, Tuning, UserData} from "../../../types";
-import {capitalize, getUnitWeight, round, stringAverage, stringGauge, tension, uwFromGauge} from "../utils/calculate";
+import {
+    capitalize,
+    getUnitWeight,
+    round,
+    stringAverage,
+    stringAverageUnweighted,
+    stringGauge,
+    tension,
+    uwFromGauge
+} from "../utils/calculate";
 import AverageStringSet from "./AverageStringSet";
 import {
     addInstrument, addTuning,
@@ -99,7 +108,8 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
         addInstrument(instrument)
             .then((instID) => {
                 newInst.id = instID;
-                updateUser({instruments: [...userData.instruments, instID]}, userData.id);
+                const instIDs = instruments.map((inst) => inst.id);
+                updateUser({instruments: [...instIDs, instID]}, userData.id);
             })
             .then(() => {
                 setInstruments([...instruments, newInst]);
@@ -197,7 +207,8 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
         addTuning(newTuning)
             .then((tuningID) => {
                 newTuning.id = tuningID;
-                updateUser({tunings: [...userData.tunings, tuningID]}, userData.id);
+                const tuningIDs = tunings.map((tuning: Tuning) => tuning.id);
+                updateUser({tunings: [...tuningIDs, tuningID]}, userData.id);
             })
             .then(() => {
                 setTunings([...tunings, newTuning]);
@@ -208,12 +219,12 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                     setMessage('');
                 }, 2000);
             }).catch((e) => {
-            console.error(e);
-            setMessageClass('text-red-400');
-            setMessage('Could not add tuning');
-            setTimeout(() => {
-                setMessage('');
-            }, 3000)
+                console.error(e);
+                setMessageClass('text-red-400');
+                setMessage('Could not add tuning');
+                setTimeout(() => {
+                    setMessage('');
+                }, 3000)
         })
     }
 
@@ -314,10 +325,10 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
 
     const handleSubmitGetAv = (selectedTuningNames: string[], wound3rd: boolean) => {
         const selectedTunings: Tuning[] = selectedInstrument.tunings.filter((tuning) => selectedTuningNames.includes(tuning.name));
-        const avTuning = stringAverage(selectedTunings);
+        const avTuning = userData.settings.weightedMode ? stringAverage(selectedTunings) : stringAverageUnweighted(selectedTunings);
         console.log(avTuning)
         if (avTuning) {
-            setAverageTuning(avTuning);
+            //setAverageTuning(avTuning);
             const stringSet: StringSet = {
                 gauges: [],
                 woundStrings: [],
@@ -597,7 +608,6 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 isOpen={isAveragerOpen}
                 onClose={() => setIsAveragerOpen(false)}
                 onSubmit={handleSubmitStringSet}
-                averageTuning={averageTuning}
                 instrument={selectedInstrument}
             />
             <DeleteConfirm

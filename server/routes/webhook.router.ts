@@ -60,15 +60,30 @@ webhookRouter.post(
                         id: id,
                         username: attributes.username,
                         tunings: [],
-                        instruments: []
+                        instruments: [],
+                        settings: {
+                            darkMode: false,
+                            weightedMode: true,
+                            stringCoeff: 0,
+                            stringPower: 0,
+                        }
                     };
                     const result = await collections?.users?.insertOne(newUser);
+
                 } else if (eventType === 'user.deleted'){
                     const query = { id: id };
                     console.log(`User ${id} was ${eventType} in Clerk, trying Mongo...`);
                     const result = await collections?.users?.deleteOne(query);
                     console.log(`User ${id} was ${eventType}`);
+
+                } else if (eventType === 'user.updated') {
+                    const query = { id: id };
+                    const update = {username: attributes.username}
+                    console.log(`User ${attributes.username} was ${eventType} in Clerk, trying Mongo...`);
+                    const result = await collections?.users?.updateOne(query, { $set: update });
+                    console.log(`User ${id} was ${eventType}`);
                 }
+
                 res.status(200).json({
                     success: true,
                     message: 'Webhook received',

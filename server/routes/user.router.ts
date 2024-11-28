@@ -69,7 +69,7 @@ userRouter.patch("/:id", async (req: Request, res: Response) => {
     try {
         const updatedUser = req.body as UserData;
         const query = { _id: new ObjectId(id) };
-
+        console.log(updatedUser.tunings)
         const result = await collections?.users?.updateOne(query, { $set: updatedUser });
 
         result
