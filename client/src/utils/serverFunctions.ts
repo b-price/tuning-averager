@@ -9,7 +9,12 @@ export const getUser = async (userID?: string | null) => {
             throw new Error("No user ID");
         }
         const response = await axios.get(`${serverURL}/users/${userID}`);
-        return {...response.data, id: response.data._id};
+        if (response.status === 200) {
+            return {...response.data, id: response.data._id};
+        }
+        else {
+            throw new Error("Failed to fetch user with id " + userID);
+        }
     }
     catch (error) {
         if (error instanceof AxiosError) {

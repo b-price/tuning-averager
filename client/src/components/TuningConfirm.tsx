@@ -51,7 +51,7 @@ const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
-            <h2 className="text-xl font-semibold mb-1">Select Tunings</h2>
+            <h2 className="text-xl font-semibold mb-1 mt-0">Select Tunings</h2>
             <h3 className="text-md font-semibold mb-2">for {instrument}</h3>
             <div className="grid justify-items-center">
 

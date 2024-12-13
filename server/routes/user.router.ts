@@ -34,13 +34,14 @@ userRouter.get("/", async (req: Request<{}, {}, {}, QueryParams>, res: Response)
 
 userRouter.get("/:id", async (req: Request, res: Response) => {
     const id = req?.params?.id;
-
     try {
         const query = { id: id };
         const user = (await collections?.users?.findOne(query)) as UserData;
 
         if (user) {
             res.status(200).send(user);
+        } else {
+            res.status(404).send(`Unable to find matching user with id: ${id}`);
         }
     } catch (error) {
         res.status(404).send(`Unable to find matching user with id: ${req.params.id}`);

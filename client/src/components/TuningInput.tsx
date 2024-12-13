@@ -128,9 +128,9 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultT
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
-            <div className="sm:max-w-md max-w-xs mx-auto bg-gray-600 rounded-xl shadow-md p-6"> {/* Added padding here */}
+            <div className="sm:max-w-md max-w-xs mx-auto px-8 pb-6 bg-gray-600 rounded-xl">
                 {/*Title*/}
-                <h2 className="text-2xl font-bold mb-6">{titleText}</h2> {/* Increased margin bottom */}
+                <h2 className="text-2xl font-bold mb-6">{titleText}</h2>
                 {/* Desktop Columns */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {/* Column 1: String Notes */}
@@ -154,7 +154,7 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultT
                     <div className="sm:col-span-2">
                         <div className="flex justify-between">
                             {/* String Count/Transpose (labels on top) */}
-                            <div className="mb-4 flex-grow px-2 w-full sm:w-1/2"> {/* Added width classes */}
+                            <div className="mb-4 flex-grow px-2 w-full sm:w-1/2">
                                 <label className="block text-sm font-medium mb-2">String Count</label>
                                 <ArrowSelector
                                     key={stringCount + 'S'}
@@ -164,7 +164,7 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultT
                                     disabled={isEdit}
                                 />
                             </div>
-                            <div className="mb-4 flex-grow px-2 w-full sm:w-1/2"> {/* Added width classes */}
+                            <div className="mb-4 flex-grow px-2 w-full sm:w-1/2">
                                 <label className="block text-sm font-medium mb-2">Transpose</label>
                                 <ArrowSelector
                                     key={transpose.current + 'T'}

@@ -6,8 +6,9 @@ import RootLayout from "./layouts/RootLayout.tsx";
 import SignInPage from "./routes/SignInPage.tsx";
 import SignUpPage from "./routes/SignUpPage.tsx";
 import SignedInLayout from "./layouts/SignedInLayout.tsx";
-import TARouter from "./components/TARouter.tsx";
+import Initialize from "./components/Initialize.tsx";
 import Settings from "./components/Settings.tsx";
+
 
 const router = createBrowserRouter([
     {
@@ -19,7 +20,7 @@ const router = createBrowserRouter([
                 element: <SignedInLayout />,
                 path: '',
                 children: [
-                    { path: '/', element: <TARouter />},
+                    { path: '/', element: <Initialize />},
                     { path: '/settings', element: <Settings />}
                 ]
             }
@@ -29,6 +30,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-     <RouterProvider router={router} />
+
+          <RouterProvider router={router} />
+
   </StrictMode>,
 )

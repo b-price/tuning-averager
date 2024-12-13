@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import TuningConfirm from "./TuningConfirm";
-import TuningInput from "./TuningInput";
-import InstrumentInput from "./InstrumentInput";
+import TuningConfirm from "./TuningConfirm.tsx";
+import TuningInput from "./TuningInput.tsx";
+import InstrumentInput from "./InstrumentInput.tsx";
 import {
     DECIMAL_POINTS,
     defaultTensions,
@@ -10,8 +10,8 @@ import {
     presetTunings,
     stringRange,
     stringTypeFactors
-} from "../defaults";
-import {Instrument, StringSet, Tuning, UserData} from "../../../types";
+} from "../defaults.ts";
+import {Instrument, StringSet, Tuning, UserData} from "../../../types.ts";
 import {
     capitalize,
     getUnitWeight,
@@ -21,8 +21,8 @@ import {
     stringGauge,
     tension,
     uwFromGauge
-} from "../utils/calculate";
-import AverageStringSet from "./AverageStringSet";
+} from "../utils/calculate.ts";
+
 import {
     addInstrument, addTuning,
     deleteInstrument, deleteTuning,
@@ -30,9 +30,13 @@ import {
     getTunings,
     updateInstrument, updateTuning,
     updateUser
-} from "../utils/serverFunctions";
+} from "../utils/serverFunctions.ts";
 import DeleteConfirm from "./DeleteConfirm.tsx";
 import {UserButton} from '@clerk/clerk-react';
+import Skeleton, {SkeletonTheme} from "react-loading-skeleton";
+import 'react-loading-skeleton/dist/skeleton.css';
+import AverageStringSet from "./AverageStringSet.tsx";
+import StringSets from "./StringSets.tsx";
 
 interface HomeProps {
     userData: UserData;
@@ -51,11 +55,12 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
     const [isInstInputOpen, setIsInstInputOpen] = useState(false);
     const [isAveragerOpen, setIsAveragerOpen] = useState(false);
     const [avStringSet, setAvStringSet] = useState<StringSet>(instruments.length && instruments[0].stringSets.length? instruments[0].stringSets[0]: presetInstruments[0].stringSets[0]);
-    const [averageTuning, setAverageTuning] = useState<number[]>([]);
+    //const [averageTuning, setAverageTuning] = useState<number[]>([]);
     //const [unitWeights, setUnitWeights] = useState<number[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isInstDeleteOpen, setIsInstDeleteOpen] = useState(false);
     const [isTuningDeleteOpen, setIsTuningDeleteOpen] = useState(false);
+    const [isStringSetsOpen, setIsStringSetsOpen] = useState(false);
     const [isEdit, setIsEdit] = useState<boolean>(false);
 
     // On mount
@@ -79,14 +84,42 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
             .catch((e) => console.error(e));
     },[])
 
-    if (isLoading || userData === undefined){
-        return <div>Loading.....!</div>
+    if (isLoading || userData === undefined) {
+        return (
+            <SkeletonTheme baseColor="#444444" highlightColor="#666666">
+                <div className="flex flex-col p-6">
+                    <div className="flex items-center mb-4 gap-4">
+                        <Skeleton circle height={50} width={50}/>
+                        <Skeleton height={30} width={150}/>
+                    </div>
+                    <div className="flex flex-wrap gap-10">
+                        {/* Instruments Skeleton */}
+                        <div className="mb-7">
+                            <Skeleton height={30} width={200}/>
+                            <Skeleton height={50} width={300} style={{marginTop: '10px'}}/>
+                            <Skeleton height={20} width={150} style={{marginTop: '10px'}}/>
+                            <Skeleton height={20} width={250} style={{marginTop: '10px'}}/>
+                            <Skeleton height={20} width={200} style={{marginTop: '10px'}}/>
+                        </div>
+                        {/* Tunings Skeleton */}
+                        <div className="mb-2">
+                            <Skeleton height={30} width={200}/>
+                            <Skeleton height={50} width={300} style={{marginTop: '10px'}}/>
+                            <Skeleton height={20} width={150} style={{marginTop: '10px'}}/>
+                            <Skeleton height={20} width={250} style={{marginTop: '10px'}}/>
+                        </div>
+                    </div>
+                </div>
+            </SkeletonTheme>
+        );
     }
 
     // Instrument functions
     const onUpdateInstrument = async (changes: object, updatedInst: Instrument) => {
         updateInstrument(changes, updatedInst.id).then(() => {
-            setInstruments(instruments.map((inst) => {return inst.id === updatedInst.id? updatedInst : inst}));
+            setInstruments(instruments.map((inst) => {
+                return inst.id === updatedInst.id ? updatedInst : inst
+            }));
             setSelectedInstrument(updatedInst);
             setMessageClass('text-blue-400');
             setMessage('Instrument updated successfully!');
@@ -123,12 +156,12 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                     setMessage('');
                 }, 2000);
             }).catch((e) => {
-                console.error(e);
-                setMessageClass('text-red-400');
-                setMessage('Could not add instrument');
-                setTimeout(() => {
-                    setMessage('');
-                }, 3000)
+            console.error(e);
+            setMessageClass('text-red-400');
+            setMessage('Could not add instrument');
+            setTimeout(() => {
+                setMessage('');
+            }, 3000)
         })
     };
 
@@ -166,14 +199,14 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
         let currentInst: Instrument;
         instruments.forEach((inst: Instrument) => {
             const updateInst: Instrument = {...inst, tunings: inst.tunings.map((tuning: Tuning) => {
-                if (tuning.id === updatedTuning.id) {
-                    if (inst.id === selectedInstrument.id) {
-                        currentInstHasTuning = true;
+                    if (tuning.id === updatedTuning.id) {
+                        if (inst.id === selectedInstrument.id) {
+                            currentInstHasTuning = true;
+                        }
+                        return updatedTuning;
+                    } else {
+                        return tuning;
                     }
-                    return updatedTuning;
-                } else {
-                    return tuning;
-                }
                 })};
             if (currentInstHasTuning) {
                 currentInst = updateInst;
@@ -200,7 +233,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 setTimeout(() => {
                     setMessage('');
                 }, 3000)
-        });
+            });
     };
 
     const onAddTuning = async (newTuning: Tuning) => {
@@ -219,12 +252,12 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                     setMessage('');
                 }, 2000);
             }).catch((e) => {
-                console.error(e);
-                setMessageClass('text-red-400');
-                setMessage('Could not add tuning');
-                setTimeout(() => {
-                    setMessage('');
-                }, 3000)
+            console.error(e);
+            setMessageClass('text-red-400');
+            setMessage('Could not add tuning');
+            setTimeout(() => {
+                setMessage('');
+            }, 3000)
         })
     }
 
@@ -406,7 +439,6 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
         }
     };
 
-
     return (
         <div className="flex flex-col p-6">
             <div className="flex items-center mb-4 gap-4 ">
@@ -467,7 +499,12 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                                                 key={tuning.id}>{tuning.name}</li>
                                         ))}
                                     </ul>
-                                    <label><strong>String Sets:</strong></label>
+                                    <div className="">
+                                        <label><strong>String Sets:</strong></label>
+                                        <button
+                                            className="bg-gray-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2"
+                                            onClick={() => setIsStringSetsOpen(true)}>Edit</button>
+                                    </div>
                                     <ul className="mb-3 justify-items-start">
                                         {selectedInstrument.stringSets.map((set, idx) => (
                                             <li key={idx}><em>{set.name}: </em>{set.gauges.map((gauge, index) => (
@@ -538,7 +575,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                                         Delete
                                     </button>
                                 </div>
-                                <div className="justify-items-start">
+                                <div className="text-start">
                                     <p><strong>Type: </strong>{capitalize(selectedTuning.type)}</p>
                                     <ul className="mb-3">
                                         {selectedTuning.strings.map((string, index) => (
@@ -608,6 +645,11 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 isOpen={isAveragerOpen}
                 onClose={() => setIsAveragerOpen(false)}
                 onSubmit={handleSubmitStringSet}
+                instrument={selectedInstrument}
+            />
+            <StringSets
+                isOpen={isStringSetsOpen}
+                onClose={() => setIsStringSetsOpen(false)}
                 instrument={selectedInstrument}
             />
             <DeleteConfirm
