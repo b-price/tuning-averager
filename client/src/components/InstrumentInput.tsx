@@ -168,7 +168,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
-            <div className="flex-col px-8 pb-6 mx-auto bg-gray-600 rounded-xl">
+            <div className="flex-col px-8 pb-6 mx-auto">
                 <h2 className="text-2xl font-bold mb-4">{titleText}</h2>
 
                 <div className="grid sm:grid-cols-2 grid-cols-1 gap-4">

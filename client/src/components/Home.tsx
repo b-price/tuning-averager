@@ -394,10 +394,35 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
         setIsAveragerOpen(true);
     };
 
+    const handleDeleteStringSet = (deletedSet: StringSet) => {
+        const newStringSets = selectedInstrument.stringSets.filter((strSet) => strSet !== deletedSet);
+        const updatedInstrument = {...selectedInstrument, stringSets: newStringSets};
+        onUpdateInstrument({stringSets: newStringSets}, updatedInstrument).catch((e) => console.error(e));
+    }
+
     const handleSubmitStringSet = (newStringSet: StringSet) => {
         const updatedInstrument = {...selectedInstrument, stringSets: [...selectedInstrument.stringSets, newStringSet]};
         onUpdateInstrument({stringSets: updatedInstrument.stringSets}, updatedInstrument).catch((e) => console.error(e));
     };
+
+    const handleOpenEditStringSet = (stringSet: StringSet) => {
+        setAvStringSet(stringSet);
+        setIsEdit(true);
+        setIsStringSetsOpen(false);
+        setIsAveragerOpen(true);
+    }
+
+    const handleEditStringSet = (stringSet: StringSet) => {
+        const newStringSets = selectedInstrument.stringSets.map((strSet: StringSet) => {
+            if (strSet.id === stringSet.id){
+                return stringSet;
+            } else {
+                return strSet;
+            }
+        });
+        const updatedInstrument = {...selectedInstrument, stringSets: newStringSets};
+        onUpdateInstrument({stringSets: newStringSets}, updatedInstrument).catch((e) => console.error(e));
+    }
 
     // UI handlers
     const handleCloseTuningInput = () => {
@@ -409,6 +434,11 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
         setIsInstInputOpen(false);
         setIsEdit(false);
     };
+
+    const handleCloseStringAverage = () => {
+        setIsAveragerOpen(false);
+        setIsEdit(false);
+    }
 
     const handleEditInst = () => {
         setIsEdit(true);
@@ -495,7 +525,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                                     <label><strong>Tunings:</strong></label>
                                     <ul className="mb-3 justify-items-start">
                                         {selectedInstrument.tunings.map((tuning) => (
-                                            <li className="cursor-pointer" onClick={() => setSelectedTuning(tuning)}
+                                            <li className="cursor-pointer hover:text-indigo-400" onClick={() => setSelectedTuning(tuning)}
                                                 key={tuning.id}>{tuning.name}</li>
                                         ))}
                                     </ul>
@@ -643,14 +673,18 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
             <AverageStringSet
                 stringSet={avStringSet}
                 isOpen={isAveragerOpen}
-                onClose={() => setIsAveragerOpen(false)}
+                onClose={handleCloseStringAverage}
                 onSubmit={handleSubmitStringSet}
                 instrument={selectedInstrument}
+                isEdit={isEdit}
+                editStringSet={handleEditStringSet}
             />
             <StringSets
                 isOpen={isStringSetsOpen}
                 onClose={() => setIsStringSetsOpen(false)}
                 instrument={selectedInstrument}
+                onDelete={handleDeleteStringSet}
+                onEdit={handleOpenEditStringSet}
             />
             <DeleteConfirm
                 isOpen={isInstDeleteOpen}

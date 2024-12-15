@@ -128,7 +128,7 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultT
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
-            <div className="sm:max-w-md max-w-xs mx-auto px-8 pb-6 bg-gray-600 rounded-xl">
+            <div className="sm:max-w-md max-w-xs mx-auto px-8 pb-6">
                 {/*Title*/}
                 <h2 className="text-2xl font-bold mb-6">{titleText}</h2>
                 {/* Desktop Columns */}

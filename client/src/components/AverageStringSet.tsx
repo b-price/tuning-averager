@@ -11,6 +11,8 @@ interface AverageStringSetProps {
     onClose: () => void;
     onSubmit: (newStringSet: StringSet) => void;
     instrument?: Instrument;
+    isEdit: boolean;
+    editStringSet: (stringSet: StringSet) => void;
 }
 
 interface Note {
@@ -19,7 +21,7 @@ interface Note {
     noteValue: number;
 }
 
-const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, onClose, onSubmit, instrument }) => {
+const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, onClose, onSubmit, instrument, isEdit, editStringSet }) => {
     const [newGauges, setNewGauges] = useState<number[]>([]);
     const [woundStrings, setWoundStrings] = useState<boolean[]>([]);
     const [name, setName] = useState<string>('');
@@ -37,6 +39,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
         setWoundStrings(stringSet.woundStrings);
         setTensions(stringSet.tensions);
         setNoteObjects(stringSet.noteValues.map((noteValue) => convertToNote(noteValue)));
+        setName(stringSet.name);
     };
 
     const handleStringGaugeChange = (stringIndex: number, gauge: number) => {
@@ -110,13 +113,18 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
 
     const handleSubmit = () => {
         const newStringSet: StringSet = {
+            id: isEdit ? stringSet.id : Math.random().toString(36),
             name: name,
             gauges: newGauges,
             woundStrings: woundStrings,
             tensions: tensions,
             noteValues: stringSet.noteValues,
         };
-        onSubmit(newStringSet);
+        if (isEdit) {
+            editStringSet(newStringSet);
+        } else {
+            onSubmit(newStringSet);
+        }
         onClose();
     };
 
@@ -127,13 +135,13 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
                 {instrument ? <h3 className="text-md font-semibold mb-4">for {instrument.name}</h3> : <></>}
 
                 {/* String Set Name */}
-                <div className="mb-4">
+                <div className="mb-4 justify-items-center">
                     <label className="block text-sm font-medium">String Set Name</label>
                     <input
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        className="mt-1 block w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
                 </div>
 
@@ -215,8 +223,8 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
                         className="bg-indigo-600 text-white m-2 px-4 py-2 rounded-md hover:bg-indigo-500 focus:outline-none focus:ring-2"
                         onClick={handleSubmit}
                     >
-                        <span className="hidden md:block">Add String Set to Instrument</span>
-                        <span className="block md:hidden">Add Set to Inst.</span>
+                        <span className="hidden md:block">{isEdit ? "Edit String Set" : "Add String Set to Instrument"}</span>
+                        <span className="block md:hidden">{isEdit ? "Edit String Set" : "Add Set to Inst."}</span>
                     </button>
                 </div>
             </div>
