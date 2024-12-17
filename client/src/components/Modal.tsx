@@ -17,9 +17,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center overflow-y-auto" onClick={handleOverlayClick}>
-            <div className="bg-gray-600 rounded-lg shadow-lg p-1 max-h-screen overflow-y-auto">
+            <div className="modal rounded-lg shadow-lg p-1 max-h-screen overflow-y-auto">
                 <span className="grid justify-items-end items-start">
-                    <button onClick={onClose} className="bg-gray-600 text-xl py-1 px-3">✕</button>
+                    <button onClick={onClose} className="x-button text-xl py-1 px-3">✕</button>
                 </span>
                 {children}
             </div>

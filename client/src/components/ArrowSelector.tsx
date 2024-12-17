@@ -43,7 +43,7 @@ const ArrowSelector: React.FC<ArrowSelectorProps> = (props:ArrowSelectorProps) =
             {props.disabled? (
                 <div className="flex flex-col items-center w-full">
                     <button
-                        className="bg-gray-800 text-gray-400 font-bold py-0.5 px-4 rounded-b-none w-full"
+                        className="dark:bg-gray-800 dark:text-gray-400 font-bold py-0.5 px-4 rounded-b-none w-full"
                         disabled
                     >
                         {'▲'}
@@ -66,7 +66,7 @@ const ArrowSelector: React.FC<ArrowSelectorProps> = (props:ArrowSelectorProps) =
                 <div className="flex flex-col items-center w-full">
                     <button
                         onClick={decrementValue}
-                        className="bg-gray-800 hover:bg-gray-700 text-white font-bold py-0.5 px-4 rounded-b-none w-full"
+                        className="dark:bg-gray-800 bg-gray-400 dark:hover:bg-gray-700 hover:bg-gray-300 font-bold py-0.5 px-4 rounded-b-none w-full"
                     >
                         {'▲'}
                     </button>
@@ -74,11 +74,11 @@ const ArrowSelector: React.FC<ArrowSelectorProps> = (props:ArrowSelectorProps) =
                         type="text"
                         value={selectedValue}
                         readOnly
-                        className="bg-gray-700 text-white text-center font-semibold py-1.5 px-4 border-0 border-gray-600 rounded-none w-full"
+                        className="dark:bg-gray-700 bg-gray-200 text-center font-semibold py-1.5 px-4 border-0 border-gray-600 rounded-none w-full"
                     />
                     <button
                         onClick={incrementValue}
-                        className="bg-gray-800 hover:bg-gray-700 text-white font-bold py-0.5 px-4 rounded-t-none w-full"
+                        className="dark:bg-gray-800 bg-gray-400 dark:hover:bg-gray-700 hover:bg-gray-300 font-bold py-0.5 px-4 rounded-t-none w-full"
                     >
                         {'▼'}
                     </button>

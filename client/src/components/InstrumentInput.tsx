@@ -187,7 +187,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
 
                 <div className="grid sm:grid-cols-2 grid-cols-1 gap-4">
                     {/*Desktop Column 1*/}
-                    <div className="space-y-2">
+                    <div className="space-y-2 mx-2">
                         {/* Instrument Name */}
                         <div>
                             <label className="block text-sm font-medium">Instrument Name</label>
@@ -242,7 +242,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                         <div className="relative">
                             <button
                                 onClick={() => setIsTuningDropdownOpen(!isTuningDropdownOpen)}
-                                className="w-full mt-2 px-4 py-2 bg-blue-600 rounded-md hover:bg-blue-500"
+                                className="w-full mt-2 px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-500"
                             >
                                 Select Tunings
                             </button>
@@ -273,7 +273,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
 
 
                     {/*Desktop Column 2*/}
-                    <div className="space-y-2 mt-2">
+                    <div className="space-y-2 mt-2 mx-2">
                         {/* Average Tension Switch */}
                         <div className="flex items-center mt-4">
                             <label className="relative inline-flex items-center cursor-pointer">
@@ -284,7 +284,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                                     className="sr-only peer"
                                 />
                                 <div
-                                    className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-400 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                    className="w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                                 <span className="ml-3 text-sm font-medium">Use Average Tension</span>
                             </label>
                         </div>
@@ -313,8 +313,9 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                                             step="0.2"
                                             value={tension}
                                             onChange={(e) => handleTensionChange(index, parseFloat(e.target.value))}
-                                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            className="mt-1 block w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                         />
+                                        <p className="ml-1">lbs.</p>
                                     </div>
                                 ))}
                             </div>

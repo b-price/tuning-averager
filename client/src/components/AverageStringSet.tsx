@@ -130,7 +130,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
-            <div className="flex-col mx-auto sm:px-8 px-4 pb-6 bg-gray-600 rounded-xl md:max-w-xl">
+            <div className="flex-col mx-auto sm:px-8 px-4 pb-6 rounded-xl md:max-w-xl">
                 <h2 className="text-2xl font-bold mb-2 mt-0">Average String Set</h2>
                 {instrument ? <h3 className="text-md font-semibold mb-4">for {instrument.name}</h3> : <></>}
 

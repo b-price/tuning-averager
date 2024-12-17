@@ -3,9 +3,8 @@ import TuningConfirm from "./TuningConfirm.tsx";
 import TuningInput from "./TuningInput.tsx";
 import InstrumentInput from "./InstrumentInput.tsx";
 import {
-    DECIMAL_POINTS,
-    notes, presetInstruments,
-    presetTunings,
+    DECIMAL_POINTS, DEFAULT_INST, DEFAULT_TUNING,
+    notes,
     stringTypeFactors
 } from "../defaults.ts";
 import {Instrument, StringSet, Tuning, UserData} from "../../../types.ts";
@@ -43,15 +42,21 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
 
     const [tunings, setTunings] = useState<Tuning[]>([]);
     const [instruments, setInstruments] = useState<Instrument[]>([]);
-    const [selectedInstrument, setSelectedInstrument] = useState<Instrument>(instruments.length? instruments[0] : presetInstruments[0]);
-    const [selectedTuning, setSelectedTuning] = useState<Tuning>(instruments.length && instruments[0].tunings.length? instruments[0].tunings[0] : presetTunings[0]);
+    const [selectedInstrument, setSelectedInstrument] = useState<Instrument>(
+        instruments.length? instruments[0] : DEFAULT_INST
+    );
+    const [selectedTuning, setSelectedTuning] = useState<Tuning>(
+        instruments.length && instruments[0].tunings.length? instruments[0].tunings[0] : DEFAULT_TUNING
+    );
     const [message, setMessage] = useState<string>('');
     const [messageClass, setMessageClass] = useState<string>('text-blue-400');
     const [isTuningConfirmOpen, setIsTuningConfirmOpen] = useState(false);
     const [isTuningInputOpen, setIsTuningInputOpen] = useState(false);
     const [isInstInputOpen, setIsInstInputOpen] = useState(false);
     const [isAveragerOpen, setIsAveragerOpen] = useState(false);
-    const [avStringSet, setAvStringSet] = useState<StringSet>(instruments.length && instruments[0].stringSets.length? instruments[0].stringSets[0]: presetInstruments[0].stringSets[0]);
+    const [avStringSet, setAvStringSet] = useState<StringSet>(
+        instruments.length && instruments[0].stringSets.length? instruments[0].stringSets[0]: DEFAULT_INST.stringSets[0]
+    );
     //const [averageTuning, setAverageTuning] = useState<number[]>([]);
     //const [unitWeights, setUnitWeights] = useState<number[]>([]);
     const [isLoading, setIsLoading] = useState(false);

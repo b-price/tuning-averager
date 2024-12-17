@@ -61,6 +61,16 @@ button:disabled {
   border-color: transparent;
 }
 
+input, select {
+  border: 1px solid #ffffff;
+  background: #1a1a1a;
+}
+
+.modal, .x-button {
+  background-color: #4b5563;
+}
+
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -71,5 +81,12 @@ button:disabled {
   }
   button {
     background-color: #f9f9f9;
+  }
+  input, select {
+    border-color: #213547;
+    background: #ffffff;
+  }
+  .modal, .x-button {
+    background-color: #f0f0f0;
   }
 }

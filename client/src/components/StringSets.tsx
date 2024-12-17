@@ -20,12 +20,12 @@ const StringSets: React.FC<StringSetsProps> = ({ instrument, isOpen, onClose, on
                     {instrument ? <h3 className="text-md font-semibold mb-4">for {instrument.name}</h3> : <></>}
 
                     <div className="flex flex-col h-full justify-self-center">
-                        <table className="text-left table-auto min-w-max bg-gray-800">
+                        <table className="text-left table-auto min-w-max dark:bg-gray-800 bg-gray-200">
                             <tbody>
                                 {instrument.stringSets.map((set, index) => (
                                     <>
                                         {/*Name, Edit/Delete*/}
-                                        <tr key={set.name + index} className="border-x border-t">
+                                        <tr key={set.name + index} className="border-slate-700 dark:border-white border-x border-t">
                                             <td className="p-2" colSpan={set.gauges.length / 3}><strong>{set.name}</strong></td>
                                             <td className="p-2" colSpan={set.gauges.length / 3}>
                                                 <button
@@ -47,7 +47,7 @@ const StringSets: React.FC<StringSetsProps> = ({ instrument, isOpen, onClose, on
 
                                         {/*String Gauges*/}
                                         {set.gauges.length < 10 ?
-                                            <tr className="hover:bg-gray-700 border-x border-b mb-3">
+                                            <tr className="hover:bg-gray-300 dark:hover:bg-gray-700 border-slate-700 dark:border-white border-x border-b mb-3">
                                                 {set.gauges.map((gauge, index) => (
                                             <td
                                                 key={index}
@@ -61,7 +61,7 @@ const StringSets: React.FC<StringSetsProps> = ({ instrument, isOpen, onClose, on
                                                 {/*The case of a 12 string bass lol*/}
                                                 {instrument.type === "bass" && set.gauges.length === 12 ?
                                                     <>
-                                                        <tr className="hover:bg-gray-700 border-x mb-3">
+                                                        <tr className="hover:bg-gray-300 dark:hover:bg-gray-700 border-slate-700 dark:border-white border-x mb-3">
                                                             {set.gauges.map((gauge, index) => (
                                                                 index % 3 === 0 ?
                                                                     <td
@@ -73,7 +73,7 @@ const StringSets: React.FC<StringSetsProps> = ({ instrument, isOpen, onClose, on
                                                                     :
                                                                     <></>))}
                                                         </tr>
-                                                        <tr className="hover:bg-gray-700 border-x mb-3">
+                                                        <tr className="hover:bg-gray-300 dark:hover:bg-gray-700 border-slate-700 dark:border-white border-x mb-3">
                                                             {set.gauges.map((gauge, index) => (
                                                                 index % 3 === 1 ?
                                                                     <td
@@ -85,7 +85,7 @@ const StringSets: React.FC<StringSetsProps> = ({ instrument, isOpen, onClose, on
                                                                     :
                                                                     <></>))}
                                                         </tr>
-                                                        <tr className="hover:bg-gray-700 border-x border-b mb-3">
+                                                        <tr className="hover:bg-gray-300 dark:hover:bg-gray-700 border-slate-700 dark:border-white border-x border-b mb-3">
                                                             {set.gauges.map((gauge, index) => (
                                                                 index % 3 === 2 ?
                                                                     <td
@@ -101,7 +101,7 @@ const StringSets: React.FC<StringSetsProps> = ({ instrument, isOpen, onClose, on
                                                     :
                                                     <>
                                                         {/*Other 10+ String Instruments*/}
-                                                        <tr className="hover:bg-gray-700 border-x mb-3">
+                                                        <tr className="hover:bg-gray-300 dark:hover:bg-gray-700 border-slate-700 dark:border-white border-x mb-3">
                                                             {set.gauges.map((gauge, index) => (
                                                                 index % 2 === 0 ?
                                                                     <td
@@ -113,7 +113,7 @@ const StringSets: React.FC<StringSetsProps> = ({ instrument, isOpen, onClose, on
                                                                     :
                                                                     <></>))}
                                                         </tr>
-                                                        <tr className="hover:bg-gray-700 border-x border-b mb-3">
+                                                        <tr className="hover:bg-gray-300 dark:hover:bg-gray-700 border-slate-700 dark:border-white border-x border-b mb-3">
                                                             {set.gauges.map((gauge, index) => (
                                                                 index % 2 === 1 ?
                                                                     <td
