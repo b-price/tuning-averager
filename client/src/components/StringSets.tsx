@@ -1,6 +1,7 @@
 import Modal from './Modal';
 import {StringSet, Instrument} from '../../../types.ts';
 import React from "react";
+import {getPW} from "../utils/calculate.ts";
 
 interface StringSetsProps {
     instrument: Instrument;
@@ -23,6 +24,7 @@ const StringSets: React.FC<StringSetsProps> = ({ instrument, isOpen, onClose, on
                             <tbody>
                                 {instrument.stringSets.map((set, index) => (
                                     <>
+                                        {/*Name, Edit/Delete*/}
                                         <tr key={set.name + index} className="border-x border-t">
                                             <td className="p-2" colSpan={set.gauges.length / 3}><strong>{set.name}</strong></td>
                                             <td className="p-2" colSpan={set.gauges.length / 3}>
@@ -42,14 +44,92 @@ const StringSets: React.FC<StringSetsProps> = ({ instrument, isOpen, onClose, on
                                                 </button>
                                             </td>
                                         </tr>
-                                        <tr className="hover:bg-gray-700 border-x border-b mb-3">
-                                            {set.gauges.map((gauge, index) => (
-                                                <td key={index}
-                                                    className="p-2">{gauge}{set.woundStrings[index] ? "w" : "p"}</td>
-                                            ))}
-                                        </tr>
-                                    </>
 
+                                        {/*String Gauges*/}
+                                        {set.gauges.length < 10 ?
+                                            <tr className="hover:bg-gray-700 border-x border-b mb-3">
+                                                {set.gauges.map((gauge, index) => (
+                                            <td
+                                                key={index}
+                                                className="p-2 font-semibold"
+                                            >
+                                                {gauge}{getPW(gauge, set.woundStrings[index])}
+                                            </td>
+                                                ))} </tr> :
+                                            // Split the Table for 10+ Strings
+                                            <>
+                                                {/*The case of a 12 string bass lol*/}
+                                                {instrument.type === "bass" && set.gauges.length === 12 ?
+                                                    <>
+                                                        <tr className="hover:bg-gray-700 border-x mb-3">
+                                                            {set.gauges.map((gauge, index) => (
+                                                                index % 3 === 0 ?
+                                                                    <td
+                                                                        key={index}
+                                                                        className="p-2 font-semibold"
+                                                                    >
+                                                                        {gauge}{getPW(gauge, set.woundStrings[index])}
+                                                                    </td>
+                                                                    :
+                                                                    <></>))}
+                                                        </tr>
+                                                        <tr className="hover:bg-gray-700 border-x mb-3">
+                                                            {set.gauges.map((gauge, index) => (
+                                                                index % 3 === 1 ?
+                                                                    <td
+                                                                        key={index}
+                                                                        className="p-2 font-semibold"
+                                                                    >
+                                                                        {gauge}{getPW(gauge, set.woundStrings[index])}
+                                                                    </td>
+                                                                    :
+                                                                    <></>))}
+                                                        </tr>
+                                                        <tr className="hover:bg-gray-700 border-x border-b mb-3">
+                                                            {set.gauges.map((gauge, index) => (
+                                                                index % 3 === 2 ?
+                                                                    <td
+                                                                        key={index}
+                                                                        className="p-2 font-semibold"
+                                                                    >
+                                                                        {gauge}{getPW(gauge, set.woundStrings[index])}
+                                                                    </td>
+                                                                    :
+                                                                    <></>))}
+                                                        </tr>
+                                                    </>
+                                                    :
+                                                    <>
+                                                        {/*Other 10+ String Instruments*/}
+                                                        <tr className="hover:bg-gray-700 border-x mb-3">
+                                                            {set.gauges.map((gauge, index) => (
+                                                                index % 2 === 0 ?
+                                                                    <td
+                                                                        key={index}
+                                                                        className="p-2 font-semibold"
+                                                                    >
+                                                                        {gauge}{getPW(gauge, set.woundStrings[index])}
+                                                                    </td>
+                                                                    :
+                                                                    <></>))}
+                                                        </tr>
+                                                        <tr className="hover:bg-gray-700 border-x border-b mb-3">
+                                                            {set.gauges.map((gauge, index) => (
+                                                                index % 2 === 1 ?
+                                                                    <td
+                                                                        key={index}
+                                                                        className="p-2 font-semibold"
+                                                                    >
+                                                                        {gauge}{getPW(gauge, set.woundStrings[index])}
+                                                                    </td>
+                                                                    :
+                                                                    <></>))}
+                                                        </tr>
+                                                    </>
+                                                }
+                                            </>
+                                        }
+                                    </>
                                 ))}
                             </tbody>
                         </table>
@@ -60,3 +140,5 @@ const StringSets: React.FC<StringSetsProps> = ({ instrument, isOpen, onClose, on
     )
 }
 export default StringSets;
+
+

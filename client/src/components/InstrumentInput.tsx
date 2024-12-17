@@ -2,25 +2,26 @@ import React, { useState, useEffect, useRef } from 'react';
 import {Instrument, InstType, Tuning} from "../../../types.ts";
 import Modal from "./Modal.tsx";
 import {round} from "../utils/calculate.ts";
-import {DECIMAL_POINTS, defaultScales, defaultStrings} from "../defaults.ts";
+import {
+    DECIMAL_POINTS,
+    defaultScales,
+    defaultStrings,
+    INST_PRESETS,
+    SCALE_LENGTH_RANGE,
+    STRING_RANGE
+} from "../defaults.ts";
 
 const defaultState = {
     name: '',
     selectedTunings: [],
     scale: 25.5,
     targetTension: [],
-    type: 'guitar'
+    type: "guitar"
 }
 
 interface InstrumentInputProps {
     onSubmit: ( instrument: Instrument ) => void;
     tunings: Tuning[];
-    targetTensions: {
-        guitar: number[];
-        bass: number[];
-        other: number[];
-    };
-    stringRange: [number, number];
     isOpen: boolean;
     onClose: () => void;
     isEdit: boolean;
@@ -30,8 +31,6 @@ interface InstrumentInputProps {
 
 const InstrumentInput: React.FC<InstrumentInputProps> = ({
      onSubmit, tunings,
-     targetTensions,
-     stringRange,
      isOpen,
      onClose,
      isEdit,
@@ -40,7 +39,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
 }) => {
     const [name, setName] = useState(defaultState.name);
     const [selectedTunings, setSelectedTunings] = useState<Tuning[]>(defaultState.selectedTunings);
-    const [scale, setScale] = useState(defaultState.scale);
+    const [scale, setScaleInternal] = useState(defaultState.scale);
     const [targetTension, setTargetTension] = useState<number[]>(defaultState.targetTension);
     const [type, setType] = useState<InstType>('guitar');
     const [useAverageTension, setUseAverageTension] = useState(false);
@@ -52,10 +51,26 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
     const [buttonText, setButtonText] = useState('Submit');
 
     const setStrings = (value: number) => {
-        const [minStrings, maxStrings] = stringRange;
-        if (value >= minStrings && value <= maxStrings) {
+        if (value >= STRING_RANGE[0] && value <= STRING_RANGE[1]) {
             setStringsInternal(value);
         }
+    }
+
+    const setScale = (value: number) => {
+        if (value >= SCALE_LENGTH_RANGE[0] && value <= SCALE_LENGTH_RANGE[1]) {
+            setScaleInternal(value);
+        }
+    }
+
+    const resetFields = () => {
+        setName(defaultState.name);
+        setSelectedTunings(defaultState.selectedTunings);
+        setScale(defaultState.scale);
+        setStrings(defaultStrings.guitar);
+        setTargetTension(INST_PRESETS[0].tensions.slice(0, strings));
+        setType('guitar');
+        setTitleText('New Instrument');
+        setButtonText('Submit');
     }
 
     useEffect(() => {
@@ -68,38 +83,36 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
             setTitleText(`Editing ${editInstrument.name}`);
             setButtonText('Save Changes');
         } else {
-            setName(defaultState.name);
-            setSelectedTunings(defaultState.selectedTunings);
-            setScale(defaultState.scale);
-            setTargetTension(targetTensions[type].slice(0, strings));
-            setType('guitar');
-            setTitleText('New Instrument');
-            setButtonText('Submit');
+            resetFields();
         }
     }, [isEdit]);
 
     useEffect(() => {
         // Update default target tensions and average when strings or type change
-        const defaultTensions = targetTensions[type].slice(0, strings);
-        setTargetTension(defaultTensions);
-
-        if (useAverageTension && defaultTensions.length > 0) {
-            const avg = defaultTensions.reduce((a, b) => a + b, 0) / defaultTensions.length;
-            setAverageTension(avg);
+        const defaultTensions = INST_PRESETS.find((preset) => preset.instrument === type && preset.forStrings.includes(strings))?.tensions;
+        if (defaultTensions) {
+            setTargetTension(defaultTensions.slice(0, strings));
+            if (useAverageTension && defaultTensions.length > 0) {
+                const avg = defaultTensions.reduce((a, b) => a + b, 0) / defaultTensions.length;
+                setAverageTension(avg);
+            }
         }
         setSelectedTunings([])
-    }, [strings, type, targetTensions, useAverageTension]);
+    }, [strings, type, useAverageTension]);
 
     const handleTensionChange = (index: number, value: number) => {
-        setTargetTension((prevTensions) => {
-            const newTensions = [...prevTensions];
-            newTensions[index] = value;
-            return newTensions;
-        });
-        if (useAverageTension) {
-            const avg = targetTension.reduce((a, b) => a + b, 0) / targetTension.length;
-            setAverageTension(avg);
+        if (!isNaN(value) && value !== undefined) {
+            setTargetTension((prevTensions) => {
+                const newTensions = [...prevTensions];
+                newTensions[index] = value;
+                return newTensions;
+            });
+            if (useAverageTension) {
+                const avg = targetTension.reduce((a, b) => a + b, 0) / targetTension.length;
+                setAverageTension(avg);
+            }
         }
+
     };
 
     const handleTypeChange = (type: InstType) => {
@@ -142,6 +155,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
             onSubmit(instrument);
         }
         onClose();
+        resetFields();
     };
 
     // Close dropdown when clicking outside
@@ -219,6 +233,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                                 type="number"
                                 disabled={isEdit}
                                 value={scale}
+                                step={scale < 30 ? 0.25 : 1}
                                 onChange={(e) => setScale(parseFloat(e.target.value))}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             />
@@ -234,7 +249,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
 
                             {isTuningDropdownOpen && (
                                 <div ref={dropdownRef}
-                                     className="absolute mt-2 py-2 w-full bg-gray-500 border border-gray-300 rounded-md shadow-lg z-10">
+                                     className="mt-2 py-2 w-full bg-gray-500 border border-gray-300 rounded-md shadow-lg z-10">
                                     {
                                         getFilteredTunings().length > 0 ? (
                                             getFilteredTunings().map((tuning) => (

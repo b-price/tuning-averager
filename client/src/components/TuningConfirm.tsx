@@ -5,20 +5,20 @@ import { Tuning } from '../../../types.ts';
 interface TuningConfirmProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (selectedTuningNames: string[], wound3rd: boolean) => void;
+    onSubmit: (selectedTunings: Tuning[], wound3rd: boolean) => void;
     tunings?: Tuning[];
     defaultChecked?: boolean[];
     instrument?: string;
 }
 
 const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit, tunings, defaultChecked, instrument }) => {
-    const [selectedTunings, setSelectedTunings] = useState<string[]>([]);
+    const [selected, setSelected] = useState<boolean[]>(Array(tunings ? tunings.length : 1).fill(true));
     const [wound3rd, setWound3rd] = useState<boolean>(false);
 
     useEffect(() => {
         // Set the initial state based on the defaultChecked prop
         if (isOpen && tunings && tunings.length && defaultChecked && defaultChecked.length) {
-            setSelectedTunings(tunings.filter((_, index) => defaultChecked[index]).map(tuning => tuning.name));
+            setSelected(defaultChecked);
         }
     }, [isOpen, tunings, defaultChecked]);
 
@@ -27,26 +27,28 @@ const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit
     }
 
     const handleSubmit = () => {
+        const selectedTunings = tunings.filter((_, index) => selected[index]);
         onSubmit(selectedTunings, wound3rd);
         setWound3rd(false);
         onClose();
     };
 
-    const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>, tuningName: string) => {
-        setSelectedTunings(prev =>
-            event.target.checked
-                ? [...prev, tuningName]
-                : prev.filter(name => name !== tuningName)
-        );
+    const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>,index: number) => {
+        const newSelected = [...selected];
+        newSelected[index] = event.target.checked;
+        setSelected(newSelected);
     };
 
-    const handleLabelClick = (tuningName: string) => {
-        setSelectedTunings(prev =>
-            prev.includes(tuningName)
-                ? prev.filter(name => name !== tuningName)
-                : [...prev, tuningName]
-        );
+    const handleLabelClick = (index: number) => {
+        const newSelected = [...selected];
+        newSelected[index] = !newSelected[index];
+        setSelected(newSelected);
     };
+
+    const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newSelected = Array(selected.length).fill(event.target.checked);
+        setSelected(newSelected);
+    }
 
 
     return (
@@ -57,17 +59,28 @@ const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit
 
                 {/*Tunings*/}
                 <ul className="grid justify-items-start">
-                    {tunings.map(tuning => (
-                        <li key={tuning.name}>
+                    <li className="mb-3">
+                        <input
+                            type="checkbox"
+                            checked={selected.every((_, index) => selected[index])}
+                            onChange={(e) => handleSelectAll(e)}
+                            className="mr-2"
+                        />
+                        <label className="font-semibold">
+                            All/None
+                        </label>
+                    </li>
+                    {tunings.map((tuning, index) => (
+                        <li key={index}>
                             <input
                                 type="checkbox"
-                                checked={selectedTunings.includes(tuning.name)}
-                                onChange={(e) => handleCheckboxChange(e, tuning.name)}
+                                checked={selected[index]}
+                                onChange={(e) => handleCheckboxChange(e, index)}
                                 className="mr-2"
                             />
                             <label
                                 className="cursor-pointer"
-                                onClick={() => handleLabelClick(tuning.name)}
+                                onClick={() => handleLabelClick(index)}
                             >
                                 {tuning.name}
                             </label>

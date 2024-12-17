@@ -4,16 +4,13 @@ import TuningInput from "./TuningInput.tsx";
 import InstrumentInput from "./InstrumentInput.tsx";
 import {
     DECIMAL_POINTS,
-    defaultTensions,
-    defaultTunings,
     notes, presetInstruments,
     presetTunings,
-    stringRange,
     stringTypeFactors
 } from "../defaults.ts";
 import {Instrument, StringSet, Tuning, UserData} from "../../../types.ts";
 import {
-    capitalize,
+    capitalize, getPW,
     getUnitWeight,
     round,
     stringAverage,
@@ -356,8 +353,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
         }
     };
 
-    const handleSubmitGetAv = (selectedTuningNames: string[], wound3rd: boolean) => {
-        const selectedTunings: Tuning[] = selectedInstrument.tunings.filter((tuning) => selectedTuningNames.includes(tuning.name));
+    const handleSubmitGetAv = (selectedTunings: Tuning[], wound3rd: boolean) => {
         const avTuning = userData.settings.weightedMode ? stringAverage(selectedTunings) : stringAverageUnweighted(selectedTunings);
         console.log(avTuning)
         if (avTuning) {
@@ -539,7 +535,10 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                                         {selectedInstrument.stringSets.map((set, idx) => (
                                             <li key={idx}><em>{set.name}: </em>{set.gauges.map((gauge, index) => (
                                                 <span
-                                                    key={index}>{gauge}{!set.woundStrings[index] ? "p" : ""} {index < set.gauges.length - 1 ? "| " : ""} </span>
+                                                    key={index}
+                                                >
+                                                    {gauge}{getPW(gauge, set.woundStrings[index])} {index < set.gauges.length - 1 ? "| " : ""}
+                                                </span>
                                             ))}</li>
                                         ))}
                                     </ul>
@@ -651,7 +650,6 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
             <TuningInput
                 notes={notes}
                 presetTunings={tunings}
-                defaultTunings={defaultTunings}
                 onSubmit={onAddTuning}
                 isOpen={isTuningInputOpen}
                 onClose={handleCloseTuningInput}
@@ -663,8 +661,6 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 onSubmit={onAddInstrument}
                 onEdit={onUpdateInstrument}
                 tunings={tunings}
-                targetTensions={defaultTensions}
-                stringRange={stringRange}
                 isOpen={isInstInputOpen}
                 onClose={handleCloseInstInput}
                 isEdit={isEdit}

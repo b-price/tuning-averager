@@ -1,5 +1,5 @@
 import {Tuning} from "../../../types";
-import {notes} from "../defaults.ts";
+import {notes, PLAIN_CHAR, WOUND_CHAR, woundOverlap} from "../defaults.ts";
 
 export function tuningWeight(tuning: Tuning){
     let sum = 0;
@@ -86,7 +86,7 @@ export function convertToNoteValue(note: string){
 }
 
 export function convertToNote(noteValue: number){
-    if (noteValue <= 0 || noteValue >= notes.length){
+    if (noteValue < 0 || noteValue >= notes.length){
         return {note: 'invalid', cents: 0, noteValue: noteValue};
         //return 'invalid note';
     }
@@ -167,6 +167,14 @@ export const capitalize = (word: string) => {
 
 export const getCents = (noteValue: number) => {
     return Math.round(noteValue * 100) - (Math.round(noteValue) * 100);
+}
+
+export const getPW = (gauge: number, wound: boolean) => {
+    if (gauge >= woundOverlap[0] && gauge <= woundOverlap[1]) {
+        return wound ? WOUND_CHAR : PLAIN_CHAR;
+    } else {
+        return "";
+    }
 }
 /*
 To calculate the tension of a string in pounds use the formula below,

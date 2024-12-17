@@ -3,11 +3,11 @@ import ArrowSelector from './ArrowSelector.tsx';
 import {GuitarString, Tuning, Transpose, InstType} from "../../../types.ts";
 import Modal from "./Modal.tsx";
 import {capitalize} from "../utils/calculate.ts";
+import {defaultStrings, INST_PRESETS, VALID_STRINGS} from "../defaults.ts";
 
 interface TuningInputProps {
     notes: string[];
     presetTunings?: Tuning[];
-    defaultTunings: { guitar: GuitarString[], bass: GuitarString[], other: GuitarString[] };
     onSubmit: (tuning: Tuning) => void;
     isOpen: boolean;
     onClose: () => void;
@@ -16,8 +16,8 @@ interface TuningInputProps {
     onEdit: ( changes: object, tuning: Tuning ) => void;
 }
 
-const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultTunings, onSubmit, isOpen, onClose, isEdit, editTuning, onEdit}) => {
-    const [strings, setStrings] = useState<GuitarString[]>(defaultTunings.guitar.slice(0, -3));
+const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, onSubmit, isOpen, onClose, isEdit, editTuning, onEdit}) => {
+    const [strings, setStrings] = useState<GuitarString[]>(INST_PRESETS[0].tuning.strings.slice(0, 6));
     const [name, setName] = useState<string>('');
     const [type, setType] = useState<InstType>('guitar');
     const [stringCount, setStringCount] = useState<number>(6);
@@ -35,12 +35,7 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultT
             setTitleText(`Editing ${editTuning.name}`);
             setButtonText('Save Changes');
         } else {
-            setStrings(defaultTunings.guitar.slice(0, -3));
-            setName('');
-            setType('guitar');
-            setStringCount(6);
-            setTitleText('New Tuning');
-            setButtonText('Submit');
+            resetFields();
         }
         if (!presetTunings || !presetTunings.length){
             setTunings([])
@@ -48,6 +43,15 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultT
             setTunings(presetTunings);
         }
     }, [isEdit]);
+
+    const resetFields = () => {
+        setStrings(INST_PRESETS[0].tuning.strings.slice(0, 6));
+        setName('');
+        setType('guitar');
+        setStringCount(6);
+        setTitleText('New Tuning');
+        setButtonText('Submit');
+    }
 
     const handleNoteChange = (index: number, note: string | number) => {
         note = typeof note === 'number' ? note.toString() : note;
@@ -69,36 +73,25 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultT
             onSubmit(submittedTuning);
         }
         onClose();
+        resetFields();
     };
 
     const handleStringCountChange = (count: number | string, newType: InstType) => {
-        if (isEdit){
-            console.log('Cannot change string count');
-        } else {
-            count = typeof count === 'number' ? count : parseInt(count)
-            const newStrings = defaultTunings[newType].slice(0, count) || defaultTunings.guitar.slice(0, -3);
-            setTranspose({prev: 0, current: 0}); // Reset transpose when changing instrument
-            setStrings(newStrings);
-            setStringCount(count);
+        if (!isEdit){
+            const numCount = typeof count === 'number' ? count : parseInt(count);
+            const newStrings = INST_PRESETS.find((preset) => preset.instrument === newType && preset.forStrings.includes(numCount))?.tuning.strings.slice(0, numCount);
+            if (newStrings) {
+                setTranspose({prev: 0, current: 0});
+                setStrings(newStrings);
+                setStringCount(numCount);
+            }
         }
     };
 
     const handleTypeChange = (newType: InstType) => {
-        if (isEdit){
-            console.log('Cannot change instrument type');
-        } else {
+        if (!isEdit){
             setType(newType);
-            let standardAmount = 4;
-            switch (newType) {
-                case 'guitar':
-                    standardAmount = 6;
-                    break;
-                case "bass":
-                    standardAmount = 4;
-                    break;
-                default:
-            }
-            handleStringCountChange(standardAmount, newType);
+            handleStringCountChange(defaultStrings[newType], newType);
         }
     };
 
@@ -109,7 +102,7 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultT
             setType(selectedTuning.type);
             setStringCount(selectedTuning.strings.length);
             setName(selectedTuning.name);
-            setTranspose({prev: 0, current: 0}); // Reset transpose when loading a preset
+            setTranspose({prev: 0, current: 0});
         }
     };
 
@@ -153,12 +146,12 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, defaultT
                     {/* Column 2: String Count, Transpose, Instrument, Preset, Tuning Name */}
                     <div className="sm:col-span-2">
                         <div className="flex justify-between">
-                            {/* String Count/Transpose (labels on top) */}
+                            {/* String Count/Transpose */}
                             <div className="mb-4 flex-grow px-2 w-full sm:w-1/2">
                                 <label className="block text-sm font-medium mb-2">String Count</label>
                                 <ArrowSelector
                                     key={stringCount + 'S'}
-                                    options={[3, 4, 5, 6, 7, 8, 9]}
+                                    options={VALID_STRINGS}
                                     initialValue={stringCount}
                                     onChange={(count) => handleStringCountChange(count, type)}
                                     disabled={isEdit}

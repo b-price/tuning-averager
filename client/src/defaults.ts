@@ -1,4 +1,4 @@
-import {Instrument, Tuning, UserData} from "../../types.ts";
+import {Instrument, InstPreset, Tuning, UserData} from "../../types.ts";
 
 
 export const notes = [
@@ -14,9 +14,11 @@ export const notes = [
     'C9', 'C#9', 'D9', 'D#9', 'E9', 'F9', 'F#9', 'G9', 'G#9', 'A9', 'A#9', 'B9'
 ];
 
-const intStrings = Array.from({length: 200 - 13}, (_v, k) => k + 13)
+const intStrings = Array.from({length: 300 - 13}, (_v, k) => k + 13)
 
 export const STRING_GAUGES = [5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, ...intStrings]
+
+export const SCALE_LENGTH_RANGE = [10, 100]
 
 export const presetTunings: Tuning[] = [
     {
@@ -225,6 +227,34 @@ export const defaultTunings = {
         { note: 'B1', noteValue: notes.indexOf('B1') },
         { note: 'F#1', noteValue: notes.indexOf('F#1') },
         { note: 'C#1', noteValue: notes.indexOf('C#1') },
+        { note: 'G#0', noteValue: notes.indexOf('G#0') },
+        { note: 'D#0', noteValue: notes.indexOf('D#0') },
+    ],
+    guitar_12: [
+        { note: 'E4', noteValue: notes.indexOf('E4') },
+        { note: 'E4', noteValue: notes.indexOf('E4') },
+        { note: 'B3', noteValue: notes.indexOf('B3') },
+        { note: 'B3', noteValue: notes.indexOf('B3') },
+        { note: 'G3', noteValue: notes.indexOf('G3') },
+        { note: 'G4', noteValue: notes.indexOf('G4') },
+        { note: 'D3', noteValue: notes.indexOf('D3') },
+        { note: 'D4', noteValue: notes.indexOf('D4') },
+        { note: 'A2', noteValue: notes.indexOf('A2') },
+        { note: 'A3', noteValue: notes.indexOf('A3') },
+        { note: 'E2', noteValue: notes.indexOf('E2') },
+        { note: 'E3', noteValue: notes.indexOf('E3') },
+    ],
+    guitar_10: [
+        { note: 'E4', noteValue: notes.indexOf('E4') },
+        { note: 'E4', noteValue: notes.indexOf('E4') },
+        { note: 'B3', noteValue: notes.indexOf('B3') },
+        { note: 'B3', noteValue: notes.indexOf('B3') },
+        { note: 'G3', noteValue: notes.indexOf('G3') },
+        { note: 'G4', noteValue: notes.indexOf('G4') },
+        { note: 'D3', noteValue: notes.indexOf('D3') },
+        { note: 'D4', noteValue: notes.indexOf('D4') },
+        { note: 'A2', noteValue: notes.indexOf('A2') },
+        { note: 'E2', noteValue: notes.indexOf('E2') },
     ],
     bass: [
         { note: 'G2', noteValue: notes.indexOf('G2') },
@@ -235,12 +265,113 @@ export const defaultTunings = {
         { note: 'F#0', noteValue: notes.indexOf('F#0') },
         { note: 'C#0', noteValue: notes.indexOf('C#0') },
     ],
+    bass_6: [
+        { note: 'C3', noteValue: notes.indexOf('C3') },
+        { note: 'G2', noteValue: notes.indexOf('G2') },
+        { note: 'D2', noteValue: notes.indexOf('D2') },
+        { note: 'A1', noteValue: notes.indexOf('A1') },
+        { note: 'E1', noteValue: notes.indexOf('E1') },
+        { note: 'B0', noteValue: notes.indexOf('B0') },
+    ],
+    bass_7: [
+        { note: 'F#3', noteValue: notes.indexOf('F#3') },
+        { note: 'C3', noteValue: notes.indexOf('C3') },
+        { note: 'G2', noteValue: notes.indexOf('G2') },
+        { note: 'D2', noteValue: notes.indexOf('D2') },
+        { note: 'A1', noteValue: notes.indexOf('A1') },
+        { note: 'E1', noteValue: notes.indexOf('E1') },
+        { note: 'B0', noteValue: notes.indexOf('B0') },
+    ],
+    bass_8: [
+        { note: 'G2', noteValue: notes.indexOf('G2') },
+        { note: 'G3', noteValue: notes.indexOf('G3') },
+        { note: 'D2', noteValue: notes.indexOf('D2') },
+        { note: 'D3', noteValue: notes.indexOf('D3') },
+        { note: 'A1', noteValue: notes.indexOf('A1') },
+        { note: 'A2', noteValue: notes.indexOf('A2') },
+        { note: 'E1', noteValue: notes.indexOf('E1') },
+        { note: 'E2', noteValue: notes.indexOf('E2') },
+        { note: 'B0', noteValue: notes.indexOf('B0') },
+        { note: 'B1', noteValue: notes.indexOf('B1') },
+    ],
+    bass_9: [
+        { note: 'B3', noteValue: notes.indexOf('B3') },
+        { note: 'F#3', noteValue: notes.indexOf('F#3') },
+        { note: 'C3', noteValue: notes.indexOf('C3') },
+        { note: 'G2', noteValue: notes.indexOf('G2') },
+        { note: 'D2', noteValue: notes.indexOf('D2') },
+        { note: 'A1', noteValue: notes.indexOf('A1') },
+        { note: 'E1', noteValue: notes.indexOf('E1') },
+        { note: 'B0', noteValue: notes.indexOf('B0') },
+        { note: 'F#0', noteValue: notes.indexOf('F#0') },
+        { note: 'C#0', noteValue: notes.indexOf('C#0') },
+        { note: 'C#0', noteValue: notes.indexOf('C#0') },
+    ],
+    bass_12: [
+        { note: 'G2', noteValue: notes.indexOf('G2') },
+        { note: 'G3', noteValue: notes.indexOf('G3') },
+        { note: 'G3', noteValue: notes.indexOf('G3') },
+        { note: 'D2', noteValue: notes.indexOf('D2') },
+        { note: 'D3', noteValue: notes.indexOf('D3') },
+        { note: 'D3', noteValue: notes.indexOf('D3') },
+        { note: 'A1', noteValue: notes.indexOf('A1') },
+        { note: 'A2', noteValue: notes.indexOf('A2') },
+        { note: 'A2', noteValue: notes.indexOf('A2') },
+        { note: 'E1', noteValue: notes.indexOf('E1') },
+        { note: 'E2', noteValue: notes.indexOf('E2') },
+        { note: 'E2', noteValue: notes.indexOf('E2') },
+    ],
     other: [
         { note: 'A4', noteValue: notes.indexOf('A4') },
         { note: 'E4', noteValue: notes.indexOf('E4') },
         { note: 'C4', noteValue: notes.indexOf('C4') },
         { note: 'G4', noteValue: notes.indexOf('G4') },
-    ]
+    ],
+    other_ukulele: [
+        { note: 'A4', noteValue: notes.indexOf('A4') },
+        { note: 'E4', noteValue: notes.indexOf('E4') },
+        { note: 'C4', noteValue: notes.indexOf('C4') },
+        { note: 'G4', noteValue: notes.indexOf('G4') },
+    ],
+    other_banjo: [
+        { note: 'D4', noteValue: notes.indexOf('D4') },
+        { note: 'B3', noteValue: notes.indexOf('B3') },
+        { note: 'G3', noteValue: notes.indexOf('G3') },
+        { note: 'D3', noteValue: notes.indexOf('D3') },
+        { note: 'G4', noteValue: notes.indexOf('G4') },
+        { note: 'G4', noteValue: notes.indexOf('G4') },
+        { note: 'D3', noteValue: notes.indexOf('D3') },
+        { note: 'D3', noteValue: notes.indexOf('D3') },
+        { note: 'G2', noteValue: notes.indexOf('G2') },
+        { note: 'G3', noteValue: notes.indexOf('G3') },
+        { note: 'G4', noteValue: notes.indexOf('G4') },
+    ],
+    other_mandolin: [
+        { note: 'E5', noteValue: notes.indexOf('E5') },
+        { note: 'E5', noteValue: notes.indexOf('E5') },
+        { note: 'A4', noteValue: notes.indexOf('A4') },
+        { note: 'A4', noteValue: notes.indexOf('A4') },
+        { note: 'D4', noteValue: notes.indexOf('D4') },
+        { note: 'D4', noteValue: notes.indexOf('D4') },
+        { note: 'G3', noteValue: notes.indexOf('G3') },
+        { note: 'G3', noteValue: notes.indexOf('G3') },
+        { note: 'C3', noteValue: notes.indexOf('C3') },
+        { note: 'C3', noteValue: notes.indexOf('C3') },
+        { note: 'F2', noteValue: notes.indexOf('F2') },
+        { note: 'F2', noteValue: notes.indexOf('F2') },
+    ],
+    other_pedalsteel: [
+        { note: 'F#4', noteValue: notes.indexOf('F#4') },
+        { note: 'D#4', noteValue: notes.indexOf('D#4') },
+        { note: 'G#4', noteValue: notes.indexOf('G#4') },
+        { note: 'E4', noteValue: notes.indexOf('E4') },
+        { note: 'B3', noteValue: notes.indexOf('B3') },
+        { note: 'G#3', noteValue: notes.indexOf('G#3') },
+        { note: 'F#3', noteValue: notes.indexOf('F#3') },
+        { note: 'E3', noteValue: notes.indexOf('E3') },
+        { note: 'D3', noteValue: notes.indexOf('D3') },
+        { note: 'B2', noteValue: notes.indexOf('B2') },
+    ],
 };
 
 export const defaultTensions = {
@@ -249,9 +380,13 @@ export const defaultTensions = {
     other: [7.5, 5.9, 5.5, 6.4, 6, 6, 6, 6, 6],
 }
 
-export const stringRange: [number, number] = [3, 9]
+export const STRING_RANGE = [1, 12]
+export const VALID_STRINGS = Array.from({length: STRING_RANGE[1] + 1 - STRING_RANGE[0]}, (_v, k) => k + STRING_RANGE[0])
 
-export const woundOverlap = [18, 22]
+export const woundOverlap = [18, 24]
+
+export const PLAIN_CHAR = 'p'
+export const WOUND_CHAR = 'w'
 
 export const stringTypeFactors = {
     guitar: {
@@ -298,7 +433,7 @@ export const defaultScales = {
     other: 13
 }
 
-export const TENSION_PRESETS = {
+export const TENSION_PRESETS_OLD = {
     guitar_2550_E_46: [16.2, 15.4, 16.6, 18.4, 19.0, 16.9],
     guitar_2550_E_42: [13.1, 11.0, 14.7, 15.7, 15.5, 14.4],
     guitar_2550_E_50: [19.6, 17.8, 18.6, 21.1, 21.0, 19.0],
@@ -319,4 +454,213 @@ export const TENSION_PRESETS = {
     guitar_3000_E_84: [27.4, 30.0, 30.6, 27.7, 25.6, 19.8],
     banjo_2625_G_11: [16.5, 13.9, 10.3, 14.1, 16.4],
     mandolin_1387_G_36: [23.2, 23.2, 19.3, 19.3, 26.5, 26.5, 20.2, 20.2],
+    guitar_3000_G_95: [16.2, 15.4, 17.5, 21.5, 35.0, 38.0]
 }
+
+export const INST_PRESETS: InstPreset[] = [
+    {
+        name: "Guitar 25.5 10-46 E",
+        instrument: "guitar",
+        scale: 25.5,
+        forStrings: [1, 2, 3, 4, 5, 6, 7, 8, 9, 11],
+        tensions: [16.2, 15.4, 16.6, 18.4, 19.0, 16.9, 15.8, 13.9, 13.9, 13.9, 13.9],
+        tuning: {
+            name: "E Standard",
+            type: "guitar",
+            strings: defaultTunings.guitar
+        }
+    },
+    {
+        name: "Guitar 25.5 10-46 E 12",
+        instrument: "guitar",
+        scale: 25.5,
+        forStrings: [12],
+        tensions: [16.2, 16.2, 15.4, 15.4, 16.6, 14.7, 18.4, 18.5, 19.0, 23.4, 16.9, 23.2],
+        tuning: {
+            name: "E Standard",
+            type: "guitar",
+            strings: defaultTunings.guitar_12
+        }
+    },
+    {
+        name: "Guitar 25.5 10-46 E 10",
+        instrument: "guitar",
+        scale: 25.5,
+        forStrings: [10],
+        tensions: [16.2, 16.2, 15.4, 15.4, 16.6, 14.7, 18.4, 18.5, 19.0, 16.9],
+        tuning: {
+            name: "E Standard",
+            type: "guitar",
+            strings: defaultTunings.guitar_10
+        }
+    },
+    {
+        name: "Guitar 24.75 10-46 E",
+        instrument: "guitar",
+        scale: 24.75,
+        forStrings: [3, 4, 5, 6, 7, 8, 9],
+        tensions: [15.3, 14.5, 15.6, 17.4, 17.9, 15.9],
+        tuning: {
+            name: "E Standard",
+            type: "guitar",
+            strings: defaultTunings.guitar
+        }
+    },
+    {
+        name: "Guitar 25.5 9-42 E",
+        instrument: "guitar",
+        scale: 25.5,
+        forStrings: [3, 4, 5, 6, 7, 8, 9],
+        tensions: [13.1, 11.0, 14.7, 15.7, 15.5, 14.4],
+        tuning: {
+            name: "E Standard",
+            type: "guitar",
+            strings: defaultTunings.guitar
+        }
+    },
+    {
+        name: "Guitar 24.75 9-42 E",
+        instrument: "guitar",
+        scale: 24.75,
+        forStrings: [3, 4, 5, 6, 7, 8, 9],
+        tensions: [12.4, 10.4, 13.8, 14.8, 14.6, 13.5],
+        tuning: {
+            name: "E Standard",
+            type: "guitar",
+            strings: defaultTunings.guitar
+        }
+    },
+    {
+        name: "Guitar 24.75 9-42 E",
+        instrument: "guitar",
+        scale: 24.75,
+        forStrings: [3, 4, 5, 6, 7, 8, 9],
+        tensions: [12.4, 10.4, 13.8, 14.8, 14.6, 13.5],
+        tuning: {
+            name: "E Standard",
+            type: "guitar",
+            strings: defaultTunings.guitar
+        }
+    },
+    {
+        name: "Bass 34 105 E",
+        instrument: "bass",
+        scale: 34,
+        forStrings: [1, 2, 3, 4, 5],
+        tensions: [42.5, 48.4, 40.1, 34.7, 32.1],
+        tuning: {
+            name: "E Standard",
+            type: "bass",
+            strings: defaultTunings.bass
+        }
+    },
+    {
+        name: "Bass 34 105 E 6",
+        instrument: "bass",
+        scale: 34,
+        forStrings: [6],
+        tensions: [39.0, 42.5, 48.4, 40.1, 34.7, 32.1],
+        tuning: {
+            name: "E Standard",
+            type: "bass",
+            strings: defaultTunings.bass_6
+        }
+    },
+    {
+        name: "Bass 34 105 E 7",
+        instrument: "bass",
+        scale: 34,
+        forStrings: [7],
+        tensions: [39.0, 39.0, 42.5, 48.4, 40.1, 34.7, 32.1],
+        tuning: {
+            name: "E Standard",
+            type: "bass",
+            strings: defaultTunings.bass_7
+        }
+    },
+    {
+        name: "Bass 34 100 E 8",
+        instrument: "bass",
+        scale: 34,
+        forStrings: [8, 10],
+        tensions: [42.5, 33.0, 48.4, 37.5, 40.1, 40.8, 34.7, 35.6, 32.1, 36.1],
+        tuning: {
+            name: "E Standard",
+            type: "bass",
+            strings: defaultTunings.bass_8
+        }
+    },
+    {
+        name: "Bass 34 105 E 9",
+        instrument: "bass",
+        scale: 34,
+        forStrings: [9, 11],
+        tensions: [30, 39.0, 39.0, 42.5, 48.4, 40.1, 34.7, 32.1, 30, 25, 25],
+        tuning: {
+            name: "E Standard",
+            type: "bass",
+            strings: defaultTunings.bass_9
+        }
+    },
+    {
+        name: "Bass 34 100 E 12",
+        instrument: "bass",
+        scale: 34,
+        forStrings: [12],
+        tensions: [42.5, 33.0, 33.0, 48.4, 37.5, 37.5, 40.1, 40.8, 40.8, 34.7, 35.6, 35.6, 32.1, 36.1, 36.1],
+        tuning: {
+            name: "E Standard",
+            type: "bass",
+            strings: defaultTunings.bass_12
+        }
+    },
+    {
+        name: "Banjo 11 G 5",
+        instrument: "other",
+        scale: 26.25,
+        forStrings: [5, 6, 7, 9, 11],
+        tensions: [16.5, 13.9, 10.3, 14.1, 16.4, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0],
+        tuning: {
+            name: "Banjo G",
+            type: "other",
+            strings: defaultTunings.other_banjo
+        }
+    },
+    {
+        name: "Mandolin 13 G 36",
+        instrument: "other",
+        scale: 13.875,
+        forStrings: [8, 12],
+        tensions: [23.2, 23.2, 19.3, 19.3, 26.5, 26.5, 20.2, 20.2, 20.0, 20.0, 20.0, 20.0],
+        tuning: {
+            name: "Mandolin",
+            type: "other",
+            strings: defaultTunings.other_mandolin
+        }
+    },
+    {
+        name: "Pedal Steel 24.25 B9 10",
+        instrument: "other",
+        scale: 24.25,
+        forStrings: [10],
+        tensions: [31.2, 29.4, 28.2, 28.8, 23.8, 23.3, 26.3, 28.1, 27.6, 23.8],
+        tuning: {
+            name: "Pedal Steel E9",
+            type: "other",
+            strings: defaultTunings.other_pedalsteel
+        }
+    },
+    {
+        name: "Ukulele Soprano G",
+        instrument: "other",
+        scale: 13,
+        forStrings: [1, 2, 3, 4],
+        tensions: [7.5, 5.9, 5.5, 6.4],
+        tuning: {
+            name: "Ukulele Soprano G",
+            type: "other",
+            strings: defaultTunings.other_ukulele
+        }
+    },
+
+]
