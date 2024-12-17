@@ -10,6 +10,7 @@ import {
     SCALE_LENGTH_RANGE,
     STRING_RANGE
 } from "../defaults.ts";
+import ToggleSwitch from "./ToggleSwitch.tsx";
 
 const defaultState = {
     name: '',
@@ -89,9 +90,9 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
 
     useEffect(() => {
         // Update default target tensions and average when strings or type change
-        const defaultTensions = INST_PRESETS.find((preset) => preset.instrument === type && preset.forStrings.includes(strings))?.tensions;
+        const defaultTensions = INST_PRESETS.find((preset) => preset.instrument === type && preset.forStrings.includes(strings))?.tensions.slice(0, strings);
         if (defaultTensions) {
-            setTargetTension(defaultTensions.slice(0, strings));
+            setTargetTension(defaultTensions);
             if (useAverageTension && defaultTensions.length > 0) {
                 const avg = defaultTensions.reduce((a, b) => a + b, 0) / defaultTensions.length;
                 setAverageTension(avg);
@@ -274,20 +275,13 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
 
                     {/*Desktop Column 2*/}
                     <div className="space-y-2 mt-2 mx-2">
-                        {/* Average Tension Switch */}
-                        <div className="flex items-center mt-4">
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={useAverageTension}
-                                    onChange={(e) => setUseAverageTension(e.target.checked)}
-                                    className="sr-only peer"
-                                />
-                                <div
-                                    className="w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                <span className="ml-3 text-sm font-medium">Use Average Tension</span>
-                            </label>
-                        </div>
+                        <ToggleSwitch
+                            checked={useAverageTension}
+                            onChange={(e) => setUseAverageTension(e.target.checked)}
+                        >
+                            <span className="ml-3 text-sm font-medium">Use Average Tension</span>
+                        </ToggleSwitch>
+
                         {/* Target Tension Inputs */}
                         {useAverageTension ? (
                             <div>

@@ -1,4 +1,4 @@
-import {Instrument, InstPreset, Tuning, UserData} from "../../types.ts";
+import {InstPreset} from "../types";
 
 export const notes = [
     'C0', 'C#0', 'D0', 'D#0', 'E0', 'F0', 'F#0', 'G0', 'G#0', 'A0', 'A#0', 'B0',
@@ -13,75 +13,7 @@ export const notes = [
     'C9', 'C#9', 'D9', 'D#9', 'E9', 'F9', 'F#9', 'G9', 'G#9', 'A9', 'A#9', 'B9'
 ];
 
-export const MAX_STRING_GAUGE = 300
-const intStrings = Array.from({length: MAX_STRING_GAUGE + 1 - 13}, (_v, k) => k + 13)
-export const STRING_GAUGES = [5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, ...intStrings]
-
-export const SCALE_LENGTH_RANGE = [10, 100]
-
-export const DEFAULT_TUNING: Tuning = {
-    id: '0',
-    name: 'E Standard',
-    strings: [
-        { note: 'E4', noteValue: notes.indexOf('E4') },
-        { note: 'B3', noteValue: notes.indexOf('B3') },
-        { note: 'G3', noteValue: notes.indexOf('G3') },
-        { note: 'D3', noteValue: notes.indexOf('D3') },
-        { note: 'A2', noteValue: notes.indexOf('A2') },
-        { note: 'E2', noteValue: notes.indexOf('E2') },
-    ],
-    type: 'guitar',
-}
-
-
-export const DEFAULT_INST: Instrument = {
-    id: '0',
-    name: 'Stratocaster',
-    strings: 6,
-    tunings: [
-        {
-            id: '0',
-            name: 'E Standard',
-            strings: [
-                { note: 'E4', noteValue: 52 },
-                { note: 'B3', noteValue: 47 },
-                { note: 'G3', noteValue: 43 },
-                { note: 'D3', noteValue: 38 },
-                { note: 'A2', noteValue: 33 },
-                { note: 'E2', noteValue: 28 },
-            ],
-            type: 'guitar',
-        },
-        {
-            id: '2',
-            name: 'DADGAD',
-            strings: [
-                { note: 'D4', noteValue: 50 },
-                { note: 'A3', noteValue: 45 },
-                { note: 'G3', noteValue: 43 },
-                { note: 'D3', noteValue: 38 },
-                { note: 'A2', noteValue: 33 },
-                { note: 'D2', noteValue: 26 },
-            ],
-            type: 'guitar',
-        },
-    ],
-    scale: 25.5,
-    targetTension: [16.2, 15.4, 16.6, 18.4, 19, 16.9],
-    type: 'guitar',
-    stringSets: [
-        {
-            id: '0',
-            name: '10-46',
-            gauges: [10, 13, 17, 26, 36, 46],
-            woundStrings: [false, false, false, true, true, true],
-            tensions: [16.2, 15.4, 16.6, 18.4, 19, 16.9],
-            noteValues: [28, 33, 38, 43, 47, 53]
-        },
-    ]
-}
-
-export const defaultTunings = {
+const defaultTunings = {
     guitar: [
         { note: 'E4', noteValue: notes.indexOf('E4') },
         { note: 'B3', noteValue: notes.indexOf('B3') },
@@ -239,78 +171,7 @@ export const defaultTunings = {
     ],
 };
 
-export const STRING_RANGE = [1, 12]
-export const VALID_STRINGS = Array.from({length: STRING_RANGE[1] + 1 - STRING_RANGE[0]}, (_v, k) => k + STRING_RANGE[0])
-
-export const woundOverlap = [18, 24]
-
-export const PLAIN_CHAR = 'p'
-export const WOUND_CHAR = 'w'
-
-export const stringTypeFactors = {
-    guitar: {
-        plain: {coeff: 2.215, power: 2},
-        wound: {coeff: 2.07, power: 1.97},
-    },
-    bass: {
-        plain: {coeff: 2.939, power: 1.89},
-        wound: {coeff: 2.939, power: 1.89},
-    },
-    other: {
-        plain: {coeff: 2.215, power: 2},
-        wound: {coeff: 2.215, power: 2},
-    },
-}
-
-export const serverURL = 'http://localhost:8080';
-
-export const DECIMAL_POINTS = 2
-
-export const defaultSettings = {
-    weightedMode: true,
-    darkMode: false,
-    stringCoeff: 0,
-    stringPower: 0,
-    useOSTheme: true,
-}
-
-export const defaultStrings = {
-    guitar: 6,
-    bass: 4,
-    other: 4
-}
-
-export const defaultScales = {
-    guitar: 25.5,
-    bass: 34,
-    other: 13
-}
-
-export const TENSION_PRESETS_OLD = {
-    guitar_2550_E_46: [16.2, 15.4, 16.6, 18.4, 19.0, 16.9],
-    guitar_2550_E_42: [13.1, 11.0, 14.7, 15.7, 15.5, 14.4],
-    guitar_2550_E_50: [19.6, 17.8, 18.6, 21.1, 21.0, 19.0],
-    guitar_2550_E_54: [23.4, 23.3, 22.9, 27.6, 25.6, 23.6],
-    guitar_2475_E_46: [15.3, 14.5, 15.6, 17.4, 17.9, 15.9],
-    guitar_2475_E_42: [12.4, 10.4, 13.8, 14.8, 14.6, 13.5],
-    guitar_2475_E_50: [18.5, 16.8, 17.5, 19.9, 19.7, 17.9],
-    guitar_2475_E_54: [22.0, 22.0, 21.6, 26.0, 24.1, 22.2],
-    guitar_2400_E_54: [20.7, 20.6, 20.3, 24.5, 22.7, 20.9],
-    guitar_2400_E_46: [14.4, 13.6, 14.7, 16.3, 16.9, 15.0],
-    bass_3400_E_105: [50.3, 55.6, 45.3, 38.1],
-    bass_3400_E_100: [42.5, 48.4, 40.1, 34.7],
-    bass5_3400_B_135: [50.3, 55.6, 45.3, 38.1, 35.0],
-    bass5_3400_B_130: [42.5, 48.4, 40.1, 34.7, 32.1],
-    bass6_3400_BC_130: [39.0, 42.5, 48.4, 40.1, 34.7, 32.1],
-    bass_3000_E_105: [39.2, 43.3, 35.3, 29.6],
-    bass_3200_E_105: [44.6, 49.3, 40.2, 33.7],
-    guitar_3000_E_84: [27.4, 30.0, 30.6, 27.7, 25.6, 19.8],
-    banjo_2625_G_11: [16.5, 13.9, 10.3, 14.1, 16.4],
-    mandolin_1387_G_36: [23.2, 23.2, 19.3, 19.3, 26.5, 26.5, 20.2, 20.2],
-    guitar_3000_G_95: [16.2, 15.4, 17.5, 21.5, 35.0, 38.0]
-}
-
-export const INST_PRESETS: InstPreset[] = [
+export const INST_PRESETS_SERVER: InstPreset[] = [
     {
         name: "Guitar 25.5 10-46 E",
         instrument: "guitar",
@@ -467,60 +328,4 @@ export const INST_PRESETS: InstPreset[] = [
             strings: defaultTunings.other_ukulele
         }
     },
-    {
-        name: "Guitar 24.75 10-46 E",
-        instrument: "guitar",
-        scale: 24.75,
-        forStrings: [3, 4, 5, 6, 7, 8, 9],
-        tensions: [15.3, 14.5, 15.6, 17.4, 17.9, 15.9],
-        tuning: {
-            name: "E Standard",
-            type: "guitar",
-            strings: defaultTunings.guitar
-        }
-    },
-    {
-        name: "Guitar 25.5 9-42 E",
-        instrument: "guitar",
-        scale: 25.5,
-        forStrings: [3, 4, 5, 6, 7, 8, 9],
-        tensions: [13.1, 11.0, 14.7, 15.7, 15.5, 14.4],
-        tuning: {
-            name: "E Standard",
-            type: "guitar",
-            strings: defaultTunings.guitar
-        }
-    },
-    {
-        name: "Guitar 24.75 9-42 E",
-        instrument: "guitar",
-        scale: 24.75,
-        forStrings: [3, 4, 5, 6, 7, 8, 9],
-        tensions: [12.4, 10.4, 13.8, 14.8, 14.6, 13.5],
-        tuning: {
-            name: "E Standard",
-            type: "guitar",
-            strings: defaultTunings.guitar
-        }
-    },
-    {
-        name: "Guitar 24.75 9-42 E",
-        instrument: "guitar",
-        scale: 24.75,
-        forStrings: [3, 4, 5, 6, 7, 8, 9],
-        tensions: [12.4, 10.4, 13.8, 14.8, 14.6, 13.5],
-        tuning: {
-            name: "E Standard",
-            type: "guitar",
-            strings: defaultTunings.guitar
-        }
-    },
 ]
-
-export const defaultUser: UserData = {
-    username: 'CoolGuy',
-    instruments: ['0', '1'],
-    tunings: ['0', '1', '2', '3', '4', '5', '6', '7', '8'],
-    instPresets: INST_PRESETS,
-    settings: defaultSettings
-}

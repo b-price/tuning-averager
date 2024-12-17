@@ -12,6 +12,10 @@ interface StringSetsProps {
 }
 
 const StringSets: React.FC<StringSetsProps> = ({ instrument, isOpen, onClose, onDelete, onEdit }) => {
+    if (!instrument || !instrument.stringSets) {
+        return null;
+    }
+
     return (
         <div>
             <Modal isOpen={isOpen} onClose={onClose}>
@@ -21,117 +25,122 @@ const StringSets: React.FC<StringSetsProps> = ({ instrument, isOpen, onClose, on
 
                     <div className="flex flex-col h-full justify-self-center">
                         <table className="text-left table-auto min-w-max dark:bg-gray-800 bg-gray-200">
-                            <tbody>
-                                {instrument.stringSets.map((set, index) => (
-                                    <>
-                                        {/*Name, Edit/Delete*/}
-                                        <tr key={set.name + index} className="border-slate-700 dark:border-white border-x border-t">
-                                            <td className="p-2" colSpan={set.gauges.length / 3}><strong>{set.name}</strong></td>
-                                            <td className="p-2" colSpan={set.gauges.length / 3}>
-                                                <button
-                                                    className="bg-gray-500 text-white text-sm px-3 py-1.5 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2"
-                                                    onClick={() => (onEdit(set))}
-                                                >
-                                                    Edit
-                                                </button>
-                                            </td>
-                                            <td className="p-2" colSpan={set.gauges.length / 3}>
-                                                <button
-                                                    className="bg-red-500 text-white text-sm px-3 py-1.5 rounded-md hover:bg-red-400 focus:outline-none focus:ring-2"
-                                                    onClick={() => (onDelete(set))}
-                                                >
-                                                    Delete
-                                                </button>
-                                            </td>
-                                        </tr>
-
-                                        {/*String Gauges*/}
-                                        {set.gauges.length < 10 ?
-                                            <tr className="hover:bg-gray-300 dark:hover:bg-gray-700 border-slate-700 dark:border-white border-x border-b mb-3">
-                                                {set.gauges.map((gauge, index) => (
-                                            <td
-                                                key={index}
-                                                className="p-2 font-semibold"
+                            {instrument.stringSets.map((set, index) => (
+                                <tbody key={set.name + index}>
+                                    {/*Name, Edit/Delete*/}
+                                    <tr key={set.name + index} className="border-slate-700 dark:border-white border-x border-t">
+                                        <td className="p-2" colSpan={set.gauges.length / 3}><strong>{set.name}</strong></td>
+                                        <td className="p-2" colSpan={set.gauges.length / 3}>
+                                            <button
+                                                className="bg-gray-500 text-white text-sm px-3 py-1.5 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2"
+                                                onClick={() => (onEdit(set))}
                                             >
-                                                {gauge}{getPW(gauge, set.woundStrings[index])}
-                                            </td>
-                                                ))} </tr> :
-                                            // Split the Table for 10+ Strings
-                                            <>
-                                                {/*The case of a 12 string bass lol*/}
-                                                {instrument.type === "bass" && set.gauges.length === 12 ?
-                                                    <>
-                                                        <tr className="hover:bg-gray-300 dark:hover:bg-gray-700 border-slate-700 dark:border-white border-x mb-3">
-                                                            {set.gauges.map((gauge, index) => (
-                                                                index % 3 === 0 ?
-                                                                    <td
-                                                                        key={index}
-                                                                        className="p-2 font-semibold"
-                                                                    >
-                                                                        {gauge}{getPW(gauge, set.woundStrings[index])}
-                                                                    </td>
-                                                                    :
-                                                                    <></>))}
-                                                        </tr>
-                                                        <tr className="hover:bg-gray-300 dark:hover:bg-gray-700 border-slate-700 dark:border-white border-x mb-3">
-                                                            {set.gauges.map((gauge, index) => (
-                                                                index % 3 === 1 ?
-                                                                    <td
-                                                                        key={index}
-                                                                        className="p-2 font-semibold"
-                                                                    >
-                                                                        {gauge}{getPW(gauge, set.woundStrings[index])}
-                                                                    </td>
-                                                                    :
-                                                                    <></>))}
-                                                        </tr>
-                                                        <tr className="hover:bg-gray-300 dark:hover:bg-gray-700 border-slate-700 dark:border-white border-x border-b mb-3">
-                                                            {set.gauges.map((gauge, index) => (
-                                                                index % 3 === 2 ?
-                                                                    <td
-                                                                        key={index}
-                                                                        className="p-2 font-semibold"
-                                                                    >
-                                                                        {gauge}{getPW(gauge, set.woundStrings[index])}
-                                                                    </td>
-                                                                    :
-                                                                    <></>))}
-                                                        </tr>
-                                                    </>
-                                                    :
-                                                    <>
-                                                        {/*Other 10+ String Instruments*/}
-                                                        <tr className="hover:bg-gray-300 dark:hover:bg-gray-700 border-slate-700 dark:border-white border-x mb-3">
-                                                            {set.gauges.map((gauge, index) => (
-                                                                index % 2 === 0 ?
-                                                                    <td
-                                                                        key={index}
-                                                                        className="p-2 font-semibold"
-                                                                    >
-                                                                        {gauge}{getPW(gauge, set.woundStrings[index])}
-                                                                    </td>
-                                                                    :
-                                                                    <></>))}
-                                                        </tr>
-                                                        <tr className="hover:bg-gray-300 dark:hover:bg-gray-700 border-slate-700 dark:border-white border-x border-b mb-3">
-                                                            {set.gauges.map((gauge, index) => (
-                                                                index % 2 === 1 ?
-                                                                    <td
-                                                                        key={index}
-                                                                        className="p-2 font-semibold"
-                                                                    >
-                                                                        {gauge}{getPW(gauge, set.woundStrings[index])}
-                                                                    </td>
-                                                                    :
-                                                                    <></>))}
-                                                        </tr>
-                                                    </>
-                                                }
-                                            </>
-                                        }
-                                    </>
-                                ))}
-                            </tbody>
+                                                Edit
+                                            </button>
+                                        </td>
+                                        <td className="p-2" colSpan={set.gauges.length / 3}>
+                                            <button
+                                                className="bg-red-500 text-white text-sm px-3 py-1.5 rounded-md hover:bg-red-400 focus:outline-none focus:ring-2"
+                                                onClick={() => (onDelete(set))}
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+
+                                    {/*String Gauges*/}
+                                    {set.gauges.length < 10 ?
+                                        <tr className="hover:bg-gray-300 dark:hover:bg-gray-700 border-slate-700 dark:border-white border-x border-b mb-3">
+                                            {set.gauges.map((gauge, index) => (
+                                                <td
+                                                    key={index}
+                                                    className="p-2 font-semibold"
+                                                >
+                                                    {gauge}{getPW(gauge, set.woundStrings[index])}
+                                                </td>
+                                            ))}
+                                        </tr>
+                                        :
+                                        // Split the Table for 10+ Strings
+                                        <>
+                                            {/*The case of a 12 string bass lol*/}
+                                            {instrument.type === "bass" && set.gauges.length === 12 ?
+                                                <>
+                                                    <tr className="hover:bg-gray-300 dark:hover:bg-gray-700 border-slate-700 dark:border-white border-x mb-3">
+                                                        {set.gauges.map((gauge, index) => (
+                                                            index % 3 === 0 ?
+                                                                <td
+                                                                    key={index}
+                                                                    className="p-2 font-semibold"
+                                                                >
+                                                                    {gauge}{getPW(gauge, set.woundStrings[index])}
+                                                                </td>
+                                                                :
+                                                                <></>
+                                                        ))}
+                                                    </tr>
+                                                    <tr className="hover:bg-gray-300 dark:hover:bg-gray-700 border-slate-700 dark:border-white border-x mb-3">
+                                                        {set.gauges.map((gauge, index) => (
+                                                            index % 3 === 1 ?
+                                                                <td
+                                                                    key={index}
+                                                                    className="p-2 font-semibold"
+                                                                >
+                                                                    {gauge}{getPW(gauge, set.woundStrings[index])}
+                                                                </td>
+                                                                :
+                                                                <></>
+                                                        ))}
+                                                    </tr>
+                                                    <tr className="hover:bg-gray-300 dark:hover:bg-gray-700 border-slate-700 dark:border-white border-x border-b mb-3">
+                                                        {set.gauges.map((gauge, index) => (
+                                                            index % 3 === 2 ?
+                                                                <td
+                                                                    key={index}
+                                                                    className="p-2 font-semibold"
+                                                                >
+                                                                    {gauge}{getPW(gauge, set.woundStrings[index])}
+                                                                </td>
+                                                                :
+                                                                <></>
+                                                        ))}
+                                                    </tr>
+                                                </>
+                                                :
+                                                <>
+                                                    {/*Other 10+ String Instruments*/}
+                                                    <tr className="hover:bg-gray-300 dark:hover:bg-gray-700 border-slate-700 dark:border-white border-x mb-3">
+                                                        {set.gauges.map((gauge, index) => (
+                                                            index % 2 === 0 ?
+                                                                <td
+                                                                    key={index}
+                                                                    className="p-2 font-semibold"
+                                                                >
+                                                                    {gauge}{getPW(gauge, set.woundStrings[index])}
+                                                                </td>
+                                                                :
+                                                                <></>
+                                                        ))}
+                                                    </tr>
+                                                    <tr className="hover:bg-gray-300 dark:hover:bg-gray-700 border-slate-700 dark:border-white border-x border-b mb-3">
+                                                        {set.gauges.map((gauge, index) => (
+                                                            index % 2 === 1 ?
+                                                                <td
+                                                                    key={index}
+                                                                    className="p-2 font-semibold"
+                                                                >
+                                                                    {gauge}{getPW(gauge, set.woundStrings[index])}
+                                                                </td>
+                                                                :
+                                                                <></>
+                                                        ))}
+                                                    </tr>
+                                                </>
+                                            }
+                                        </>
+                                    }
+                                </tbody>
+                            ))}
                         </table>
                     </div>
                 </div>

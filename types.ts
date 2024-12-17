@@ -47,6 +47,7 @@ export class UserData {
         public instruments: string[],
         public tunings: string[],
         public settings: UserSettings,
+        public instPresets: InstPreset[],
         public id?: string,
     ) {
     }
@@ -58,6 +59,7 @@ export class UserSettings {
         public stringCoeff: number,
         public stringPower: number,
         public darkMode: boolean,
+        public useOSTheme: boolean,
     ) {
     }
 }

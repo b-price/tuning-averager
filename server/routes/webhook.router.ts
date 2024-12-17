@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import {Webhook} from "svix";
 import {UserData} from "../../types";
 import {collections} from "../services/database.service";
+import {INST_PRESETS_SERVER} from "../instPresets";
 
 export const webhookRouter = express.Router();
 
@@ -61,11 +62,13 @@ webhookRouter.post(
                         username: attributes.username,
                         tunings: [],
                         instruments: [],
+                        instPresets: INST_PRESETS_SERVER,
                         settings: {
                             darkMode: false,
                             weightedMode: true,
                             stringCoeff: 0,
                             stringPower: 0,
+                            useOSTheme: true,
                         }
                     };
                     const result = await collections?.users?.insertOne(newUser);

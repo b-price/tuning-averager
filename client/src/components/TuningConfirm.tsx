@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import { Tuning } from '../../../types.ts';
+import ToggleSwitch from "./ToggleSwitch.tsx";
 
 interface TuningConfirmProps {
     isOpen: boolean;
@@ -90,19 +91,12 @@ const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit
 
                 {/*Wound 3rd Switch*/}
                 {tunings[0].type === 'guitar' ? (
-                    <div className="flex items-center mt-4">
-                        <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                                type="checkbox"
-                                checked={wound3rd}
-                                onChange={(e) => setWound3rd(e.target.checked)}
-                                className="sr-only peer"
-                            />
-                            <div
-                                className="w-11 h-6 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                            <span className="ml-3 text-sm font-medium">Wound 3rd</span>
-                        </label>
-                    </div>
+                    <ToggleSwitch
+                        checked={wound3rd}
+                        onChange={(e) => setWound3rd(e.target.checked)}
+                    >
+                        <span className="ml-3 text-sm font-medium">Wound 3rd</span>
+                    </ToggleSwitch>
                 ) : (<div></div>)}
             </div>
 
