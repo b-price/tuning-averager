@@ -2,7 +2,7 @@ import { Instrument, StringSet } from "../../../types.ts";
 import React, { useEffect, useState } from "react";
 import Modal from "./Modal.tsx";
 import { convertToNote, tension, uwFromGauge } from "../utils/calculate.ts";
-import { notes, stringTypeFactors, STRING_GAUGES } from "../defaults.ts";
+import {notes, stringTypeFactors, STRING_GAUGES, WOUND_CHAR, PLAIN_CHAR} from "../defaults.ts";
 import ArrowSelector from "./ArrowSelector.tsx";
 
 interface AverageStringSetProps {
@@ -101,14 +101,12 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
 
     const toggleWoundString = (stringIndex: number) => {
         const wound = !woundStrings[stringIndex];
-        if (instrument?.type === "guitar") {
-            setWoundStrings((prevWoundStrings) => {
-                const newWoundStrings = [...prevWoundStrings];
-                newWoundStrings[stringIndex] = wound;
-                return newWoundStrings;
-            });
-            adjustTension(stringIndex, newGauges[stringIndex], noteObjects[stringIndex].noteValue, wound);
-        }
+        setWoundStrings((prevWoundStrings) => {
+            const newWoundStrings = [...prevWoundStrings];
+            newWoundStrings[stringIndex] = wound;
+            return newWoundStrings;
+        });
+        adjustTension(stringIndex, newGauges[stringIndex], noteObjects[stringIndex].noteValue, wound);
     };
 
     const handleSubmit = () => {
@@ -147,10 +145,11 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
 
                 {/* String Set Values */}
                 <div className="grid grid-cols-4 gap-y-0 gap-x-4 mb-4">
-                    <div className="col-span-2 flex justify-between">
-                        <label className="block text-sm font-medium col-span-2">String</label>
-                        <label className="block text-sm font-medium text-center">Note</label>
-                        <label className="block text-sm font-medium">Cents</label>
+                    <div className="col-span-2 flex justify-center">
+                        {/*<label className="block text-sm font-medium col-span-2">String</label>*/}
+                        {/*<label className="block text-sm font-medium text-center">Note</label>*/}
+                        {/*<label className="block text-sm font-medium">Cents</label>*/}
+                        <label className="block text-sm font-medium">Average Note</label>
                     </div>
 
                     <label className="block text-sm font-medium">Gauge</label>
@@ -193,12 +192,10 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
 
                                 {/* Toggle wound/plain */}
                                 <p
-                                    className={`font-semibold ml-2 cursor-pointer ${
-                                        instrument?.type === "guitar" ? "hover:text-indigo-400" : "cursor-default"
-                                    }`}
+                                    className="font-semibold ml-2 cursor-pointer hover:text-indigo-400"
                                     onClick={() => toggleWoundString(index)}
                                 >
-                                    {woundStrings[index] ? "w" : "p"}
+                                    {woundStrings[index] ? WOUND_CHAR : PLAIN_CHAR}
                                 </p>
                             </div>
 

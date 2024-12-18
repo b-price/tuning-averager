@@ -395,6 +395,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
         setIsAveragerOpen(true);
     };
 
+    // String Set functions
     const handleDeleteStringSet = (deletedSet: StringSet) => {
         const newStringSets = selectedInstrument.stringSets.filter((strSet) => strSet !== deletedSet);
         const updatedInstrument = {...selectedInstrument, stringSets: newStringSets};
@@ -516,11 +517,22 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                                 </div>
                                 <div className="justify-items-start">
                                     <p><strong>Type: </strong>{capitalize(selectedInstrument.type)}</p>
-                                    <p><strong>Scale Length: </strong>{selectedInstrument.scale}"</p>
+                                    {selectedInstrument.isMultiscale && selectedInstrument.scales ?
+                                        <p><strong>Scale Lengths: </strong>
+                                            {selectedInstrument.scales.map((scale, index) => (
+                                                <span
+                                                    key={index}>{round(scale, DECIMAL_POINTS)} {index < selectedInstrument.strings - 1 ? "| " : ""}
+                                            </span>
+                                            ))}
+                                        </p>
+                                        :
+                                        <p><strong>Scale Length: </strong>{selectedInstrument.scale}"</p>
+                                    }
                                     <p><strong>Target
                                         Tensions: </strong>{selectedInstrument.targetTension.map((tension, index) => (
                                         <span
-                                            key={index}>{round(tension, DECIMAL_POINTS)} {index < selectedInstrument.targetTension.length - 1 ? "| " : ""} </span>
+                                            key={index}>{round(tension, DECIMAL_POINTS)} {index < selectedInstrument.targetTension.length - 1 ? "| " : ""}
+                                        </span>
                                     ))}
                                     </p>
                                     <label><strong>Tunings:</strong></label>

@@ -22,6 +22,8 @@ export class Instrument {
         public targetTension: number[],
         public type: InstType,
         public stringSets: StringSet[],
+        public isMultiscale?: boolean, //new
+        public scales?: number[], //new
         public id?: string,
     ) {
     }

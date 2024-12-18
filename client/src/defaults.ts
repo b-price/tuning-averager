@@ -253,12 +253,12 @@ export const stringTypeFactors = {
         wound: {coeff: 2.07, power: 1.97},
     },
     bass: {
-        plain: {coeff: 2.939, power: 1.89},
+        plain: {coeff: 2.215, power: 2},
         wound: {coeff: 2.939, power: 1.89},
     },
     other: {
         plain: {coeff: 2.215, power: 2},
-        wound: {coeff: 2.215, power: 2},
+        wound: {coeff: 2.07, power: 1.97},
     },
 }
 
@@ -524,3 +524,5 @@ export const defaultUser: UserData = {
     instPresets: INST_PRESETS,
     settings: defaultSettings
 }
+
+export const MULTISCALE_SPAN = 1.5

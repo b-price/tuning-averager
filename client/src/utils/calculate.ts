@@ -1,5 +1,5 @@
 import {Tuning} from "../../../types";
-import {notes, PLAIN_CHAR, WOUND_CHAR, woundOverlap} from "../defaults.ts";
+import {MULTISCALE_SPAN, notes, PLAIN_CHAR, WOUND_CHAR, woundOverlap} from "../defaults.ts";
 
 export function tuningWeight(tuning: Tuning){
     let sum = 0;
@@ -176,6 +176,16 @@ export const getPW = (gauge: number, wound: boolean) => {
         return "";
     }
 }
+
+export const getMultiscale = (scale: number, strings: number) => {
+    const scales = [];
+    const gap = MULTISCALE_SPAN / (strings - 1);
+    for (let i = 0; i < strings; i++) {
+        scales.push(i * gap + scale);
+    }
+    return scales;
+}
+
 /*
 To calculate the tension of a string in pounds use the formula below,
 inserting the three variables described above:

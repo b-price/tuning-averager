@@ -43,7 +43,7 @@ const ArrowSelector: React.FC<ArrowSelectorProps> = (props:ArrowSelectorProps) =
             {props.disabled? (
                 <div className="flex flex-col items-center w-full">
                     <button
-                        className="dark:bg-gray-800 dark:text-gray-400 font-bold py-0.5 px-4 rounded-b-none w-full"
+                        className="dark:bg-gray-800 dark:text-gray-400 bg-gray-300 text-gray-500 font-bold py-0.5 px-4 rounded-b-none w-full"
                         disabled
                     >
                         {'▲'}
@@ -53,10 +53,10 @@ const ArrowSelector: React.FC<ArrowSelectorProps> = (props:ArrowSelectorProps) =
                         value={selectedValue}
                         readOnly
                         disabled
-                        className="bg-gray-700 text-gray-400 text-center font-semibold py-1.5 px-4 border-0 border-gray-600 rounded-none w-full"
+                        className="dark:bg-gray-700 dark:text-gray-400 bg-gray-200 text-gray-500 text-center font-semibold py-1.5 px-4 border-0 border-gray-600 rounded-none w-full"
                     />
                     <button
-                        className="bg-gray-800 text-gray-400 font-bold py-0.5 px-4 rounded-t-none w-full "
+                        className="dark:bg-gray-800 dark:text-gray-400 text-gray-500 bg-gray-300 font-bold py-0.5 px-4 rounded-t-none w-full "
                         disabled
                     >
                         {'▼'}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {Instrument, InstType, Tuning} from "../../../types.ts";
 import Modal from "./Modal.tsx";
-import {round} from "../utils/calculate.ts";
+import {getMultiscale, round} from "../utils/calculate.ts";
 import {
     DECIMAL_POINTS,
     defaultScales,
@@ -17,7 +17,8 @@ const defaultState = {
     selectedTunings: [],
     scale: 25.5,
     targetTension: [],
-    type: "guitar"
+    type: "guitar",
+    scales: [25.5, 25.65, 25.8, 26.0, 26.25, 26.5]
 }
 
 interface InstrumentInputProps {
@@ -47,15 +48,11 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
     const [averageTension, setAverageTension] = useState(0);
     const [isTuningDropdownOpen, setIsTuningDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const [strings, setStringsInternal] = useState(defaultStrings.guitar);
+    const [strings, setStrings] = useState(defaultStrings.guitar);
     const [titleText, setTitleText] = useState('New Instrument');
     const [buttonText, setButtonText] = useState('Submit');
-
-    const setStrings = (value: number) => {
-        if (value >= STRING_RANGE[0] && value <= STRING_RANGE[1]) {
-            setStringsInternal(value);
-        }
-    }
+    const [multiscale, setMultiscale] = useState<boolean>(false);
+    const [scales, setScales] = useState<number[]>(defaultState.scales);
 
     const setScale = (value: number) => {
         if (value >= SCALE_LENGTH_RANGE[0] && value <= SCALE_LENGTH_RANGE[1]) {
@@ -68,38 +65,32 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
         setSelectedTunings(defaultState.selectedTunings);
         setScale(defaultState.scale);
         setStrings(defaultStrings.guitar);
-        setTargetTension(INST_PRESETS[0].tensions.slice(0, strings));
+        setTargetTension(INST_PRESETS[0].tensions.slice(0, defaultStrings.guitar));
         setType('guitar');
         setTitleText('New Instrument');
         setButtonText('Submit');
+        setMultiscale(false);
+        setScales(defaultState.scales);
     }
 
     useEffect(() => {
         if (isEdit && editInstrument) {
             setName(editInstrument.name);
-            setSelectedTunings(editInstrument.tunings);
-            setScale(editInstrument.scale);
+            setStrings(editInstrument.strings)
             setTargetTension(editInstrument.targetTension);
             setType(editInstrument.type);
+            setSelectedTunings(editInstrument.tunings);
+            setScale(editInstrument.scale);
             setTitleText(`Editing ${editInstrument.name}`);
             setButtonText('Save Changes');
+            if (editInstrument.isMultiscale && editInstrument.scales) {
+                setMultiscale(editInstrument.isMultiscale);
+                setScales(editInstrument.scales);
+            }
         } else {
             resetFields();
         }
     }, [isEdit]);
-
-    useEffect(() => {
-        // Update default target tensions and average when strings or type change
-        const defaultTensions = INST_PRESETS.find((preset) => preset.instrument === type && preset.forStrings.includes(strings))?.tensions.slice(0, strings);
-        if (defaultTensions) {
-            setTargetTension(defaultTensions);
-            if (useAverageTension && defaultTensions.length > 0) {
-                const avg = defaultTensions.reduce((a, b) => a + b, 0) / defaultTensions.length;
-                setAverageTension(avg);
-            }
-        }
-        setSelectedTunings([])
-    }, [strings, type, useAverageTension]);
 
     const handleTensionChange = (index: number, value: number) => {
         if (!isNaN(value) && value !== undefined) {
@@ -113,13 +104,41 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                 setAverageTension(avg);
             }
         }
-
     };
+
+    const handleAvTensionSwitch = (checked: boolean) => {
+        setUseAverageTension(checked);
+        const avg = targetTension.reduce((a, b) => a + b, 0) / targetTension.length;
+        setAverageTension(avg);
+    }
+
+    const handleStringChange = (value: number) => {
+        if (value >= STRING_RANGE[0] && value <= STRING_RANGE[1]) {
+            setStrings(value);
+            stringTypeChangeUpdate(value, type);
+        }
+    }
+
+    const stringTypeChangeUpdate = (newStrings: number, newType: InstType) => {
+        const defaultTensions = INST_PRESETS
+            .find((preset) => preset.instrument === newType && preset.forStrings.includes(newStrings))?.tensions
+            .slice(0, newStrings);
+        if (defaultTensions) {
+            setTargetTension(defaultTensions);
+            if (useAverageTension && defaultTensions.length > 0) {
+                const avg = defaultTensions.reduce((a, b) => a + b, 0) / defaultTensions.length;
+                setAverageTension(avg);
+            }
+        }
+        setScales(getMultiscale(scale, newStrings));
+        setSelectedTunings([]);
+    }
 
     const handleTypeChange = (type: InstType) => {
         setType(type);
         setStrings(defaultStrings[type]);
         setScale(defaultScales[type]);
+        stringTypeChangeUpdate(strings, type);
     }
 
     const handleTuningChange = (tuning: Tuning, checked: boolean) => {
@@ -141,7 +160,9 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
             scale,
             targetTension: finalTargetTension,
             type: type,
-            stringSets: []
+            stringSets: [],
+            isMultiscale: multiscale,
+            scales
         };
         if (isEdit && editInstrument) {
             instrument.id = editInstrument.id;
@@ -166,7 +187,6 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                 setIsTuningDropdownOpen(false);
             }
         };
-
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
@@ -180,6 +200,23 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
         );
         return filteredTunings.length > 0 ? filteredTunings : [];
     };
+
+    const handleMultiscaleChange = (value: number, index: number) => {
+        if (value >= SCALE_LENGTH_RANGE[0] && value <= SCALE_LENGTH_RANGE[1]){
+            const newScales = [...scales];
+            newScales[index] = value;
+            setScales(newScales);
+        }
+    }
+
+    const handleMultiscale = (checked: boolean) => {
+        setMultiscale(checked);
+        if (checked){
+            setScales(getMultiscale(scale, strings));
+        } else {
+            setScale(scales[0]);
+        }
+    }
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
@@ -216,29 +253,54 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                         </div>
 
                         {/* Number of Strings */}
-                        <div>
+                        <div className="pb-2">
                             <label className="block text-sm font-medium">Number of Strings</label>
                             <input
                                 type="number"
                                 value={strings}
                                 disabled={isEdit}
-                                onChange={(e) => setStrings(parseInt(e.target.value))}
+                                onChange={(e) => handleStringChange(parseInt(e.target.value))}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             />
                         </div>
 
                         {/* Scale Length */}
+
+                        <ToggleSwitch
+                            checked={multiscale}
+                            onChange={(e) => handleMultiscale(e.target.checked)}
+                            disabled={isEdit}
+                        >
+                            <span className="ml-3 text-sm font-medium">Multiscale</span>
+                        </ToggleSwitch>
                         <div>
                             <label className="block text-sm font-medium">Scale Length</label>
-                            <input
-                                type="number"
-                                disabled={isEdit}
-                                value={scale}
-                                step={scale < 30 ? 0.25 : 1}
-                                onChange={(e) => setScale(parseFloat(e.target.value))}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            />
+                            {multiscale ? scales.map((length, index) => (
+                                    <div key={index} className="flex items-center">
+                                        <label className="px-2">{index + 1}:</label>
+                                        <input
+                                            type="number"
+                                            disabled={isEdit}
+                                            value={round(length, DECIMAL_POINTS + 1)}
+                                            step={0.125}
+                                            onChange={(e) => handleMultiscaleChange(parseFloat(e.target.value), index)}
+                                            className="mt-1 block w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        />
+                                        <label className="px-2">in.</label>
+                                    </div>
+                                ))
+                                :
+                                <input
+                                    type="number"
+                                    disabled={isEdit}
+                                    value={scale}
+                                    step={scale < 30 ? 0.25 : 1}
+                                    onChange={(e) => setScale(parseFloat(e.target.value))}
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                />
+                            }
                         </div>
+
                         {/* Tunings Dropdown Button */}
                         <div className="relative">
                             <button
@@ -250,14 +312,14 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
 
                             {isTuningDropdownOpen && (
                                 <div ref={dropdownRef}
-                                     className="mt-2 py-2 w-full bg-gray-500 border border-gray-300 rounded-md shadow-lg z-10">
+                                     className="mt-2 py-2 w-full dark:bg-gray-500 bg-white border border-gray-300 rounded-md shadow-lg z-10">
                                     {
                                         getFilteredTunings().length > 0 ? (
                                             getFilteredTunings().map((tuning) => (
-                                                <label key={tuning.name} className="flex items-center px-4 ">
+                                                <label key={tuning.id} className="flex items-center px-4 ">
                                                     <input
                                                         type="checkbox"
-                                                        checked={selectedTunings.includes(tuning)}
+                                                        checked={selectedTunings.map((t) => t.id).includes(tuning.id)}
                                                         onChange={(e) => handleTuningChange(tuning, e.target.checked)}
                                                     />
                                                     <span className="ml-2">{tuning.name}</span>
@@ -277,7 +339,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                     <div className="space-y-2 mt-2 mx-2">
                         <ToggleSwitch
                             checked={useAverageTension}
-                            onChange={(e) => setUseAverageTension(e.target.checked)}
+                            onChange={(e) => handleAvTensionSwitch(e.target.checked)}
                         >
                             <span className="ml-3 text-sm font-medium">Use Average Tension</span>
                         </ToggleSwitch>
