@@ -100,7 +100,7 @@ const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit
                 ) : (<div></div>)}
             </div>
 
-            <button onClick={handleSubmit} className="m-6 bg-blue-500 text-white px-4 py-2 rounded">
+            <button onClick={handleSubmit} className="bg-indigo-500 text-white m-6 px-4 py-2 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2">
                 Get Average String Set
             </button>
         </Modal>

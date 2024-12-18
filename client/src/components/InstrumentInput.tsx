@@ -305,7 +305,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                         <div className="relative">
                             <button
                                 onClick={() => setIsTuningDropdownOpen(!isTuningDropdownOpen)}
-                                className="w-full mt-2 px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-500"
+                                className="w-full mt-2 px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-400"
                             >
                                 Select Tunings
                             </button>
@@ -381,7 +381,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
 
                 {/* Submit Button */}
                 <button onClick={handleSubmit}
-                        className="mt-6 w-full py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">{buttonText}
+                        className="mt-6 sm:w-1/2 w-full py-2 px-4 bg-indigo-500 text-white rounded-md hover:bg-indigo-400">{buttonText}
                 </button>
             </div>
         </Modal>

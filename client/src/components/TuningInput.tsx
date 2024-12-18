@@ -175,7 +175,7 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, onSubmit
                                 onChange={(e) => {
                                     handleTypeChange(e.target.value as InstType)
                                 }}
-                                className="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                className="mt-2 mx-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 disabled={isEdit}
                             >
                                 <option value="guitar">Guitar</option>
@@ -189,7 +189,7 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, onSubmit
                             <select
                                 onChange={handlePresetChange}
                                 disabled={!presetTunings || presetTunings.length === 0}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                className="mt-1 mx-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             >
                                 {isEdit && editTuning ? (tunings.filter((tuning) => tuning.type === editTuning.type && tuning.strings.length === editTuning.strings.length).map((t) => (
                                     <option key={t.id} value={t.id}>{capitalize(t.type)}: {t.name}</option>
@@ -207,13 +207,13 @@ const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, onSubmit
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 placeholder="Tuning Name"
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                className="mx-2 mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             />
                         </div>
                         {/*Submit*/}
                         <button
                             onClick={handleSubmit}
-                            className="w-full bg-indigo-600 text-white">{buttonText}
+                            className="w-full bg-indigo-500 text-white m-2 px-4 py-2 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2">{buttonText}
                         </button>
                     </div>
                 </div>

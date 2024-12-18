@@ -217,7 +217,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
                     </button>
 
                     <button
-                        className="bg-indigo-600 text-white m-2 px-4 py-2 rounded-md hover:bg-indigo-500 focus:outline-none focus:ring-2"
+                        className="bg-indigo-500 text-white m-2 px-4 py-2 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2"
                         onClick={handleSubmit}
                     >
                         <span className="hidden md:block">{isEdit ? "Edit String Set" : "Add String Set to Instrument"}</span>

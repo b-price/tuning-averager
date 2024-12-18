@@ -9,7 +9,7 @@ import {
 } from "../defaults.ts";
 import {Instrument, StringSet, Tuning, UserData} from "../../../types.ts";
 import {
-    capitalize, getPW,
+    capitalize,
     getUnitWeight,
     round,
     stringAverage,
@@ -88,7 +88,10 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
 
     if (isLoading || userData === undefined) {
         return (
-            <SkeletonTheme baseColor="#444444" highlightColor="#666666">
+            <SkeletonTheme
+                baseColor={window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? "#444444" : "#cccccc"}
+                highlightColor={window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? "#666666" : "#eeeeee"}
+            >
                 <div className="flex flex-col p-6">
                     <div className="flex items-center mb-4 gap-4">
                         <Skeleton circle height={50} width={50}/>
@@ -501,7 +504,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                                     ))}
                                 </select>
                                 <div className="flex-grow space-3">
-                                    <p className="text-lg font-medium">{selectedInstrument.name}</p>
+                                    <p className="mt-2 text-lg font-medium">{selectedInstrument.name}</p>
                                     <button
                                         className="bg-gray-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2"
                                         onClick={handleEditInst}
@@ -514,7 +517,18 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                                     >
                                         Delete
                                     </button>
+                                    {selectedInstrument.stringSets.length > 0 &&
+                                        <button
+                                            className="bg-indigo-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2"
+                                            onClick={() => setIsStringSetsOpen(true)}
+                                        >
+                                            String Sets
+                                        </button>
+                                    }
                                 </div>
+                                {/*<div className="">*/}
+                                {/*    */}
+                                {/*</div>*/}
                                 <div className="justify-items-start">
                                     <p><strong>Type: </strong>{capitalize(selectedInstrument.type)}</p>
                                     {selectedInstrument.isMultiscale && selectedInstrument.scales ?
@@ -538,25 +552,9 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                                     <label><strong>Tunings:</strong></label>
                                     <ul className="mb-3 justify-items-start">
                                         {selectedInstrument.tunings.map((tuning) => (
-                                            <li className="cursor-pointer hover:text-indigo-400" onClick={() => setSelectedTuning(tuning)}
+                                            <li className="cursor-pointer hover:text-indigo-400"
+                                                onClick={() => setSelectedTuning(tuning)}
                                                 key={tuning.id}>{tuning.name}</li>
-                                        ))}
-                                    </ul>
-                                    <div className="">
-                                        <label><strong>String Sets:</strong></label>
-                                        <button
-                                            className="bg-gray-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2"
-                                            onClick={() => setIsStringSetsOpen(true)}>Edit</button>
-                                    </div>
-                                    <ul className="mb-3 justify-items-start">
-                                        {selectedInstrument.stringSets.map((set, idx) => (
-                                            <li key={idx}><em>{set.name}: </em>{set.gauges.map((gauge, index) => (
-                                                <span
-                                                    key={index}
-                                                >
-                                                    {gauge}{getPW(gauge, set.woundStrings[index])} {index < set.gauges.length - 1 ? "| " : ""}
-                                                </span>
-                                            ))}</li>
                                         ))}
                                     </ul>
                                 </div>
@@ -570,13 +568,13 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
 
                     <div className="flex-grow space-4">
                         <button
-                            className="bg-blue-600 text-white m-2 px-4 py-2 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2"
+                            className="bg-blue-500 text-white m-2 px-4 py-2 rounded-md hover:bg-blue-400 focus:outline-none focus:ring-2"
                             onClick={() => setIsInstInputOpen(true)}
                         >
                             New Instrument
                         </button>
                         <button
-                            className="bg-indigo-600 text-white m-2 px-4 py-2 rounded-md hover:bg-indigo-500 focus:outline-none focus:ring-2"
+                            className="bg-indigo-500 text-white m-2 px-4 py-2 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2"
                             onClick={handleOpenGetAv}
                             disabled={instruments.length < 1}
                         >
@@ -607,7 +605,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                                 </select>
 
                                 <div className="flex-grow space-3">
-                                    <p className="text-lg font-medium">{selectedTuning.name}</p>
+                                    <p className="mt-2 text-lg font-medium">{selectedTuning.name}</p>
                                     <button
                                         className="bg-gray-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2"
                                         onClick={handleEditTuning}
@@ -640,13 +638,13 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
 
                     <div className="flex-grow space-4">
                         <button
-                            className="bg-blue-600 text-white m-2 px-4 py-2 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2"
+                            className="bg-blue-500 text-white m-2 px-4 py-2 rounded-md hover:bg-blue-400 focus:outline-none focus:ring-2"
                             onClick={() => setIsTuningInputOpen(true)}
                         >
                             New Tuning
                         </button>
                         <button
-                            className="bg-indigo-600 text-white m-2 px-4 py-2 rounded-md hover:bg-indigo-500 focus:outline-none focus:ring-2"
+                            className="bg-indigo-500 text-white m-2 px-4 py-2 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2"
                             onClick={handleAddTuningToInstrument}
                             disabled={instruments.length < 1 || tunings.length < 1}
                         >

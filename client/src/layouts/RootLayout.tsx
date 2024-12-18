@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom'
 import {ClerkProvider, SignedIn, SignedOut} from '@clerk/clerk-react'
 import TopBar from "../components/TopBar.tsx";
 import ErrorBoundary from "../components/ErrorBoundary.tsx";
+import Footer from "../components/Footer.tsx";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
@@ -28,6 +29,7 @@ export default function RootLayout() {
                 <main>
                     <Outlet />
                 </main>
+                <Footer />
             </ClerkProvider>
         </ErrorBoundary>
 
