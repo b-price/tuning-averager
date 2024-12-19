@@ -7,7 +7,6 @@ import {
     stringGauge,
     getUnitWeight,
 } from "../utils/calculate";
-import {presetTunings} from "../defaults";
 
 describe('Tuning Functions', () => {
 
@@ -31,34 +30,34 @@ describe('Tuning Functions', () => {
 
     describe('stringAverage', () => {
         it('should return the average note values for each string across tunings', () => {
-            // const testTunings: Tuning[] = [
-            //     {
-            //         name: 'standard',
-            //         strings: [
-            //             { note: 'E 2', noteValue: 8 },
-            //             { note: 'B 2', noteValue: 7 },
-            //             { note: 'G 2', noteValue: 5 },
-            //             { note: 'D 2', noteValue: 4 },
-            //             { note: 'A 2', noteValue: 3 },
-            //             { note: 'E 2', noteValue: 8 },
-            //         ],
-            //         type: "guitar"
-            //     },
-            //     {
-            //         name: 'alternative',
-            //         strings: [
-            //             { note: 'E 3', noteValue: 9 },
-            //             { note: 'B 3', noteValue: 8 },
-            //             { note: 'G 3', noteValue: 6 },
-            //             { note: 'D 3', noteValue: 5 },
-            //             { note: 'A 3', noteValue: 4 },
-            //             { note: 'E 3', noteValue: 9 },
-            //         ],
-            //         type: "guitar"
-            //     }
-            // ];
-            expect(stringAverage(presetTunings.slice(0, 2))).toEqual([51, 46, 43, 38, 33, 27]);
-            expect(stringAverage([presetTunings[0], presetTunings[0]])).toEqual([52, 47, 43, 38, 33, 28])
+            const testTunings: Tuning[] = [
+                {
+                    name: 'standard',
+                    strings: [
+                        { note: 'E 2', noteValue: 8 },
+                        { note: 'B 2', noteValue: 7 },
+                        { note: 'G 2', noteValue: 5 },
+                        { note: 'D 2', noteValue: 4 },
+                        { note: 'A 2', noteValue: 3 },
+                        { note: 'E 2', noteValue: 8 },
+                    ],
+                    type: "guitar"
+                },
+                {
+                    name: 'alternative',
+                    strings: [
+                        { note: 'E 3', noteValue: 9 },
+                        { note: 'B 3', noteValue: 8 },
+                        { note: 'G 3', noteValue: 6 },
+                        { note: 'D 3', noteValue: 5 },
+                        { note: 'A 3', noteValue: 4 },
+                        { note: 'E 3', noteValue: 9 },
+                    ],
+                    type: "guitar"
+                }
+            ];
+            expect(stringAverage(testTunings.slice(0, 2))).toEqual([51, 46, 43, 38, 33, 27]);
+            expect(stringAverage([testTunings[0], testTunings[0]])).toEqual([52, 47, 43, 38, 33, 28])
         });
 
         it('should return null if tunings do not have the same number of strings', () => {
@@ -140,11 +139,11 @@ describe('Tuning Functions', () => {
         it('calculates string gauge correctly for different instrument and winding types', () => {
             //expect(stringGauge(28, 25.5, 17.5, 'guitar', true)).toBeCloseTo(45.24158, 1);
             //expect(stringGauge(47, 25.5, 15.4, 'guitar', false)).toBeCloseTo(13.91449, 5);
-            expect(stringGauge(16, 34, 32, 'bass', true)).toBeCloseTo(127.58495, 5);
+            expect(stringGauge(16, 34, 32)).toBeCloseTo(127.58495, 5);
         });
 
         it('returns 0 for invalid note values', () => {
-            expect(stringGauge(-1, 30, 20, 'guitar', true)).toBe(0);
+            expect(stringGauge(-1, 30, 20)).toBe(0);
         });
     });
 

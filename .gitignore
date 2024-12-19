@@ -28,3 +28,4 @@ client/src/components/aicomponents/
 *.njsproj
 *.sln
 *.sw?
+.vercel

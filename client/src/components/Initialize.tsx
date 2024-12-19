@@ -48,13 +48,17 @@ const Initialize: React.FC = () => {
         if (user && user.username) {
             setCurrentUser((prevUser) => {
                 // Avoid unnecessary updates if the username is already set
-                if (prevUser.username === user.username) {
+                if (prevUser.username && prevUser.username === user.username) {
                     return prevUser;
                 }
-                return {
-                    ...prevUser,
-                    username: user.username,
-                };
+                return new UserData(
+                    user.username ? user.username : prevUser.username,
+                    prevUser.instruments,
+                    prevUser.tunings,
+                    prevUser.settings,
+                    prevUser.instPresets,
+                    prevUser.id
+                );
             });
         }
     }, [user]);
