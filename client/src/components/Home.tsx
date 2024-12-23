@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import TuningConfirm from "./TuningConfirm.tsx";
 import TuningInput from "./TuningInput.tsx";
 import InstrumentInput from "./InstrumentInput.tsx";
@@ -34,6 +34,20 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import AverageStringSet from "./AverageStringSet.tsx";
 import StringSets from "./StringSets.tsx";
 
+// Utility function for setting messages
+const useMessage = () => {
+    const [message, setMessage] = useState<string>('');
+    const [messageClass, setMessageClass] = useState<string>('text-blue-400');
+
+    const showMessage = (text: string, type: 'success' | 'error') => {
+        setMessage(text);
+        setMessageClass(type === 'success' ? 'text-blue-400' : 'text-red-400');
+        setTimeout(() => setMessage(''), 3000);
+    };
+
+    return { message, messageClass, showMessage };
+};
+
 interface HomeProps {
     userData: UserData;
 }
@@ -48,8 +62,6 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
     const [selectedTuning, setSelectedTuning] = useState<Tuning>(
         instruments.length && instruments[0].tunings.length? instruments[0].tunings[0] : DEFAULT_TUNING
     );
-    const [message, setMessage] = useState<string>('');
-    const [messageClass, setMessageClass] = useState<string>('text-blue-400');
     const [isTuningConfirmOpen, setIsTuningConfirmOpen] = useState(false);
     const [isTuningInputOpen, setIsTuningInputOpen] = useState(false);
     const [isInstInputOpen, setIsInstInputOpen] = useState(false);
@@ -64,8 +76,9 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
     const [isTuningDeleteOpen, setIsTuningDeleteOpen] = useState(false);
     const [isStringSetsOpen, setIsStringSetsOpen] = useState(false);
     const [isEdit, setIsEdit] = useState<boolean>(false);
+    const { message, messageClass, showMessage } = useMessage();
 
-    // On mount
+    //On mount
     useEffect(() => {
         setIsLoading(true);
         getTunings(userData)
@@ -85,6 +98,24 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
             .then(() => setIsLoading(false))
             .catch((e) => console.error(e));
     },[])
+
+    // Memoize the instrument options to prevent recalculating on every render
+    const instrumentOptions = useMemo(() => {
+        return instruments.map((instrument) => (
+            <option key={instrument.id} value={instrument.id}>
+                {instrument.name}
+            </option>
+        ));
+    }, [instruments]);
+
+    // Memoize the tuning options to prevent recalculating on every render
+    const tuningOptions = useMemo(() => {
+        return tunings.map((tuning) => (
+            <option key={tuning.id} value={tuning.id}>
+                {capitalize(tuning.type)}: {tuning.name}
+            </option>
+        ));
+    }, [tunings]);
 
     if (isLoading || userData === undefined) {
         return (
@@ -126,18 +157,10 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 return inst.id === updatedInst.id ? updatedInst : inst
             }));
             setSelectedInstrument(updatedInst);
-            setMessageClass('text-blue-400');
-            setMessage('Instrument updated successfully!');
-            setTimeout(() => {
-                setMessage('');
-            }, 2000);
+            showMessage('Instrument updated successfully!', 'success');
         }).catch((e) => {
             console.error(e);
-            setMessageClass('text-red-400');
-            setMessage('Could not update instrument');
-            setTimeout(() => {
-                setMessage('');
-            }, 3000)
+            showMessage('Could not update instrument', 'error');
         });
     };
 
@@ -155,18 +178,10 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 if (newInst.tunings.length > 0) {
                     setSelectedTuning(newInst.tunings[0]);
                 }
-                setMessageClass('text-blue-400');
-                setMessage('Instrument added successfully!');
-                setTimeout(() => {
-                    setMessage('');
-                }, 2000);
+                showMessage('Instrument added successfully.', 'success');
             }).catch((e) => {
             console.error(e);
-            setMessageClass('text-red-400');
-            setMessage('Could not add instrument');
-            setTimeout(() => {
-                setMessage('');
-            }, 3000)
+            showMessage('Could not add instrument', 'error');
         })
     };
 
@@ -181,19 +196,10 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 if (updatedInstruments[0].tunings.length) {
                     setSelectedTuning(updatedInstruments[0].tunings[0]);
                 }
-                setMessageClass('text-blue-400');
-                setMessage('Instrument successfully deleted');
-                setTimeout(() => {
-                    setMessage('');
-                }, 2000);
-            })
-            .catch((e) => {
+                showMessage('Instrument deleted successfully.', 'success');
+            }).catch((e) => {
                 console.error(e);
-                setMessageClass('text-red-400');
-                setMessage('Error deleting instrument!');
-                setTimeout(() => {
-                    setMessage('');
-                }, 3000);
+                showMessage('Instrument could not be deleted.', 'error');
             });
     };
 
@@ -226,18 +232,11 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 if (currentInstHasTuning) {
                     setSelectedInstrument(currentInst);
                 }
-                setMessageClass('text-blue-400');
-                setMessage('Tuning updated successfully!');
-                setTimeout(() => {
-                    setMessage('');
-                }, 2000);})
+                showMessage('Tuning updated successfully!', 'success');
+                })
             .catch((e) => {
                 console.error(e);
-                setMessageClass('text-red-400');
-                setMessage('Could not update tuning');
-                setTimeout(() => {
-                    setMessage('');
-                }, 3000)
+                showMessage('Could not update tuning.', 'error');
             });
     };
 
@@ -251,18 +250,10 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
             .then(() => {
                 setTunings([...tunings, newTuning]);
                 setSelectedTuning(newTuning);
-                setMessageClass('text-blue-400');
-                setMessage('Tuning added successfully!');
-                setTimeout(() => {
-                    setMessage('');
-                }, 2000);
+                showMessage('Tuning added successfully!', 'success');
             }).catch((e) => {
             console.error(e);
-            setMessageClass('text-red-400');
-            setMessage('Could not add tuning');
-            setTimeout(() => {
-                setMessage('');
-            }, 3000)
+            showMessage('Could not add tuning', 'error');
         })
     }
 
@@ -305,37 +296,21 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 }
                 setTunings(updatedTunings);
                 setSelectedTuning(updatedTunings[0]);
-                setMessageClass('text-blue-400');
-                setMessage('Tuning successfully deleted');
-                setTimeout(() => {
-                    setMessage('');
-                }, 2000);
+                showMessage('Tuning successfully deleted', 'success');
             })
             .catch((e) => {
                 console.error(e);
-                setMessageClass('text-red-400');
-                setMessage('Error deleting tuning!');
-                setTimeout(() => {
-                    setMessage('');
-                }, 3000);
+                showMessage('Error deleting tuning!', 'error');
             });
     };
 
     const handleAddTuningToInstrument = async () => {
         if (selectedInstrument.tunings.some(tuning => tuning.id === selectedTuning.id)) {
-            setMessageClass('text-red-500');
-            setMessage('Instrument already has this tuning!');
-            setTimeout(() => {
-                setMessage('');
-            }, 3000);
+            showMessage('Instrument already has this tuning!', 'error');
             return;
         }
         if (selectedInstrument.type !== selectedTuning.type || selectedInstrument.strings !== selectedTuning.strings.length) {
-            setMessageClass('text-red-500');
-            setMessage('Tuning does not match instrument\'s type or string count.');
-            setTimeout(() => {
-                setMessage('');
-            }, 3000);
+            showMessage('Tuning does not match instrument\'s type or string count.', 'error');
             return;
         }
         const newTuningIDs = [...selectedInstrument.tunings, selectedTuning].map((tuning) => tuning.id);
@@ -353,11 +328,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
         if (selectedInstrument.tunings.length){
             setIsTuningConfirmOpen(true);
         } else {
-            setMessageClass('text-red-400');
-            setMessage('Instrument has no tunings!');
-            setTimeout(() => {
-                setMessage('');
-            }, 3000);
+            showMessage('Instrument has no tunings!', 'error');
         }
     };
 
@@ -497,11 +468,12 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                                     onChange={handleInstrumentChange}
                                     className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                                 >
-                                    {instruments.map((instrument) => (
-                                        <option key={instrument.id} value={instrument.id}>
-                                            {instrument.name}
-                                        </option>
-                                    ))}
+                                    {/*{instruments.map((instrument) => (*/}
+                                    {/*    <option key={instrument.id} value={instrument.id}>*/}
+                                    {/*        {instrument.name}*/}
+                                    {/*    </option>*/}
+                                    {/*))}*/}
+                                    {instrumentOptions}
                                 </select>
                                 <div className="flex-grow space-3">
                                     <p className="mt-2 text-lg font-medium">{selectedInstrument.name}</p>
@@ -526,9 +498,6 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                                         </button>
                                     }
                                 </div>
-                                {/*<div className="">*/}
-                                {/*    */}
-                                {/*</div>*/}
                                 <div className="justify-items-start">
                                     <p><strong>Type: </strong>{capitalize(selectedInstrument.type)}</p>
                                     {selectedInstrument.isMultiscale && selectedInstrument.scales ?
@@ -597,11 +566,12 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                                     onChange={handleTuningChange}
                                     className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                                 >
-                                    {tunings.map((tuning) => (
-                                        <option key={tuning.id} value={tuning.id}>
-                                            {capitalize(tuning.type)}: {tuning.name}
-                                        </option>
-                                    ))}
+                                    {/*{tunings.map((tuning) => (*/}
+                                    {/*    <option key={tuning.id} value={tuning.id}>*/}
+                                    {/*        {capitalize(tuning.type)}: {tuning.name}*/}
+                                    {/*    </option>*/}
+                                    {/*))}*/}
+                                    {tuningOptions}
                                 </select>
 
                                 <div className="flex-grow space-3">

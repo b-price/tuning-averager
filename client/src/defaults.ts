@@ -1,5 +1,7 @@
 import {Instrument, InstPreset, Tuning, UserData} from "../../types.ts";
 
+export const APP_NAME = "Ideal Strings"
+
 export const notes = [
     'C0', 'C#0', 'D0', 'D#0', 'E0', 'F0', 'F#0', 'G0', 'G#0', 'A0', 'A#0', 'B0',
     'C1', 'C#1', 'D1', 'D#1', 'E1', 'F1', 'F#1', 'G1', 'G#1', 'A1', 'A#1', 'B1',
@@ -526,3 +528,64 @@ export const defaultUser: UserData = {
 }
 
 export const MULTISCALE_SPAN = 1.5
+
+export const FAQS = [
+    {
+        question: "What's this for?",
+        answer: `${APP_NAME} allows you find the best string gauges for your stringed instrument. It lets you find what 
+            the average tuning is for all the tunings you use and get a string set to match that. You can input your preferred
+            string tension or use the preset tension to calculate the string gauges. Then you can tweak the set, seeing
+            instant updates for the string tension of each string.`
+    },
+    {
+        question: `What does 'Target Tension' mean?`,
+        answer: `These are the tensions of each string of your instrument, in pounds per inch. Think of it as how tight
+            you'd like your strings to be. The higher the number, the tighter the string will be. Higher tension usually
+            results in brighter tone and more sustain.`
+    },
+    {
+        question: `What is 'Weighted Mode'?`,
+        answer: `If weighted mode is on, when the tunings of an instrument are averaged, how often a string is
+                    tuned
+                    to a note is taken into account. Otherwise, it is not. For example, say you have a guitar with
+                    E Standard, Drop D, and E-Flat standard. In weighted mode, the 5th string would be G#2 + 66
+                    cents,
+                    because A appears twice and G# appears once. If not in weighted mode, the 5th string would be G#2 + 50
+                    cents;
+                    A is not counted twice.`
+    },
+    {
+        question: "Why do I have to make an account?",
+        answer: `So you can save all your instruments, tunings, and string sets. You wouldn't wanna lose all that hard work!`
+    },
+    {
+        question: `Is ${APP_NAME} free?`,
+        answer: `Yes. You can support me here if you want, though: `
+    },
+    {
+        question: `Why'd you make this?`,
+        answer: `Good question. I love using many different tunings on my guitars and I wanted something that figured out 
+            what string gauges to use. I also always like doing random coding projects!`
+    },
+    {
+        question: `What sort of strings are the gauges based on?`,
+        answer: `Because D'Addario has exhaustive information on their strings (and they're popular), I went with them.
+            Guitar and bass strings are Nickel Wound XLs. I'm working on adding more options for this, but for now these
+            strings are a good representative for what's out there. You can tweak the preset tensions of your instrument
+            to approximate variations in the materials/manufacturing of strings.`
+    },
+    {
+        question: `Something's broken or messed up!`,
+        answer: `You can contact me here, thanks!`
+    },
+    {
+        question: `Other? Why don't you have x instrument?`,
+        answer: `I'd like to add more explicit support for different instruments in the future, but for now you should be
+            able to make pretty much anything you can think of with a combination of string count, scale length, and tension.`
+    },
+]
+
+export const EXTERNAL_URLS = {
+    github: "https://github.com/b-price/tuning-averager",
+    benWebsite: "https://bpricedev.com",
+}

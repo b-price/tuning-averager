@@ -8,6 +8,7 @@ import SignUpPage from "./routes/SignUpPage.tsx";
 import SignedInLayout from "./layouts/SignedInLayout.tsx";
 import Initialize from "./components/Initialize.tsx";
 import Settings from "./components/Settings.tsx";
+import FAQPage from "./components/FAQPage.tsx";
 
 
 const router = createBrowserRouter([
@@ -16,6 +17,7 @@ const router = createBrowserRouter([
         children: [
             { path: '/sign-in', element: <SignInPage /> },
             { path: '/sign-up', element: <SignUpPage /> },
+            { path: '/faq', element: <FAQPage /> },
             {
                 element: <SignedInLayout />,
                 path: '',

@@ -15,6 +15,7 @@ interface TuningConfirmProps {
 const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit, tunings, defaultChecked, instrument }) => {
     const [selected, setSelected] = useState<boolean[]>(Array(tunings ? tunings.length : 1).fill(true));
     const [wound3rd, setWound3rd] = useState<boolean>(false);
+    const [message, setMessage] = useState<string>('');
 
     useEffect(() => {
         // Set the initial state based on the defaultChecked prop
@@ -28,10 +29,15 @@ const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit
     }
 
     const handleSubmit = () => {
-        const selectedTunings = tunings.filter((_, index) => selected[index]);
-        onSubmit(selectedTunings, wound3rd);
-        setWound3rd(false);
-        onClose();
+        if (selected.length > 0 && selected.includes(true)) {
+            const selectedTunings = tunings.filter((_, index) => selected[index]);
+            onSubmit(selectedTunings, wound3rd);
+            setWound3rd(false);
+            onClose();
+        } else {
+            setMessage('Please select at least one tuning.');
+            setTimeout(() => setMessage(''), 3000);
+        }
     };
 
     const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>,index: number) => {
@@ -103,6 +109,7 @@ const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit
             <button onClick={handleSubmit} className="bg-indigo-500 text-white m-6 px-4 py-2 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2">
                 Get Average String Set
             </button>
+            {message && <p className="text-red-400 text-sm mb-2">{message}</p>}
         </Modal>
     );
 };

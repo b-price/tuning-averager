@@ -45,10 +45,12 @@ const Settings: React.FC = () => {
 
     const removeLocalStorageTheme = () => {
         localStorage.removeItem('theme');
+        window.dispatchEvent(new Event('storage'));
     }
 
     const setLocalStorageTheme = (dark: boolean) => {
-        localStorage.theme = dark ? "dark" : "light";
+        localStorage.setItem('theme', dark ? "dark" : "light");
+        window.dispatchEvent(new Event('storage'));
     }
 
     const handleDarkModeSwitch = (checked: boolean) => {
@@ -73,9 +75,9 @@ const Settings: React.FC = () => {
     }
 
     return (
-        <div className="container mx-auto p-4 sm:p-6 lg:p-8 sm:w-3/4">
+        <div className="container p-4 sm:p-6 sm:w-3/4 sm:max-w-3xl">
             <h1 className="text-2xl font-bold mb-6 text-center sm:text-left">Settings</h1>
-            <div className="grid gap-6 w-full sm:w-3/4 mx-auto">
+            <div className="grid gap-6 w-full mx-auto">
                 {/* Profile Settings */}
                 <div className="flex flex-row items-center gap-4">
                     <h2 className="text-xl font-semibold">Profile Settings →</h2>
@@ -113,13 +115,7 @@ const Settings: React.FC = () => {
                 </ToggleSwitch>
                 <p className="text-sm text-gray-600 dark:text-gray-400 text-left">
                     If weighted mode is on, when the tunings of an instrument are averaged, how often a string is
-                    tuned
-                    to a note is taken into account. Otherwise, it is not. For example, say you have a guitar with
-                    E Standard, Drop D, and E-Flat standard. In weighted mode, the 5th string would be G#2 + 66
-                    cents,
-                    because A appears twice and G# appears once. If not weighted, the 5th string would be G#2 + 50
-                    cents;
-                    A is not counted twice.
+                    tuned to a note is taken into account. Otherwise, it is not.
                 </p>
 
             </div>

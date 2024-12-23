@@ -1,4 +1,6 @@
 import React from "react";
+import {Link} from "react-router-dom";
+import {EXTERNAL_URLS} from "../defaults.ts";
 
 const Footer: React.FC = () => {
     const year = new Date().getFullYear();
@@ -18,25 +20,20 @@ const Footer: React.FC = () => {
 
                 <ul className="flex flex-wrap items-center gap-y-2 gap-x-8">
                     <li>
-                        <a
-                            href="#"
-                            className="text-slate-700 hover:text-slate-500 focus:text-slate-500 text-sm"
-                        >
-                            FAQ
-                        </a>
+                        <Link to={'/faq'} className="dark:text-gray-400">FAQ</Link>
                     </li>
                     <li>
                         <a
                             href="#"
-                            className="text-slate-700 hover:text-slate-500 focus:text-slate-500 text-sm"
+                            className="dark:text-gray-400"
                         >
                             Leave me a tip
                         </a>
                     </li>
                     <li>
                         <a
-                            href="#"
-                            className="text-slate-700 hover:text-slate-500 focus:text-slate-500 text-sm"
+                            href={EXTERNAL_URLS.github}
+                            className="dark:text-gray-400"
                         >
                             GitHub
                         </a>
@@ -44,16 +41,16 @@ const Footer: React.FC = () => {
                     <li>
                         <a
                             href="#"
-                            className="text-slate-700 hover:text-slate-500 focus:text-slate-500 text-sm"
+                            className="dark:text-gray-400"
                         >
                             Contact
                         </a>
                     </li>
                 </ul>
             </div>
-            <p className="block mb-4 text-sm text-center text-slate-500 md:mb-0 border-t border-slate-200 mt-4 pt-4">
+            <p className="block mb-4 text-sm text-center md:mb-0 border-t border-slate-200 mt-4 pt-4 dark:text-gray-400">
                 Copyright © {year}&nbsp;
-                <a href="https://bpricedev.com" target="_blank" rel="noreferrer">Ben Price</a>.
+                <a href={EXTERNAL_URLS.benWebsite} target="_blank" rel="noreferrer">Ben Price</a>.
             </p>
         </footer>
     )
