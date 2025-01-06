@@ -448,7 +448,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
     return (
         <div className="flex flex-col p-6">
             <div className="flex items-center mb-4 gap-4 ">
-                <UserButton afterSignOutUrl='sign-in'/>
+                <UserButton afterSignOutUrl='/'/>
                 <h1 className="text-2xl font-bold">{userData.username}</h1>
             </div>
             <div className="flex flex-wrap gap-10">

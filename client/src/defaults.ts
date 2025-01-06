@@ -529,9 +529,16 @@ export const defaultUser: UserData = {
 
 export const MULTISCALE_SPAN = 1.5
 
+export const EXTERNAL_URLS = {
+    github: "https://github.com/b-price/tuning-averager",
+    benWebsite: "https://bpricedev.com",
+    patreon: "https://www.patreon.com/bricedev",
+    email: "mailto:bpricedev@gmail.com"
+}
+
 export const FAQS = [
     {
-        question: "What's this for?",
+        question: `What's this for?`,
         answer: `${APP_NAME} allows you find the best string gauges for your stringed instrument. It lets you find what 
             the average tuning is for all the tunings you use and get a string set to match that. You can input your preferred
             string tension or use the preset tension to calculate the string gauges. Then you can tweak the set, seeing
@@ -555,12 +562,12 @@ export const FAQS = [
                     A is not counted twice.`
     },
     {
-        question: "Why do I have to make an account?",
+        question: `Why do I have to make an account?`,
         answer: `So you can save all your instruments, tunings, and string sets. You wouldn't wanna lose all that hard work!`
     },
     {
         question: `Is ${APP_NAME} free?`,
-        answer: `Yes. You can support me here if you want, though: `
+        answer: `Yes. You can support me at the "Leave me a tip" link below, though.`
     },
     {
         question: `Why'd you make this?`,
@@ -576,7 +583,7 @@ export const FAQS = [
     },
     {
         question: `Something's broken or messed up!`,
-        answer: `You can contact me here, thanks!`
+        answer: `You can contact me at the "Contact" link below, thanks!`
     },
     {
         question: `Other? Why don't you have x instrument?`,
@@ -584,8 +591,3 @@ export const FAQS = [
             able to make pretty much anything you can think of with a combination of string count, scale length, and tension.`
     },
 ]
-
-export const EXTERNAL_URLS = {
-    github: "https://github.com/b-price/tuning-averager",
-    benWebsite: "https://bpricedev.com",
-}
