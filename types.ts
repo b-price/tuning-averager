@@ -50,6 +50,7 @@ export class UserData {
         public tunings: string[],
         public settings: UserSettings,
         public instPresets: InstPreset[],
+        public tensionPresets: TensionPreset[],
         public id?: string,
     ) {
     }
@@ -75,4 +76,10 @@ export interface InstPreset {
     scale: number;
     tensions: number[];
     tuning: Tuning;
+}
+
+export interface TensionPreset {
+    name?: string;
+    tensions: number[];
+    type: InstType;
 }

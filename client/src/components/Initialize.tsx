@@ -57,6 +57,7 @@ const Initialize: React.FC = () => {
                     prevUser.tunings,
                     prevUser.settings,
                     prevUser.instPresets,
+                    prevUser.tensionPresets,
                     prevUser.id
                 );
             });

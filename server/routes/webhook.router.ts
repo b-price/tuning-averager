@@ -63,6 +63,7 @@ webhookRouter.post(
                         tunings: [],
                         instruments: [],
                         instPresets: INST_PRESETS_SERVER,
+                        tensionPresets: [],
                         settings: {
                             darkMode: false,
                             weightedMode: true,

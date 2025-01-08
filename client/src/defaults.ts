@@ -1,4 +1,4 @@
-import {Instrument, InstPreset, Tuning, UserData} from "../../types.ts";
+import {Instrument, InstPreset, Tuning, UserData, TensionPreset} from "../../types.ts";
 
 export const APP_NAME = "Ideal Strings"
 
@@ -524,6 +524,7 @@ export const defaultUser: UserData = {
     instruments: ['0', '1'],
     tunings: ['0', '1', '2', '3', '4', '5', '6', '7', '8'],
     instPresets: INST_PRESETS,
+    tensionPresets: [],
     settings: defaultSettings
 }
 

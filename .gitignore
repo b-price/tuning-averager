@@ -16,7 +16,7 @@ dist-ssr
 
 client/src/oldComponents/
 oldComponents
-client/src/components/aicomponents/
+client/src/aicomponents/
 
 # Editor directories and files
 .vscode/*

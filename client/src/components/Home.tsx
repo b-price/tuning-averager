@@ -33,20 +33,8 @@ import Skeleton, {SkeletonTheme} from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css';
 import AverageStringSet from "./AverageStringSet.tsx";
 import StringSets from "./StringSets.tsx";
-
-// Utility function for setting messages
-const useMessage = () => {
-    const [message, setMessage] = useState<string>('');
-    const [messageClass, setMessageClass] = useState<string>('text-blue-400');
-
-    const showMessage = (text: string, type: 'success' | 'error') => {
-        setMessage(text);
-        setMessageClass(type === 'success' ? 'text-blue-400' : 'text-red-400');
-        setTimeout(() => setMessage(''), 3000);
-    };
-
-    return { message, messageClass, showMessage };
-};
+import Alert from "./Alert.tsx";
+import {useMessage} from "../hooks/useMessage.ts";
 
 interface HomeProps {
     userData: UserData;
@@ -76,7 +64,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
     const [isTuningDeleteOpen, setIsTuningDeleteOpen] = useState(false);
     const [isStringSetsOpen, setIsStringSetsOpen] = useState(false);
     const [isEdit, setIsEdit] = useState<boolean>(false);
-    const { message, messageClass, showMessage } = useMessage();
+    const { message, messageType, showMessage } = useMessage();
 
     //On mount
     useEffect(() => {
@@ -198,9 +186,9 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 }
                 showMessage('Instrument deleted successfully.', 'success');
             }).catch((e) => {
-                console.error(e);
-                showMessage('Instrument could not be deleted.', 'error');
-            });
+            console.error(e);
+            showMessage('Instrument could not be deleted.', 'error');
+        });
     };
 
     // Tuning functions
@@ -233,7 +221,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                     setSelectedInstrument(currentInst);
                 }
                 showMessage('Tuning updated successfully!', 'success');
-                })
+            })
             .catch((e) => {
                 console.error(e);
                 showMessage('Could not update tuning.', 'error');
@@ -623,7 +611,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                     </div>
                 </div>
             </div>
-            {message && <p className={messageClass}>{message}</p>}
+            <Alert show={!!message} message={message} type={messageType} />
             <TuningConfirm
                 isOpen={isTuningConfirmOpen}
                 onClose={() => setIsTuningConfirmOpen(false)}
@@ -650,6 +638,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 onClose={handleCloseInstInput}
                 isEdit={isEdit}
                 editInstrument={selectedInstrument}
+                tensionPresets={[]}
             />
             <AverageStringSet
                 stringSet={avStringSet}
