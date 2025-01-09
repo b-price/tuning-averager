@@ -14,7 +14,7 @@ const Alert: React.FC<AlertProps> = ({ message, type, show, style }) => {
 
     return (
         <div className={`sm:relative fixed transition-all ease-in-out duration-300 ${show ? "opacity-100" : "opacity-0 invisible h-0"}`}>
-            {show &&
+            {!!message &&
                 <div className={`${baseStyles} ${style} ${type === 'success' ? successStyles : errorStyles}`}>
                     <strong className="font-bold">
                         {type === 'success' ? 'Success!' : 'Error!'}

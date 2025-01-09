@@ -7,7 +7,7 @@ import {
     notes,
     stringTypeFactors
 } from "../defaults.ts";
-import {Instrument, StringSet, Tuning, UserData} from "../../../types.ts";
+import {Instrument, StringSet, TensionPreset, Tuning, UserData} from "../../../types.ts";
 import {
     capitalize,
     getUnitWeight,
@@ -44,6 +44,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
 
     const [tunings, setTunings] = useState<Tuning[]>([]);
     const [instruments, setInstruments] = useState<Instrument[]>([]);
+    const [tensionPresets, setTensionPresets] = useState<TensionPreset[]>([]);
     const [selectedInstrument, setSelectedInstrument] = useState<Instrument>(
         instruments.length? instruments[0] : DEFAULT_INST
     );
@@ -64,10 +65,11 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
     const [isTuningDeleteOpen, setIsTuningDeleteOpen] = useState(false);
     const [isStringSetsOpen, setIsStringSetsOpen] = useState(false);
     const [isEdit, setIsEdit] = useState<boolean>(false);
-    const { message, messageType, showMessage } = useMessage();
+    const { message, messageType, showMessage, show } = useMessage();
 
     //On mount
     useEffect(() => {
+        setTensionPresets(userData.tensionPresets);
         setIsLoading(true);
         getTunings(userData)
             .then((data) => {
@@ -361,7 +363,13 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
     const handleDeleteStringSet = (deletedSet: StringSet) => {
         const newStringSets = selectedInstrument.stringSets.filter((strSet) => strSet !== deletedSet);
         const updatedInstrument = {...selectedInstrument, stringSets: newStringSets};
-        onUpdateInstrument({stringSets: newStringSets}, updatedInstrument).catch((e) => console.error(e));
+        onUpdateInstrument({stringSets: newStringSets}, updatedInstrument)
+            .then(() => {
+                if (updatedInstrument.stringSets.length < 1) {
+                    setIsStringSetsOpen(false);
+                }
+            })
+            .catch((e) => console.error(e));
     }
 
     const handleSubmitStringSet = (newStringSet: StringSet) => {
@@ -432,6 +440,12 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
             setSelectedTuning(tuning);
         }
     };
+
+    const updateTensionPresets = async (tensPres: TensionPreset[]) => {
+        return updateUser({tensionPresets: tensPres}, userData.id)
+            .then(() => setTensionPresets(tensPres))
+            .catch((e) => console.error(e));
+    }
 
     return (
         <div className="flex flex-col p-6">
@@ -611,7 +625,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                     </div>
                 </div>
             </div>
-            <Alert show={!!message} message={message} type={messageType} />
+            <Alert show={show} message={message} type={messageType} />
             <TuningConfirm
                 isOpen={isTuningConfirmOpen}
                 onClose={() => setIsTuningConfirmOpen(false)}
@@ -638,7 +652,8 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 onClose={handleCloseInstInput}
                 isEdit={isEdit}
                 editInstrument={selectedInstrument}
-                tensionPresets={[]}
+                tensionPresets={tensionPresets}
+                updateTensionPresets={updateTensionPresets}
             />
             <AverageStringSet
                 stringSet={avStringSet}
