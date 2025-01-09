@@ -147,10 +147,10 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 return inst.id === updatedInst.id ? updatedInst : inst
             }));
             setSelectedInstrument(updatedInst);
-            showMessage('Instrument updated successfully!', 'success');
+            showMessage('Instrument updated!', 'success');
         }).catch((e) => {
             console.error(e);
-            showMessage('Could not update instrument', 'error');
+            showMessage('Could not update instrument.', 'error');
         });
     };
 
@@ -168,10 +168,10 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 if (newInst.tunings.length > 0) {
                     setSelectedTuning(newInst.tunings[0]);
                 }
-                showMessage('Instrument added successfully.', 'success');
+                showMessage('Instrument added!', 'success');
             }).catch((e) => {
             console.error(e);
-            showMessage('Could not add instrument', 'error');
+            showMessage('Could not add instrument.', 'error');
         })
     };
 
@@ -186,12 +186,18 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 if (updatedInstruments[0].tunings.length) {
                     setSelectedTuning(updatedInstruments[0].tunings[0]);
                 }
-                showMessage('Instrument deleted successfully.', 'success');
+                showMessage('Instrument deleted.', 'success');
             }).catch((e) => {
             console.error(e);
             showMessage('Instrument could not be deleted.', 'error');
         });
     };
+
+    const updateTensionPresets = async (tensPres: TensionPreset[]) => {
+        return updateUser({tensionPresets: tensPres}, userData.id)
+            .then(() => setTensionPresets(tensPres))
+            .catch((e) => console.error(e));
+    }
 
     // Tuning functions
     const onUpdateTuning = async (changes: object, updatedTuning: Tuning) => {
@@ -222,7 +228,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 if (currentInstHasTuning) {
                     setSelectedInstrument(currentInst);
                 }
-                showMessage('Tuning updated successfully!', 'success');
+                showMessage('Tuning updated!', 'success');
             })
             .catch((e) => {
                 console.error(e);
@@ -240,10 +246,10 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
             .then(() => {
                 setTunings([...tunings, newTuning]);
                 setSelectedTuning(newTuning);
-                showMessage('Tuning added successfully!', 'success');
+                showMessage('Tuning added!', 'success');
             }).catch((e) => {
             console.error(e);
-            showMessage('Could not add tuning', 'error');
+            showMessage('Could not add tuning.', 'error');
         })
     }
 
@@ -286,7 +292,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 }
                 setTunings(updatedTunings);
                 setSelectedTuning(updatedTunings[0]);
-                showMessage('Tuning successfully deleted', 'success');
+                showMessage('Tuning deleted.', 'success');
             })
             .catch((e) => {
                 console.error(e);
@@ -372,9 +378,25 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
             .catch((e) => console.error(e));
     }
 
+    const changeFavStringSet = () => {
+        const formerFav: StringSet | undefined = selectedInstrument.stringSets.find((strSet) => strSet.favorite);
+        let newStringSets: StringSet[] = [];
+        if (formerFav) {
+            newStringSets = selectedInstrument.stringSets.filter((strSet) => strSet.id !== formerFav.id);
+            formerFav.favorite = false;
+            newStringSets.push(formerFav);
+        } else {
+            newStringSets = selectedInstrument.stringSets;
+        }
+        return newStringSets;
+    }
+
     const handleSubmitStringSet = (newStringSet: StringSet) => {
-        const updatedInstrument = {...selectedInstrument, stringSets: [...selectedInstrument.stringSets, newStringSet]};
-        onUpdateInstrument({stringSets: updatedInstrument.stringSets}, updatedInstrument).catch((e) => console.error(e));
+        const newStringSets = newStringSet.favorite
+            ? [...changeFavStringSet(), newStringSet]
+            : [...selectedInstrument.stringSets, newStringSet];
+        const updatedInstrument = {...selectedInstrument, stringSets: newStringSets};
+        onUpdateInstrument({stringSets: newStringSets}, updatedInstrument).catch((e) => console.error(e));
     };
 
     const handleOpenEditStringSet = (stringSet: StringSet) => {
@@ -388,10 +410,13 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
         const newStringSets = selectedInstrument.stringSets.map((strSet: StringSet) => {
             if (strSet.id === stringSet.id){
                 return stringSet;
+            } else if (stringSet.favorite && strSet.favorite) {
+                return {...strSet, favorite: false};
             } else {
                 return strSet;
             }
         });
+
         const updatedInstrument = {...selectedInstrument, stringSets: newStringSets};
         onUpdateInstrument({stringSets: newStringSets}, updatedInstrument).catch((e) => console.error(e));
     }
@@ -440,12 +465,6 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
             setSelectedTuning(tuning);
         }
     };
-
-    const updateTensionPresets = async (tensPres: TensionPreset[]) => {
-        return updateUser({tensionPresets: tensPres}, userData.id)
-            .then(() => setTensionPresets(tensPres))
-            .catch((e) => console.error(e));
-    }
 
     return (
         <div className="flex flex-col p-6">

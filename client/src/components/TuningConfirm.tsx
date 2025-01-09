@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import { Tuning } from '../../../types.ts';
 import ToggleSwitch from "./ToggleSwitch.tsx";
+import {useMessage} from "../hooks/useMessage.ts";
+import Alert from "./Alert.tsx";
 
 interface TuningConfirmProps {
     isOpen: boolean;
@@ -15,7 +17,7 @@ interface TuningConfirmProps {
 const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit, tunings, defaultChecked, instrument }) => {
     const [selected, setSelected] = useState<boolean[]>(Array(tunings ? tunings.length : 1).fill(true));
     const [wound3rd, setWound3rd] = useState<boolean>(false);
-    const [message, setMessage] = useState<string>('');
+    const { message, messageType, showMessage, show } = useMessage();
 
     useEffect(() => {
         // Set the initial state based on the defaultChecked prop
@@ -35,8 +37,7 @@ const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit
             setWound3rd(false);
             onClose();
         } else {
-            setMessage('Please select at least one tuning.');
-            setTimeout(() => setMessage(''), 3000);
+            showMessage('Please select at least one tuning.', 'error');
         }
     };
 
@@ -109,7 +110,7 @@ const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit
             <button onClick={handleSubmit} className="bg-indigo-500 text-white m-6 px-4 py-2 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2">
                 Get Average String Set
             </button>
-            {message && <p className="text-red-400 text-sm mb-2">{message}</p>}
+            <Alert show={show} message={message} type={messageType} style="m-3" />
         </Modal>
     );
 };

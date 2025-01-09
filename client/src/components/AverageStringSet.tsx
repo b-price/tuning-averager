@@ -27,6 +27,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
     const [name, setName] = useState<string>('');
     const [tensions, setTensions] = useState<number[]>([]);
     const [noteObjects, setNoteObjects] = useState<Note[]>([]);
+    const [favorite, setFavorite] = useState<boolean>(false);
 
     useEffect(() => {
         if (isOpen) {
@@ -40,6 +41,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
         setTensions(stringSet.tensions);
         setNoteObjects(stringSet.noteValues.map((noteValue) => convertToNote(noteValue)));
         setName(stringSet.name);
+        setFavorite(stringSet.favorite || false);
     };
 
     const handleStringGaugeChange = (stringIndex: number, gauge: number) => {
@@ -117,6 +119,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
             woundStrings: woundStrings,
             tensions: tensions,
             noteValues: stringSet.noteValues,
+            favorite: favorite,
         };
         if (isEdit) {
             editStringSet(newStringSet);
@@ -129,19 +132,26 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <div className="flex-col mx-auto sm:px-8 px-4 pb-6 rounded-xl md:max-w-xl">
-                <h2 className="text-2xl font-bold mb-2 mt-0">Average String Set</h2>
+                <h2 className="text-2xl font-bold mb-2 mt-0">{isEdit ? "Editing " : "Average "}String Set</h2>
                 {instrument ? <h3 className="text-md font-semibold mb-4">for {instrument.name}</h3> : <></>}
 
-                {/* String Set Name */}
-                <div className="mb-4 justify-items-center">
-                    <label className="block text-sm font-medium">String Set Name</label>
-                    <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="mt-1 block w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    />
+                {/* String Set Name / Favorite */}
+                <div className="flex items-center justify-evenly mb-4">
+                    <div className="justify-items-center">
+                        <label className="block text-sm font-medium">String Set Name</label>
+                        <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="mt-1 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        />
+                    </div>
+                    <div className="justify-items-center">
+                        <label className="block text-sm font-medium">Favorite</label>
+                        <button onClick={() => setFavorite(!favorite)} className="text-2xl font-bold x-button py-1 px-3 focus:outline-none">{favorite ? "★" : "☆"}</button>
+                    </div>
                 </div>
+
 
                 {/* String Set Values */}
                 <div className="grid grid-cols-4 gap-y-0 gap-x-4 mb-4">

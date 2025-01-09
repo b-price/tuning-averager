@@ -29,7 +29,7 @@ const StringSets: React.FC<StringSetsProps> = ({ instrument, isOpen, onClose, on
                                 <tbody key={set.name + index}>
                                     {/*Name, Edit/Delete*/}
                                     <tr key={set.name + index} className="border-slate-700 dark:border-white border-x border-t">
-                                        <td className="p-2" colSpan={set.gauges.length / 3}><strong>{set.name}</strong></td>
+                                        <td className="p-2" colSpan={set.gauges.length / 3}><strong>{set.name}{set.favorite && " ★"}</strong></td>
                                         <td className="p-2" colSpan={set.gauges.length / 3}>
                                             <button
                                                 className="bg-gray-500 text-white text-sm px-3 py-1.5 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2"

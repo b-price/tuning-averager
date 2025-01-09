@@ -22,8 +22,8 @@ export class Instrument {
         public targetTension: number[],
         public type: InstType,
         public stringSets: StringSet[],
-        public isMultiscale?: boolean, //new
-        public scales?: number[], //new
+        public isMultiscale?: boolean,
+        public scales?: number[],
         public id?: string,
     ) {
     }
@@ -36,6 +36,7 @@ export interface StringSet {
     woundStrings: boolean[];
     tensions: number[];
     noteValues: number[];
+    favorite?: boolean;
 }
 
 export interface Transpose {
