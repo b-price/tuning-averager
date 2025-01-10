@@ -5,7 +5,7 @@ import { useMessage } from "../hooks/useMessage.ts";
 import Alert from "./Alert.tsx";
 import { CSVLink } from "react-csv";
 import ToggleSwitch from "./ToggleSwitch.tsx";
-import {EXPORT_TEXT} from "../defaults.ts";
+import {EXPORT_TEXT, PLAIN_CHAR} from "../defaults.ts";
 
 interface ExportDataProps {
     tunings: Tuning[];
@@ -68,8 +68,10 @@ const ExportData: React.FC<ExportDataProps> = ({ tunings, instruments, isOpen, o
                     ],
                     data: instruments.flatMap(instrument =>
                         instrument.stringSets.map(strSet => ({
-                            ...strSet,
-                            instrument: instrument.name
+                            instrument: instrument.name,
+                            name: strSet.name,
+                            gauges: strSet.gauges.map((g, idx) => !strSet.woundStrings[idx] ? `${g}${PLAIN_CHAR}` : g).join(", "),
+                            favorite: strSet.favorite,
                         })).filter(strSet => onlyFavorites ? strSet.favorite : strSet)
                     ),
                     filename: 'string_sets.csv'

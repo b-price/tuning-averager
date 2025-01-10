@@ -64,6 +64,7 @@ export class UserSettings {
         public stringPower: number,
         public darkMode: boolean,
         public useOSTheme: boolean,
+        public referencePitch: number,
     ) {
     }
 }

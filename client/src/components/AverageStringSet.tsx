@@ -2,7 +2,7 @@ import { Instrument, StringSet } from "../../../types.ts";
 import React, { useEffect, useState } from "react";
 import Modal from "./Modal.tsx";
 import { convertToNote, tension, uwFromGauge } from "../utils/calculate.ts";
-import {notes, stringTypeFactors, STRING_GAUGES, WOUND_CHAR, PLAIN_CHAR} from "../defaults.ts";
+import {notes, stringTypeFactors, STRING_GAUGES, WOUND_CHAR, PLAIN_CHAR, REFERENCE_PITCH} from "../defaults.ts";
 import ArrowSelector from "./ArrowSelector.tsx";
 
 interface AverageStringSetProps {
@@ -13,6 +13,7 @@ interface AverageStringSetProps {
     instrument?: Instrument;
     isEdit: boolean;
     editStringSet: (stringSet: StringSet) => void;
+    referencePitch: number;
 }
 
 interface Note {
@@ -21,7 +22,7 @@ interface Note {
     noteValue: number;
 }
 
-const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, onClose, onSubmit, instrument, isEdit, editStringSet }) => {
+const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, onClose, onSubmit, instrument, isEdit, editStringSet, referencePitch = REFERENCE_PITCH }) => {
     const [newGauges, setNewGauges] = useState<number[]>([]);
     const [woundStrings, setWoundStrings] = useState<boolean[]>([]);
     const [name, setName] = useState<string>('');
@@ -83,7 +84,8 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
                         stringTypeFactors[instrument.type][woundString].power
                     ),
                     noteValue,
-                    instrument.scale
+                    instrument.scale,
+                    referencePitch
                 );
                 return newTensions;
             });

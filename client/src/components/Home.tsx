@@ -4,8 +4,8 @@ import TuningInput from "./TuningInput.tsx";
 import InstrumentInput from "./InstrumentInput.tsx";
 import {
     DECIMAL_POINTS, DEFAULT_INST, DEFAULT_TUNING,
-    notes,
-    stringTypeFactors
+    notes, REFERENCE_PITCH,
+    stringTypeFactors,
 } from "../defaults.ts";
 import {Instrument, StringSet, TensionPreset, Tuning, UserData} from "../../../types.ts";
 import {
@@ -317,7 +317,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
             tunings: [...selectedInstrument.tunings, selectedTuning]
         };
         onUpdateInstrument({tunings: newTuningIDs}, updatedInstrument).catch((error) => {
-            console.log(error);
+            console.error(error);
         })
     };
 
@@ -332,7 +332,6 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
 
     const handleSubmitGetAv = (selectedTunings: Tuning[], wound3rd: boolean) => {
         const avTuning = userData.settings.weightedMode ? stringAverage(selectedTunings) : stringAverageUnweighted(selectedTunings);
-        console.log(avTuning)
         if (avTuning) {
             //setAverageTuning(avTuning);
             const stringSet: StringSet = {
@@ -344,12 +343,16 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
             };
             const UWs: number[] = [];
             avTuning.forEach((note: number, index) => {
-                UWs[index] = getUnitWeight(note, selectedInstrument.scale, selectedInstrument.targetTension[index]);
+                UWs[index] = getUnitWeight(note, selectedInstrument.scale, selectedInstrument.targetTension[index], userData.settings.referencePitch || REFERENCE_PITCH);
                 let wound = true;
-                // Not ideal; should handle more wound vs. plain scenarios
                 if (selectedInstrument.type === 'guitar') {
-                    if (index < 2 || (!wound3rd && index === 2)) {
-                        wound = false
+                    const pwBoundary = selectedInstrument.strings > 9 ? 5 : 2;
+                    const wound3rdIndex = selectedInstrument.strings > 9 ? 4 : 2;
+                    if (index <= pwBoundary) {
+                        wound = false;
+                    }
+                    if (wound3rd && index === wound3rdIndex){
+                        wound = true;
                     }
                 }
                 const coeff = stringTypeFactors[selectedInstrument.type][wound? 'wound' : 'plain'].coeff;
@@ -358,10 +361,9 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
 
                 stringSet.gauges.push(gauge);
                 stringSet.woundStrings.push(wound);
-                stringSet.tensions.push(tension(uwFromGauge(gauge, coeff, power), note, selectedInstrument.scale));
+                stringSet.tensions.push(tension(uwFromGauge(gauge, coeff, power), note, selectedInstrument.scale, userData.settings.referencePitch || REFERENCE_PITCH));
             });
             //setUnitWeights(UWs);
-            console.log(stringSet)
             setAvStringSet(stringSet);
         }
         setIsAveragerOpen(true);
@@ -692,6 +694,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 instrument={selectedInstrument}
                 isEdit={isEdit}
                 editStringSet={handleEditStringSet}
+                referencePitch={userData.settings.referencePitch}
             />
             <StringSets
                 isOpen={isStringSetsOpen}

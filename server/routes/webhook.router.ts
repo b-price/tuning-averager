@@ -70,6 +70,7 @@ webhookRouter.post(
                             stringCoeff: 0,
                             stringPower: 0,
                             useOSTheme: true,
+                            referencePitch: 440,
                         }
                     };
                     const result = await collections?.users?.insertOne(newUser);

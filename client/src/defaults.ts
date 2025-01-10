@@ -1,4 +1,4 @@
-import {Instrument, InstPreset, Tuning, UserData, TensionPreset} from "../../types.ts";
+import {Instrument, InstPreset, Tuning, UserData} from "../../types.ts";
 
 export const APP_NAME = "Ideal Strings"
 
@@ -124,6 +124,19 @@ export const defaultTunings = {
         { note: 'D4', noteValue: notes.indexOf('D4') },
         { note: 'A2', noteValue: notes.indexOf('A2') },
         { note: 'E2', noteValue: notes.indexOf('E2') },
+    ],
+    guitar_11: [
+        { note: 'E4', noteValue: notes.indexOf('E4') },
+        { note: 'E4', noteValue: notes.indexOf('E4') },
+        { note: 'B3', noteValue: notes.indexOf('B3') },
+        { note: 'B3', noteValue: notes.indexOf('B3') },
+        { note: 'G3', noteValue: notes.indexOf('G3') },
+        { note: 'G4', noteValue: notes.indexOf('G4') },
+        { note: 'D3', noteValue: notes.indexOf('D3') },
+        { note: 'D4', noteValue: notes.indexOf('D4') },
+        { note: 'A2', noteValue: notes.indexOf('A2') },
+        { note: 'A3', noteValue: notes.indexOf('A3') },
+        { note: 'E3', noteValue: notes.indexOf('E3') },
     ],
     bass: [
         { note: 'G2', noteValue: notes.indexOf('G2') },
@@ -276,6 +289,7 @@ export const defaultSettings = {
     stringCoeff: 0,
     stringPower: 0,
     useOSTheme: true,
+    referencePitch: REFERENCE_PITCH,
 }
 
 export const defaultStrings = {
@@ -319,7 +333,7 @@ export const INST_PRESETS: InstPreset[] = [
         name: "Guitar 25.5 10-46 E",
         instrument: "guitar",
         scale: 25.5,
-        forStrings: [1, 2, 3, 4, 5, 6, 7, 8, 9, 11],
+        forStrings: [1, 2, 3, 4, 5, 6, 7, 8, 9],
         tensions: [16.2, 15.4, 16.6, 18.4, 19.0, 16.9, 15.8, 13.9, 13.9, 13.9, 13.9],
         tuning: {
             name: "E Standard",
@@ -349,6 +363,18 @@ export const INST_PRESETS: InstPreset[] = [
             name: "E Standard",
             type: "guitar",
             strings: defaultTunings.guitar_10
+        }
+    },
+    {
+        name: "Guitar 25.5 10-46 E 11",
+        instrument: "guitar",
+        scale: 25.5,
+        forStrings: [11],
+        tensions: [16.2, 16.2, 15.4, 15.4, 16.6, 14.7, 18.4, 18.5, 19.0, 23.4, 16.9],
+        tuning: {
+            name: "E Standard",
+            type: "guitar",
+            strings: defaultTunings.guitar_11
         }
     },
     {
