@@ -15,6 +15,8 @@ export const notes = [
     'C9', 'C#9', 'D9', 'D#9', 'E9', 'F9', 'F#9', 'G9', 'G#9', 'A9', 'A#9', 'B9'
 ];
 
+export const REFERENCE_PITCH = 440
+
 export const MAX_STRING_GAUGE = 300
 const intStrings = Array.from({length: MAX_STRING_GAUGE + 1 - 13}, (_v, k) => k + 13)
 export const STRING_GAUGES = [5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, ...intStrings]
@@ -592,3 +594,10 @@ export const FAQS = [
             able to make pretty much anything you can think of with a combination of string count, scale length, and tension.`
     },
 ]
+
+export const EXPORT_TEXT = {
+    Strings: "Shows how often each string gauge appears in your saved string sets. Good for making bulk string orders!",
+    StringSets: "A list of all of your saved string sets and to what instrument they belong.",
+    Instruments: "A list of all of your saved instruments.",
+    Tunings: "A list of all of your saved tunings.",
+}

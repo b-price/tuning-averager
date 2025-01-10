@@ -118,6 +118,7 @@ const Settings: React.FC = () => {
                     tuned to a note is taken into account. Otherwise, it is not.
                 </p>
 
+
             </div>
         </div>
     );

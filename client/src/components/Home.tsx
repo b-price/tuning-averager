@@ -35,6 +35,7 @@ import AverageStringSet from "./AverageStringSet.tsx";
 import StringSets from "./StringSets.tsx";
 import Alert from "./Alert.tsx";
 import {useMessage} from "../hooks/useMessage.ts";
+import ExportData from "./ExportData.tsx";
 
 interface HomeProps {
     userData: UserData;
@@ -65,6 +66,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
     const [isTuningDeleteOpen, setIsTuningDeleteOpen] = useState(false);
     const [isStringSetsOpen, setIsStringSetsOpen] = useState(false);
     const [isEdit, setIsEdit] = useState<boolean>(false);
+    const [isExportOpen, setIsExportOpen] = useState(false);
     const { message, messageType, showMessage, show } = useMessage();
 
     //On mount
@@ -644,7 +646,15 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                     </div>
                 </div>
             </div>
-            <Alert show={show} message={message} type={messageType} />
+            <div>
+                <button
+                    className="bg-gray-500 text-white m-2 px-4 py-2 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2"
+                    onClick={() => setIsExportOpen(true)}
+                >
+                    Export Data
+                </button>
+            </div>
+            <Alert show={show} message={message} type={messageType}/>
             <TuningConfirm
                 isOpen={isTuningConfirmOpen}
                 onClose={() => setIsTuningConfirmOpen(false)}
@@ -689,6 +699,12 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 instrument={selectedInstrument}
                 onDelete={handleDeleteStringSet}
                 onEdit={handleOpenEditStringSet}
+            />
+            <ExportData
+                isOpen={isExportOpen}
+                onClose={() => setIsExportOpen(false)}
+                instruments={instruments}
+                tunings={tunings}
             />
             <DeleteConfirm
                 isOpen={isInstDeleteOpen}

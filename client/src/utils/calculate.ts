@@ -1,5 +1,5 @@
 import {Tuning} from "../../../types";
-import {MULTISCALE_SPAN, notes, PLAIN_CHAR, WOUND_CHAR, woundOverlap} from "../defaults.ts";
+import {MULTISCALE_SPAN, notes, PLAIN_CHAR, REFERENCE_PITCH, WOUND_CHAR, woundOverlap} from "../defaults.ts";
 
 export function tuningWeight(tuning: Tuning){
     let sum = 0;
@@ -114,16 +114,16 @@ function checkStringMatch(tunings: Tuning[]){
         numStrings.every(g => g[1] === numStrings[0][1]);
 }
 
-export function getFrequency(noteValue: number) {
+export function getFrequency(noteValue: number, referencePitch = REFERENCE_PITCH) {
     if (noteValue < 0) {
         return 0;
     }
     noteValue -= 57;
-    return 440 * (Math.pow(2, noteValue / 12))
+    return referencePitch * (Math.pow(2, noteValue / 12))
 }
 
-export function getUnitWeight(noteValue: number, scale: number, tension: number) {
-    const frequency = getFrequency(noteValue);
+export function getUnitWeight(noteValue: number, scale: number, tension: number, referencePitch = REFERENCE_PITCH) {
+    const frequency = getFrequency(noteValue, referencePitch);
     if (frequency <= 0){
         return 0;
     }
@@ -144,8 +144,8 @@ export function stringGauge(uw: number, coefficient: number, power: number) {
     }
 }
 
-export function tension(uw: number, noteValue: number, scale: number) {
-    const frequency = getFrequency(noteValue);
+export function tension(uw: number, noteValue: number, scale: number, referencePitch = REFERENCE_PITCH) {
+    const frequency = getFrequency(noteValue, referencePitch);
     if (frequency <= 0){
         return 0;
     }
