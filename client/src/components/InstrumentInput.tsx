@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {Instrument, InstType, TensionPreset, Tuning} from "../../../types.ts";
+import {InstPreset, Instrument, InstType, TensionPreset, Tuning} from "../../../types.ts";
 import Modal from "./Modal.tsx";
 import {getMultiscale, round} from "../utils/calculate.ts";
 import {
@@ -35,18 +35,21 @@ interface InstrumentInputProps {
     onEdit: ( changes: object, instrument: Instrument ) => void;
     tensionPresets: TensionPreset[];
     updateTensionPresets: ( tensionPresets: TensionPreset[] ) => Promise<void>;
+    instrumentPresets: InstPreset[];
 }
 
 const InstrumentInput: React.FC<InstrumentInputProps> = ({
-                                                             onSubmit, tunings,
-                                                             isOpen,
-                                                             onClose,
-                                                             isEdit,
-                                                             editInstrument,
-                                                             onEdit,
-                                                             tensionPresets,
-                                                             updateTensionPresets,
-                                                         }) => {
+     onSubmit, tunings,
+     isOpen,
+     onClose,
+     isEdit,
+     editInstrument,
+     onEdit,
+     tensionPresets,
+     updateTensionPresets,
+    instrumentPresets,
+    }) =>
+{
     const [name, setName] = useState(defaultState.name);
     const [selectedTunings, setSelectedTunings] = useState<Tuning[]>(defaultState.selectedTunings);
     const [scale, setScaleInternal] = useState(defaultState.scale);
@@ -61,6 +64,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
     const [scales, setScales] = useState<number[]>(defaultState.scales);
     const [presetNaming, setPresetNaming] = useState(false);
     const [presetName, setPresetName] = useState<string>('');
+    const [instPreset, setInstPreset] = useState<InstPreset>(instrumentPresets[0]);
     const { message, messageType, showMessage, show } = useMessage();
 
     const setScale = (value: number) => {
@@ -210,7 +214,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
         } else if (tensionPresets.map((preset => preset.name)).includes(presetName)) {
             showMessage('Preset name already in use!', 'error');
         } else {
-            const preset: TensionPreset = { name: presetName, tensions: targetTension, type: type };
+            const preset: TensionPreset = { name: presetName, tensions: useAverageTension ? Array(strings).fill(averageTension) : targetTension, type: type };
             const newPresets = [...tensionPresets, preset];
             updateTensionPresets(newPresets)
                 .then(() => {
@@ -219,6 +223,13 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                 })
                 .catch((err) => showMessage('Unable to save tension preset: ' + err, 'error'));
         }
+    }
+
+    const handleLoadPresetTension = (tension: TensionPreset) => {
+        if (useAverageTension) {
+            setAverageTension(tension.tensions.reduce((a, b) => a + b, 0) / tension.tensions.length);
+        }
+        setTargetTension(tension.tensions);
     }
 
     // Function to filter tunings based on string count and type
@@ -250,6 +261,23 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
             setScales(getMultiscale(scale, strings));
         } else {
             setScale(scales[0]);
+        }
+    }
+
+    const handlePresetChange = (id: string) => {
+        const newPreset = instrumentPresets.find(preset => preset.id === id);
+        if (newPreset) {
+            const stringCount = newPreset.forStrings.length === 1
+                ? newPreset.forStrings[0]
+                : newPreset.forStrings.includes(defaultStrings[newPreset.instrument])
+                    ? defaultStrings[newPreset.instrument]
+                    : newPreset.forStrings[0];
+            setInstPreset(newPreset);
+            setType(newPreset.instrument);
+            setScale(newPreset.scale);
+            setTargetTension(newPreset.tensions.slice(0, stringCount));
+            setStrings(stringCount);
+            setSelectedTunings([]);
         }
     }
 
@@ -366,7 +394,29 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                             }
                         </DropdownButton>
 
+                        {/*Instrument Presets*/}
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium">Use Preset</label>
+                            <select
+                                onChange={(e) => handlePresetChange(e.target.value)}
+                                disabled={!instrumentPresets || instrumentPresets.length === 0}
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            >
+                                {isEdit && editInstrument ? (instrumentPresets
+                                    .filter((insPre) => insPre.instrument === editInstrument.type && insPre.forStrings.includes(editInstrument.strings) && insPre.scale === editInstrument.scale)
+                                    .map((ipre) => (
+                                        <option key={ipre.id} value={ipre.id}>{ipre.name}</option>
+                                    ))) : (instrumentPresets.map((insPre) => (
+                                        <option key={insPre.id} value={insPre.id}>{insPre.name}</option>
+                                    ))
+                                )}
+                            </select>
+                        </div>
+
                     </div>
+
+
+
 
                     {/*Desktop Column 2*/}
                     <div className="space-y-2 mt-2 mx-2">
@@ -397,7 +447,8 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                             ))}
                         </div>
 
-                        <div className={`transition-all duration-500 ease-in-out ${useAverageTension ? "opacity-100 max-h-screen" : "opacity-0 max-h-0 invisible"}`}>
+                        <div
+                            className={`transition-all duration-500 ease-in-out ${useAverageTension ? "opacity-100 max-h-screen" : "opacity-0 max-h-0 invisible"}`}>
                             <label className="block text-sm font-medium">Average Tension</label>
                             <div className="flex items-center justify-center">
                                 <input
@@ -443,7 +494,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                             <button onClick={() => setPresetNaming(true)}
                                     className={`mt-2 px-3 py-1.5 bg-indigo-500 text-white rounded-md hover:bg-indigo-400 `}
                             >
-                            Save Tensions
+                                Save Tensions
                             </button>
                         </div>
 
@@ -463,7 +514,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                                     <div key={index} className="flex justify-between">
                                         <button
                                             className="bg-indigo-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2"
-                                            onClick={() => setTargetTension(preset.tensions)}
+                                            onClick={() => handleLoadPresetTension(preset)}
                                         >
                                             {preset.name}
                                         </button>
@@ -486,7 +537,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                         className="mt-6 sm:w-1/2 w-full py-2 px-4 bg-indigo-500 text-white rounded-md hover:bg-indigo-400">{buttonText}
                 </button>
 
-                <Alert show={show} message={message} type={messageType} style="mt-4" />
+                <Alert show={show} message={message} type={messageType} style="mt-4"/>
             </div>
         </Modal>
     );

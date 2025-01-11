@@ -150,13 +150,14 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
                     </div>
                     <div className="justify-items-center">
                         <label className="block text-sm font-medium">Favorite</label>
-                        <button onClick={() => setFavorite(!favorite)} className="text-2xl font-bold x-button py-1 px-3 focus:outline-none">{favorite ? "★" : "☆"}</button>
+                        <button onClick={() => setFavorite(!favorite)}
+                                className="text-2xl font-bold x-button py-1 px-3 focus:outline-none">{favorite ? "★" : "☆"}</button>
                     </div>
                 </div>
 
 
                 {/* String Set Values */}
-                <div className="grid grid-cols-4 gap-y-0 gap-x-4 mb-4">
+                <div className="grid grid-cols-4 gap-y-0 gap-x-4 mb-1">
                     <div className="col-span-2 flex justify-center">
                         {/*<label className="block text-sm font-medium col-span-2">String</label>*/}
                         {/*<label className="block text-sm font-medium text-center">Note</label>*/}
@@ -204,7 +205,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
 
                                 {/* Toggle wound/plain */}
                                 <p
-                                    className="font-semibold ml-2 cursor-pointer hover:text-indigo-400"
+                                    className="font-semibold ml-0 cursor-pointer hover:text-indigo-400"
                                     onClick={() => toggleWoundString(index)}
                                 >
                                     {woundStrings[index] ? WOUND_CHAR : PLAIN_CHAR}
@@ -216,6 +217,13 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
                             </p>
                         </div>
                     ))}
+
+                </div>
+
+                {/*Total Tension*/}
+                <div className="flex items-center justify-center mb-4">
+                    <label className="mr-2">Total Tension:</label>
+                    <p><strong>{tensions.reduce((a, b) => a + b, 0).toFixed(2)}</strong> lbs.</p>
                 </div>
 
                 {/* Buttons */}
@@ -232,7 +240,8 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
                         className="bg-indigo-500 text-white m-2 px-4 py-2 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2"
                         onClick={handleSubmit}
                     >
-                        <span className="hidden md:block">{isEdit ? "Edit String Set" : "Add String Set to Instrument"}</span>
+                        <span
+                            className="hidden md:block">{isEdit ? "Edit String Set" : "Add String Set to Instrument"}</span>
                         <span className="block md:hidden">{isEdit ? "Edit String Set" : "Add Set to Inst."}</span>
                     </button>
                 </div>

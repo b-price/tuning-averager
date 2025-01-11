@@ -254,6 +254,24 @@ export const defaultTunings = {
         { note: 'D3', noteValue: notes.indexOf('D3') },
         { note: 'B2', noteValue: notes.indexOf('B2') },
     ],
+    bass_VI: [
+        { note: 'E3', noteValue: notes.indexOf('E3') },
+        { note: 'B2', noteValue: notes.indexOf('B2') },
+        { note: 'G2', noteValue: notes.indexOf('G2') },
+        { note: 'D2', noteValue: notes.indexOf('D2') },
+        { note: 'A1', noteValue: notes.indexOf('A1') },
+        { note: 'E1', noteValue: notes.indexOf('E1') },
+    ],
+    guitar_baritone: [
+        { note: 'B3', noteValue: notes.indexOf('B3') },
+        { note: 'F#3', noteValue: notes.indexOf('F#3') },
+        { note: 'D3', noteValue: notes.indexOf('D3') },
+        { note: 'A2', noteValue: notes.indexOf('A2') },
+        { note: 'E2', noteValue: notes.indexOf('E2') },
+        { note: 'B1', noteValue: notes.indexOf('B1') },
+        { note: 'F#1', noteValue: notes.indexOf('F#1') },
+        { note: 'C#1', noteValue: notes.indexOf('C#1') },
+    ],
 };
 
 export const STRING_RANGE = [1, 12]
@@ -295,13 +313,13 @@ export const defaultSettings = {
 export const defaultStrings = {
     guitar: 6,
     bass: 4,
-    other: 4
+    other: 4,
 }
 
 export const defaultScales = {
     guitar: 25.5,
     bass: 34,
-    other: 13
+    other: 13,
 }
 
 export const TENSION_PRESETS_OLD = {
@@ -334,12 +352,13 @@ export const INST_PRESETS: InstPreset[] = [
         instrument: "guitar",
         scale: 25.5,
         forStrings: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-        tensions: [16.2, 15.4, 16.6, 18.4, 19.0, 16.9, 15.8, 13.9, 13.9, 13.9, 13.9],
+        tensions: [16.2, 15.4, 16.6, 18.4, 19.0, 16.9, 15.8, 13.9, 13.5],
         tuning: {
             name: "E Standard",
             type: "guitar",
             strings: defaultTunings.guitar
-        }
+        },
+        id: "guitar1-6",
     },
     {
         name: "Guitar 25.5 10-46 E 12",
@@ -351,7 +370,8 @@ export const INST_PRESETS: InstPreset[] = [
             name: "E Standard",
             type: "guitar",
             strings: defaultTunings.guitar_12
-        }
+        },
+        id: "guitar1-12",
     },
     {
         name: "Guitar 25.5 10-46 E 10",
@@ -363,7 +383,8 @@ export const INST_PRESETS: InstPreset[] = [
             name: "E Standard",
             type: "guitar",
             strings: defaultTunings.guitar_10
-        }
+        },
+        id: "guitar1-10",
     },
     {
         name: "Guitar 25.5 10-46 E 11",
@@ -375,10 +396,11 @@ export const INST_PRESETS: InstPreset[] = [
             name: "E Standard",
             type: "guitar",
             strings: defaultTunings.guitar_11
-        }
+        },
+        id: "guitar1-11",
     },
     {
-        name: "Bass 34 105 E",
+        name: "Bass 34 100 E",
         instrument: "bass",
         scale: 34,
         forStrings: [1, 2, 3, 4, 5],
@@ -387,10 +409,50 @@ export const INST_PRESETS: InstPreset[] = [
             name: "E Standard",
             type: "bass",
             strings: defaultTunings.bass
-        }
+        },
+        id: "bass1-4",
     },
     {
-        name: "Bass 34 105 E 6",
+        name: "Bass 34 105 E",
+        instrument: "bass",
+        scale: 34,
+        forStrings: [1, 2, 3, 4, 5],
+        tensions: [50.3, 55.6, 45.3, 38.1, 35.0],
+        tuning: {
+            name: "E Standard",
+            type: "bass",
+            strings: defaultTunings.bass
+        },
+        id: "bass2-4",
+    },
+    {
+        name: "Bass 30 105 E",
+        instrument: "bass",
+        scale: 30,
+        forStrings: [1, 2, 3, 4, 5],
+        tensions: [39.2, 43.3, 35.3, 29.6, 27.3],
+        tuning: {
+            name: "E Standard",
+            type: "bass",
+            strings: defaultTunings.bass
+        },
+        id: "bass3-4",
+    },
+    {
+        name: "Bass 32 105 E",
+        instrument: "bass",
+        scale: 32,
+        forStrings: [1, 2, 3, 4, 5],
+        tensions: [44.6, 49.3, 40.2, 33.7, 31.0],
+        tuning: {
+            name: "E Standard",
+            type: "bass",
+            strings: defaultTunings.bass
+        },
+        id: "bass4-4",
+    },
+    {
+        name: "Bass 34 100 E 6",
         instrument: "bass",
         scale: 34,
         forStrings: [6],
@@ -399,10 +461,11 @@ export const INST_PRESETS: InstPreset[] = [
             name: "E Standard",
             type: "bass",
             strings: defaultTunings.bass_6
-        }
+        },
+        id: "bass1-6",
     },
     {
-        name: "Bass 34 105 E 7",
+        name: "Bass 34 100 E 7",
         instrument: "bass",
         scale: 34,
         forStrings: [7],
@@ -411,7 +474,8 @@ export const INST_PRESETS: InstPreset[] = [
             name: "E Standard",
             type: "bass",
             strings: defaultTunings.bass_7
-        }
+        },
+        id: "bass1-7",
     },
     {
         name: "Bass 34 100 E 8",
@@ -423,10 +487,11 @@ export const INST_PRESETS: InstPreset[] = [
             name: "E Standard",
             type: "bass",
             strings: defaultTunings.bass_8
-        }
+        },
+        id: "bass1-8",
     },
     {
-        name: "Bass 34 105 E 9",
+        name: "Bass 34 100 E 9",
         instrument: "bass",
         scale: 34,
         forStrings: [9, 11],
@@ -435,7 +500,8 @@ export const INST_PRESETS: InstPreset[] = [
             name: "E Standard",
             type: "bass",
             strings: defaultTunings.bass_9
-        }
+        },
+        id: "bass1-9",
     },
     {
         name: "Bass 34 100 E 12",
@@ -447,7 +513,8 @@ export const INST_PRESETS: InstPreset[] = [
             name: "E Standard",
             type: "bass",
             strings: defaultTunings.bass_12
-        }
+        },
+        id: "bass1-11",
     },
     {
         name: "Banjo 11 G 5",
@@ -459,7 +526,8 @@ export const INST_PRESETS: InstPreset[] = [
             name: "Banjo G",
             type: "other",
             strings: defaultTunings.other_banjo
-        }
+        },
+        id: "banjo1",
     },
     {
         name: "Mandolin 13 G 36",
@@ -471,7 +539,8 @@ export const INST_PRESETS: InstPreset[] = [
             name: "Mandolin",
             type: "other",
             strings: defaultTunings.other_mandolin
-        }
+        },
+        id: "mandolin1",
     },
     {
         name: "Pedal Steel 24.25 B9 10",
@@ -483,7 +552,8 @@ export const INST_PRESETS: InstPreset[] = [
             name: "Pedal Steel E9",
             type: "other",
             strings: defaultTunings.other_pedalsteel
-        }
+        },
+        id: "pedalsteel1",
     },
     {
         name: "Ukulele Soprano G",
@@ -495,55 +565,125 @@ export const INST_PRESETS: InstPreset[] = [
             name: "Ukulele Soprano G",
             type: "other",
             strings: defaultTunings.other_ukulele
-        }
+        },
+        id: "uke1",
     },
     {
         name: "Guitar 24.75 10-46 E",
         instrument: "guitar",
         scale: 24.75,
         forStrings: [3, 4, 5, 6, 7, 8, 9],
-        tensions: [15.3, 14.5, 15.6, 17.4, 17.9, 15.9],
+        tensions: [15.3, 14.5, 15.6, 17.4, 17.9, 15.9, 15.0, 12.3, 10.5],
         tuning: {
             name: "E Standard",
             type: "guitar",
             strings: defaultTunings.guitar
-        }
+        },
+        id: "guitar2-6",
     },
     {
         name: "Guitar 25.5 9-42 E",
         instrument: "guitar",
         scale: 25.5,
         forStrings: [3, 4, 5, 6, 7, 8, 9],
-        tensions: [13.1, 11.0, 14.7, 15.7, 15.5, 14.4],
+        tensions: [13.1, 11.0, 14.7, 15.7, 15.5, 14.4, 13.3, 13.0, 12.0],
         tuning: {
             name: "E Standard",
             type: "guitar",
             strings: defaultTunings.guitar
-        }
+        },
+        id: "guitar3-6",
     },
     {
         name: "Guitar 24.75 9-42 E",
         instrument: "guitar",
         scale: 24.75,
         forStrings: [3, 4, 5, 6, 7, 8, 9],
-        tensions: [12.4, 10.4, 13.8, 14.8, 14.6, 13.5],
+        tensions: [12.4, 10.4, 13.8, 14.8, 14.6, 13.5, 12.5, 10.0, 9.5],
         tuning: {
             name: "E Standard",
             type: "guitar",
             strings: defaultTunings.guitar
-        }
+        },
+        id: "guitar4-6",
     },
     {
-        name: "Guitar 24.75 9-42 E",
+        name: "Guitar 24 9-42 E",
         instrument: "guitar",
-        scale: 24.75,
+        scale: 24,
         forStrings: [3, 4, 5, 6, 7, 8, 9],
-        tensions: [12.4, 10.4, 13.8, 14.8, 14.6, 13.5],
+        tensions: [11.6, 9.8, 13.0, 13.9, 13.7, 12.7, 11.7, 9.4, 9.0],
         tuning: {
             name: "E Standard",
             type: "guitar",
             strings: defaultTunings.guitar
-        }
+        },
+        id: "guitar5-6",
+    },
+    {
+        name: "Guitar 24 10-46 E",
+        instrument: "guitar",
+        scale: 24,
+        forStrings: [3, 4, 5, 6, 7, 8, 9],
+        tensions: [14.4, 13.6, 14.7, 16.3, 16.9, 15.0, 14.1, 11.6, 9.9],
+        tuning: {
+            name: "E Standard",
+            type: "guitar",
+            strings: defaultTunings.guitar
+        },
+        id: "guitar6-6",
+    },
+    {
+        name: "Guitar 25.5 12-52 E",
+        instrument: "guitar",
+        scale: 25.5,
+        forStrings: [3, 4, 5, 6, 7, 8, 9],
+        tensions: [23.4, 23.3, 28.0, 27.6, 25.6, 21.1, 21.0, 19.0, 15.0],
+        tuning: {
+            name: "E Standard",
+            type: "guitar",
+            strings: defaultTunings.guitar
+        },
+        id: "guitar7-6",
+    },
+    {
+        name: "Bass VI 30 84-24 E",
+        instrument: "bass",
+        scale: 30,
+        forStrings: [6],
+        tensions: [27.4, 30.0, 30.6, 27.7, 25.6, 19.8],
+        tuning: {
+            name: "E Standard",
+            type: "guitar",
+            strings: defaultTunings.bass_VI
+        },
+        id: "bassVI1",
+    },
+    {
+        name: "Baritone 27 14-68 B",
+        instrument: "guitar",
+        scale: 27,
+        forStrings: [6, 7, 8],
+        tensions: [20.0, 18.6, 20.6, 31.2, 28.3, 23.5, 20.2, 16.0],
+        tuning: {
+            name: "B Standard",
+            type: "guitar",
+            strings: defaultTunings.guitar_baritone
+        },
+        id: "baritone1-6",
+    },
+    {
+        name: "Baritone 27 13-62 B",
+        instrument: "guitar",
+        scale: 27,
+        forStrings: [6, 7, 8],
+        tensions: [17.3, 16.6, 20.6, 21.3, 19.0, 19.6, 15.3, 13.0],
+        tuning: {
+            name: "B Standard",
+            type: "guitar",
+            strings: defaultTunings.guitar_baritone
+        },
+        id: "baritone2-6",
     },
 ]
 

@@ -72,12 +72,13 @@ export class UserSettings {
 export type InstType = 'guitar' | 'bass' | 'other';
 
 export interface InstPreset {
-    name?: string;
+    name: string;
     instrument: InstType;
     forStrings: number[];
     scale: number;
     tensions: number[];
     tuning: Tuning;
+    id: string;
 }
 
 export interface TensionPreset {

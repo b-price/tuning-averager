@@ -16,7 +16,16 @@ interface TuningInputProps {
     onEdit: ( changes: object, tuning: Tuning ) => void;
 }
 
-const TuningInput: React.FC<TuningInputProps> = ({notes, presetTunings, onSubmit, isOpen, onClose, isEdit, editTuning, onEdit}) => {
+const TuningInput: React.FC<TuningInputProps> = ({
+                                                     notes,
+                                                     presetTunings,
+                                                     onSubmit,
+                                                     isOpen,
+                                                     onClose,
+                                                     isEdit,
+                                                     editTuning,
+                                                     onEdit}) =>
+{
     const [strings, setStrings] = useState<GuitarString[]>(INST_PRESETS[0].tuning.strings.slice(0, 6));
     const [name, setName] = useState<string>('');
     const [type, setType] = useState<InstType>('guitar');

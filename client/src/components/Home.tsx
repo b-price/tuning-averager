@@ -3,7 +3,7 @@ import TuningConfirm from "./TuningConfirm.tsx";
 import TuningInput from "./TuningInput.tsx";
 import InstrumentInput from "./InstrumentInput.tsx";
 import {
-    DECIMAL_POINTS, DEFAULT_INST, DEFAULT_TUNING,
+    DECIMAL_POINTS, DEFAULT_INST, DEFAULT_TUNING, INST_PRESETS,
     notes, REFERENCE_PITCH,
     stringTypeFactors,
 } from "../defaults.ts";
@@ -685,6 +685,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 editInstrument={selectedInstrument}
                 tensionPresets={tensionPresets}
                 updateTensionPresets={updateTensionPresets}
+                instrumentPresets={INST_PRESETS}
             />
             <AverageStringSet
                 stringSet={avStringSet}

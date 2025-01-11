@@ -105,7 +105,7 @@ const Settings: React.FC = () => {
                     <UserButton afterSignOutUrl="/"/>
                 </div>
 
-                <h2 className="text-xl font-semibold">App Settings</h2>
+                <h2 className="text-xl font-semibold sm:text-left">App Settings</h2>
                 {/* Weighted Mode */}
                 <ToggleSwitch
                     checked={settings.weightedMode}
@@ -133,7 +133,7 @@ const Settings: React.FC = () => {
                 </div>
 
                 {/*Theme*/}
-                <h2 className="text-xl font-semibold">Theme</h2>
+                <h2 className="text-xl font-semibold sm:text-left">Theme</h2>
                 <ToggleSwitch
                     checked={settings.useOSTheme}
                     onChange={(e) => handleUseOSThemeSwitch(e.target.checked)}
