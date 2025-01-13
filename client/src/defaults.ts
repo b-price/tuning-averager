@@ -23,6 +23,10 @@ export const STRING_GAUGES = [5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 
 
 export const SCALE_LENGTH_RANGE = [10, 100]
 
+export const MIN_TAPER_GAUGE = 65
+export const LONG_THIN_GAUGE = 24
+export const GUITAR_WARNING_SCALE = 29
+
 export const DEFAULT_TUNING: Tuning = {
     id: '0',
     name: 'E Standard',
@@ -320,30 +324,6 @@ export const defaultScales = {
     guitar: 25.5,
     bass: 34,
     other: 13,
-}
-
-export const TENSION_PRESETS_OLD = {
-    guitar_2550_E_46: [16.2, 15.4, 16.6, 18.4, 19.0, 16.9],
-    guitar_2550_E_42: [13.1, 11.0, 14.7, 15.7, 15.5, 14.4],
-    guitar_2550_E_50: [19.6, 17.8, 18.6, 21.1, 21.0, 19.0],
-    guitar_2550_E_54: [23.4, 23.3, 22.9, 27.6, 25.6, 23.6],
-    guitar_2475_E_46: [15.3, 14.5, 15.6, 17.4, 17.9, 15.9],
-    guitar_2475_E_42: [12.4, 10.4, 13.8, 14.8, 14.6, 13.5],
-    guitar_2475_E_50: [18.5, 16.8, 17.5, 19.9, 19.7, 17.9],
-    guitar_2475_E_54: [22.0, 22.0, 21.6, 26.0, 24.1, 22.2],
-    guitar_2400_E_54: [20.7, 20.6, 20.3, 24.5, 22.7, 20.9],
-    guitar_2400_E_46: [14.4, 13.6, 14.7, 16.3, 16.9, 15.0],
-    bass_3400_E_105: [50.3, 55.6, 45.3, 38.1],
-    bass_3400_E_100: [42.5, 48.4, 40.1, 34.7],
-    bass5_3400_B_135: [50.3, 55.6, 45.3, 38.1, 35.0],
-    bass5_3400_B_130: [42.5, 48.4, 40.1, 34.7, 32.1],
-    bass6_3400_BC_130: [39.0, 42.5, 48.4, 40.1, 34.7, 32.1],
-    bass_3000_E_105: [39.2, 43.3, 35.3, 29.6],
-    bass_3200_E_105: [44.6, 49.3, 40.2, 33.7],
-    guitar_3000_E_84: [27.4, 30.0, 30.6, 27.7, 25.6, 19.8],
-    banjo_2625_G_11: [16.5, 13.9, 10.3, 14.1, 16.4],
-    mandolin_1387_G_36: [23.2, 23.2, 19.3, 19.3, 26.5, 26.5, 20.2, 20.2],
-    guitar_3000_G_95: [16.2, 15.4, 17.5, 21.5, 35.0, 38.0]
 }
 
 export const INST_PRESETS: InstPreset[] = [
@@ -759,6 +739,15 @@ export const FAQS = [
         answer: `I'd like to add more explicit support for different instruments in the future, but for now you should be
             able to make pretty much anything you can think of with a combination of string count, scale length, and tension.`
     },
+    {
+        question: `What do the warnings about taper and string length mean?`,
+        answer: `Most manufacturers put a taper in strings larger than 65 gauge, so they can fit into tuners. This can cause
+            issues if you don't buy the correct length of strings; you don't want a taper on your fretboard! Usually bass
+            string sets are marked for their intended scale length with short (S) - 30", medium (M) - 32", long (L) - 34",
+            or extra/super long (X or E) - 35+". This can be an issue with the Bass VI as well. On the other hand, it can also
+            be an issue to put a string normally intended for a standard scale guitar on one 30+": the string might not be
+            long enough. I've found that StringJoy and GHS have the longest and Ernie Ball has the shortest strings.`
+    },
 ]
 
 export const EXPORT_TEXT = {
@@ -767,3 +756,6 @@ export const EXPORT_TEXT = {
     Instruments: "A list of all of your saved instruments.",
     Tunings: "A list of all of your saved tunings.",
 }
+
+export const TAPER_WARNING = " usually tapered; be sure to get the right string length. "
+export const LENGTH_WARNING = " could be too short for an instrument with scale length "

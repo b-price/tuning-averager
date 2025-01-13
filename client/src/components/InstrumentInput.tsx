@@ -1,7 +1,9 @@
+// InstrumentInput.tsx
 import React, { useState, useEffect } from 'react';
-import {InstPreset, Instrument, InstType, TensionPreset, Tuning} from "../../../types.ts";
+import { InstPreset, Instrument, InstType, TensionPreset, Tuning } from "../../../types.ts";
 import Modal from "./Modal.tsx";
-import {getMultiscale, round} from "../utils/calculate.ts";
+import DeleteConfirm from "./DeleteConfirm.tsx"; // Import DeleteConfirm component
+import { getMultiscale, round } from "../utils/calculate.ts";
 import {
     DECIMAL_POINTS,
     defaultScales,
@@ -12,7 +14,7 @@ import {
 } from "../defaults.ts";
 import ToggleSwitch from "./ToggleSwitch.tsx";
 import DropdownButton from "./DropdownButton.tsx";
-import {useMessage} from "../hooks/useMessage.ts";
+import { useMessage } from "../hooks/useMessage.ts";
 import Alert from "./Alert.tsx";
 
 const defaultState = {
@@ -26,30 +28,29 @@ const defaultState = {
 }
 
 interface InstrumentInputProps {
-    onSubmit: ( instrument: Instrument ) => void;
+    onSubmit: (instrument: Instrument) => void;
     tunings: Tuning[];
     isOpen: boolean;
     onClose: () => void;
     isEdit: boolean;
     editInstrument?: Instrument;
-    onEdit: ( changes: object, instrument: Instrument ) => void;
+    onEdit: (changes: object, instrument: Instrument) => void;
     tensionPresets: TensionPreset[];
-    updateTensionPresets: ( tensionPresets: TensionPreset[] ) => Promise<void>;
+    updateTensionPresets: (tensionPresets: TensionPreset[]) => Promise<void>;
     instrumentPresets: InstPreset[];
 }
 
 const InstrumentInput: React.FC<InstrumentInputProps> = ({
-     onSubmit, tunings,
-     isOpen,
-     onClose,
-     isEdit,
-     editInstrument,
-     onEdit,
-     tensionPresets,
-     updateTensionPresets,
-    instrumentPresets,
-    }) =>
-{
+                                                             onSubmit, tunings,
+                                                             isOpen,
+                                                             onClose,
+                                                             isEdit,
+                                                             editInstrument,
+                                                             onEdit,
+                                                             tensionPresets,
+                                                             updateTensionPresets,
+                                                             instrumentPresets,
+                                                         }) => {
     const [name, setName] = useState(defaultState.name);
     const [selectedTunings, setSelectedTunings] = useState<Tuning[]>(defaultState.selectedTunings);
     const [scale, setScaleInternal] = useState(defaultState.scale);
@@ -64,8 +65,9 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
     const [scales, setScales] = useState<number[]>(defaultState.scales);
     const [presetNaming, setPresetNaming] = useState(false);
     const [presetName, setPresetName] = useState<string>('');
-    const [instPreset, setInstPreset] = useState<InstPreset>(instrumentPresets[0]);
-    const { message, messageType, showMessage, show } = useMessage();
+    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+    const [presetToDelete, setPresetToDelete] = useState<TensionPreset | null>(null);
+    const { message, messageType, showMessage, show, closeMessage } = useMessage();
 
     const setScale = (value: number) => {
         if (value >= SCALE_LENGTH_RANGE[0] && value <= SCALE_LENGTH_RANGE[1]) {
@@ -165,7 +167,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
     };
 
     const handleSubmit = () => {
-        if (name === ''){
+        if (name === '') {
             showMessage('Name is required!', 'error');
         } else {
             let finalTargetTension = targetTension;
@@ -202,10 +204,18 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
     };
 
     const handleDeleteTensionPreset = (deletePre: TensionPreset) => {
-        const newPresets = tensionPresets.filter(preset => preset.name !== deletePre.name);
-        updateTensionPresets(newPresets)
-            .then(() => showMessage('Tension preset deleted.', 'success'))
-            .catch(() => showMessage('Unable to delete tension preset.', 'error'));
+        setPresetToDelete(deletePre);
+        setIsDeleteConfirmOpen(true);
+    }
+
+    const confirmDeleteTensionPreset = () => {
+        if (presetToDelete) {
+            const newPresets = tensionPresets.filter(preset => preset.name !== presetToDelete.name);
+            updateTensionPresets(newPresets)
+                .then(() => showMessage('Tension preset deleted.', 'success'))
+                .catch(() => showMessage('Unable to delete tension preset.', 'error'));
+            setIsDeleteConfirmOpen(false);
+        }
     }
 
     const handleAddTensionPreset = () => {
@@ -248,7 +258,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
     }
 
     const handleMultiscaleChange = (value: number, index: number) => {
-        if (value >= SCALE_LENGTH_RANGE[0] && value <= SCALE_LENGTH_RANGE[1]){
+        if (value >= SCALE_LENGTH_RANGE[0] && value <= SCALE_LENGTH_RANGE[1]) {
             const newScales = [...scales];
             newScales[index] = value;
             setScales(newScales);
@@ -257,7 +267,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
 
     const handleMultiscale = (checked: boolean) => {
         setMultiscale(checked);
-        if (checked){
+        if (checked) {
             setScales(getMultiscale(scale, strings));
         } else {
             setScale(scales[0]);
@@ -272,7 +282,6 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                 : newPreset.forStrings.includes(defaultStrings[newPreset.instrument])
                     ? defaultStrings[newPreset.instrument]
                     : newPreset.forStrings[0];
-            setInstPreset(newPreset);
             setType(newPreset.instrument);
             setScale(newPreset.scale);
             setTargetTension(newPreset.tensions.slice(0, stringCount));
@@ -537,8 +546,15 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                         className="mt-6 sm:w-1/2 w-full py-2 px-4 bg-indigo-500 text-white rounded-md hover:bg-indigo-400">{buttonText}
                 </button>
 
-                <Alert show={show} message={message} type={messageType} style="mt-4"/>
+                <Alert show={show} message={message} type={messageType} onClose={closeMessage} style="mt-4"/>
             </div>
+
+            {/* Delete Confirmation Modal */}
+            <DeleteConfirm
+                isOpen={isDeleteConfirmOpen}
+                onClose={() => setIsDeleteConfirmOpen(false)}
+                deleteFunction={confirmDeleteTensionPreset}
+            />
         </Modal>
     );
 }

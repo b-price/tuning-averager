@@ -1,7 +1,8 @@
 import Modal from './Modal';
 import {StringSet, Instrument} from '../../../types.ts';
-import React from "react";
+import React, {useState} from "react";
 import {getPW} from "../utils/calculate.ts";
+import DeleteConfirm from "./DeleteConfirm.tsx";
 
 interface StringSetsProps {
     instrument: Instrument;
@@ -12,8 +13,23 @@ interface StringSetsProps {
 }
 
 const StringSets: React.FC<StringSetsProps> = ({ instrument, isOpen, onClose, onDelete, onEdit }) => {
+    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+    const [setToDelete, setSetToDelete] = useState<StringSet | null>(null);
+
     if (!instrument || !instrument.stringSets) {
         return null;
+    }
+
+    const onDeleteClick = (stringSet: StringSet) => {
+        setSetToDelete(stringSet);
+        setIsDeleteConfirmOpen(true);
+    }
+
+    const onDeleteConfirm = () => {
+        if (setToDelete) {
+            onDelete(setToDelete);
+        }
+        setIsDeleteConfirmOpen(false);
     }
 
     return (
@@ -41,7 +57,7 @@ const StringSets: React.FC<StringSetsProps> = ({ instrument, isOpen, onClose, on
                                         <td className="p-2" colSpan={set.gauges.length / 3}>
                                             <button
                                                 className="bg-red-500 text-white text-sm px-3 py-1.5 rounded-md hover:bg-red-400 focus:outline-none focus:ring-2"
-                                                onClick={() => (onDelete(set))}
+                                                onClick={() => (onDeleteClick(set))}
                                             >
                                                 Delete
                                             </button>
@@ -143,7 +159,9 @@ const StringSets: React.FC<StringSetsProps> = ({ instrument, isOpen, onClose, on
                             ))}
                         </table>
                     </div>
+                    <DeleteConfirm onClose={() => setIsDeleteConfirmOpen(false)} isOpen={isDeleteConfirmOpen} deleteFunction={onDeleteConfirm}/>
                 </div>
+
             </Modal>
         </div>
     )

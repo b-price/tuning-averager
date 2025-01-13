@@ -67,7 +67,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
     const [isStringSetsOpen, setIsStringSetsOpen] = useState(false);
     const [isEdit, setIsEdit] = useState<boolean>(false);
     const [isExportOpen, setIsExportOpen] = useState(false);
-    const { message, messageType, showMessage, show } = useMessage();
+    const { message, messageType, showMessage, show, closeMessage } = useMessage();
 
     //On mount
     useEffect(() => {
@@ -115,7 +115,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                 baseColor={window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? "#444444" : "#cccccc"}
                 highlightColor={window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? "#666666" : "#eeeeee"}
             >
-                <div className="flex flex-col p-6">
+                <div className="flex flex-col sm:p-6">
                     <div className="flex items-center mb-4 gap-4">
                         <Skeleton circle height={50} width={50}/>
                         <Skeleton height={30} width={150}/>
@@ -656,7 +656,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                     Export Data
                 </button>
             </div>
-            <Alert show={show} message={message} type={messageType}/>
+            <Alert show={show} message={message} type={messageType} onClose={closeMessage} style="mt-4"/>
             <TuningConfirm
                 isOpen={isTuningConfirmOpen}
                 onClose={() => setIsTuningConfirmOpen(false)}

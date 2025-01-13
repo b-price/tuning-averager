@@ -1,25 +1,29 @@
-import { Instrument, StringSet } from "../../../types.ts";
+import { Instrument, StringSet, Note } from "../../../types.ts";
 import React, { useEffect, useState } from "react";
 import Modal from "./Modal.tsx";
 import { convertToNote, tension, uwFromGauge } from "../utils/calculate.ts";
-import {notes, stringTypeFactors, STRING_GAUGES, WOUND_CHAR, PLAIN_CHAR, REFERENCE_PITCH} from "../defaults.ts";
+import {
+    notes,
+    stringTypeFactors,
+    STRING_GAUGES,
+    WOUND_CHAR,
+    PLAIN_CHAR,
+    REFERENCE_PITCH,
+    MIN_TAPER_GAUGE, LONG_THIN_GAUGE, GUITAR_WARNING_SCALE, TAPER_WARNING, LENGTH_WARNING, defaultScales
+} from "../defaults.ts";
 import ArrowSelector from "./ArrowSelector.tsx";
+import {useMessage} from "../hooks/useMessage.ts";
+import Alert from "./Alert.tsx";
 
 interface AverageStringSetProps {
     stringSet: StringSet;
     isOpen: boolean;
     onClose: () => void;
     onSubmit: (newStringSet: StringSet) => void;
-    instrument?: Instrument;
+    instrument: Instrument;
     isEdit: boolean;
     editStringSet: (stringSet: StringSet) => void;
     referencePitch: number;
-}
-
-interface Note {
-    note: string;
-    cents: number;
-    noteValue: number;
 }
 
 const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, onClose, onSubmit, instrument, isEdit, editStringSet, referencePitch = REFERENCE_PITCH }) => {
@@ -29,12 +33,37 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
     const [tensions, setTensions] = useState<number[]>([]);
     const [noteObjects, setNoteObjects] = useState<Note[]>([]);
     const [favorite, setFavorite] = useState<boolean>(false);
+    const { message, messageType, showMessage, show, closeMessage } = useMessage();
 
     useEffect(() => {
         if (isOpen) {
             resetToAverageTuning();
         }
     }, [isOpen, stringSet]);
+
+    useEffect(() => {
+        const taperWarnings: number[] = [];
+        const lengthWarnings: number[] = [];
+        newGauges.forEach((gauge) => {
+            if (gauge >= MIN_TAPER_GAUGE && instrument.scale < defaultScales.bass) {
+                taperWarnings.push(gauge);
+            }
+            if (gauge < LONG_THIN_GAUGE && instrument.scale >= GUITAR_WARNING_SCALE) {
+                lengthWarnings.push(gauge);
+            }
+        });
+        if (taperWarnings.length || lengthWarnings.length) {
+            const taperWarningString = taperWarnings.length
+                ? `Gauge${taperWarnings.length > 1 ? 's' : ''} ${taperWarnings.join(', ')} ${taperWarnings.length < 1 ? "are" : "is"} ${TAPER_WARNING}`
+                : ``;
+            const lengthWarningString = lengthWarnings.length
+                ? `Gauge${lengthWarnings.length > 1 ? 's' : ''} ${lengthWarnings.join(', ')} ${LENGTH_WARNING} ${instrument.scale}".`
+                : ``;
+            showMessage(taperWarningString + lengthWarningString, 'warning', Infinity);
+        } else {
+            closeMessage();
+        }
+    }, [newGauges]);
 
     const resetToAverageTuning = () => {
         setNewGauges(stringSet.gauges);
@@ -245,6 +274,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
                         <span className="block md:hidden">{isEdit ? "Edit String Set" : "Add Set to Inst."}</span>
                     </button>
                 </div>
+                <Alert show={show} message={message} type={messageType} onClose={closeMessage} fixed={false}/>
             </div>
         </Modal>
     );

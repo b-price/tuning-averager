@@ -86,3 +86,11 @@ export interface TensionPreset {
     tensions: number[];
     type: InstType;
 }
+
+export interface Note {
+    note: string;
+    cents: number;
+    noteValue: number;
+}
+
+export type MessageType = 'success' | 'error' | 'warning';
