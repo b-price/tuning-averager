@@ -4,6 +4,7 @@ import {Webhook} from "svix";
 import {UserData} from "../../types";
 import {collections} from "../services/database.service";
 import {INST_PRESETS_SERVER} from "../instPresets";
+import {ObjectId} from "mongodb";
 
 export const webhookRouter = express.Router();
 
@@ -55,16 +56,41 @@ webhookRouter.post(
                 // @ts-ignore
                 const eventType = evt.type;
                 if (eventType === 'user.created') {
-                    console.log(`User ${id} was ${eventType}`);
+                    console.log(`User ${id} was ${eventType} in Clerk, trying Mongo...`);
                     console.log(attributes);
+                    const userData = attributes.unsafe_metadata.userData ? attributes.unsafe_metadata.userData : null;
+                    const tunings = attributes.unsafe_metadata.tunings.length ? attributes.unsafe_metadata.tunings : [];
+                    const instruments = attributes.unsafe_metadata.instruments.length ? attributes.unsafe_metadata.instruments : [];
+                    console.log(`Raw insts0: ${instruments[0].name}`);
+                    console.log(`Raw tunings0: ${tunings[0].name}`);
                     const newUser: UserData = {
                         id: id,
                         username: attributes.username,
-                        tunings: [],
-                        instruments: [],
-                        instPresets: INST_PRESETS_SERVER,
-                        tensionPresets: [],
-                        settings: {
+                        tunings: tunings.length && collections.tunings ? await collections.tunings.insertMany(tunings)
+                            .then(ids => {
+                                const ovs = Object.values(ids.insertedIds)
+                                console.log(ovs);
+                                return ovs.map(id => id.toString())
+                            })
+                            .catch(e => {
+                                console.log(e);
+                                return [];
+                            })
+                            : [],
+                        instruments: instruments.length && collections.instruments ? await collections.instruments.insertMany(instruments)
+                                .then(ids => {
+                                    const ovs = Object.values(ids.insertedIds)
+                                    console.log(ovs);
+                                    return ovs.map(id => id.toString())
+                                })
+                                .catch(e => {
+                                    console.log(e);
+                                    return [];
+                                })
+                            : [],
+                        instPresets: userData ? userData.instPresets : [],
+                        tensionPresets: userData ? userData.tensionPresets : [],
+                        settings: userData ? userData.settings : {
                             darkMode: false,
                             weightedMode: true,
                             stringCoeff: 0,
@@ -74,10 +100,22 @@ webhookRouter.post(
                         }
                     };
                     const result = await collections?.users?.insertOne(newUser);
+                    console.log(`User ${id} was ${eventType}`);
+                    //console.log(`User insts0: ${newUser.instruments[0]}`);
 
                 } else if (eventType === 'user.deleted'){
                     const query = { id: id };
                     console.log(`User ${id} was ${eventType} in Clerk, trying Mongo...`);
+                    const userData = await collections?.users?.findOne(query);
+                    // Delete the user's tunings and instruments
+                    if (userData) {
+                        const tuningsToDelete = userData.tunings.map(t => new ObjectId(t));
+                        const instsToDelete = userData.instruments.map(i => new ObjectId(i));
+                        const tDeleteResult = tuningsToDelete.length ? await collections?.tunings?.deleteMany({_id: {$in: tuningsToDelete}}) : null;
+                        const iDeleteResult = instsToDelete.length ? await collections?.instruments?.deleteMany({_id: {$in: instsToDelete}}) : null;
+                        console.log(`User's tunings deleted: ${tDeleteResult ? tDeleteResult : 'none'}`);
+                        console.log(`User's instruments deleted: ${iDeleteResult ? iDeleteResult : 'none'}`);
+                    }
                     const result = await collections?.users?.deleteOne(query);
                     console.log(`User ${id} was ${eventType}`);
 

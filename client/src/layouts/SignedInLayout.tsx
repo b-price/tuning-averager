@@ -4,13 +4,13 @@ import { Outlet, useNavigate } from 'react-router-dom'
 
 export default function SignedInLayout() {
     const { userId, isLoaded } = useAuth()
-    const navigate = useNavigate()
-
-    React.useEffect(() => {
-        if (isLoaded && !userId) {
-            navigate('/sign-in')
-        }
-    }, [isLoaded])
+    // const navigate = useNavigate()
+    //
+    // React.useEffect(() => {
+    //     if (isLoaded && !userId) {
+    //         navigate('/sign-in')
+    //     }
+    // }, [isLoaded])
 
     if (!isLoaded) return 'Loading.'
 

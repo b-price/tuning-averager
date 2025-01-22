@@ -3,7 +3,7 @@ import TuningConfirm from "./TuningConfirm.tsx";
 import TuningInput from "./TuningInput.tsx";
 import InstrumentInput from "./InstrumentInput.tsx";
 import {
-    DECIMAL_POINTS, DEFAULT_INST, DEFAULT_TUNING, INST_PRESETS,
+    DECIMAL_POINTS, DEFAULT_INST, DEFAULT_TUNING, INST_PRESETS, LOCAL_INSTS_KEY, LOCAL_TUNINGS_KEY, LOCAL_USERDATA_KEY,
     notes, REFERENCE_PITCH,
     stringTypeFactors,
 } from "../defaults.ts";
@@ -36,29 +36,27 @@ import StringSets from "./StringSets.tsx";
 import Alert from "./Alert.tsx";
 import {useMessage} from "../hooks/useMessage.ts";
 import ExportData from "./ExportData.tsx";
+import {Link} from "react-router-dom";
 
 interface HomeProps {
     userData: UserData;
+    localMode?: boolean;
+    localInstruments: Instrument[];
+    localTunings: Tuning[];
 }
 
-const HomePage: React.FC<HomeProps> = ({ userData }) => {
+const HomePage: React.FC<HomeProps> = ({ userData, localMode, localInstruments, localTunings }) => {
 
     const [tunings, setTunings] = useState<Tuning[]>([]);
     const [instruments, setInstruments] = useState<Instrument[]>([]);
     const [tensionPresets, setTensionPresets] = useState<TensionPreset[]>([]);
-    const [selectedInstrument, setSelectedInstrument] = useState<Instrument>(
-        instruments.length? instruments[0] : DEFAULT_INST
-    );
-    const [selectedTuning, setSelectedTuning] = useState<Tuning>(
-        instruments.length && instruments[0].tunings.length? instruments[0].tunings[0] : DEFAULT_TUNING
-    );
+    const [selectedInstrument, setSelectedInstrument] = useState<Instrument>(DEFAULT_INST);
+    const [selectedTuning, setSelectedTuning] = useState<Tuning>(DEFAULT_TUNING);
     const [isTuningConfirmOpen, setIsTuningConfirmOpen] = useState(false);
     const [isTuningInputOpen, setIsTuningInputOpen] = useState(false);
     const [isInstInputOpen, setIsInstInputOpen] = useState(false);
     const [isAveragerOpen, setIsAveragerOpen] = useState(false);
-    const [avStringSet, setAvStringSet] = useState<StringSet>(
-        instruments.length && instruments[0].stringSets.length? instruments[0].stringSets[0]: DEFAULT_INST.stringSets[0]
-    );
+    const [avStringSet, setAvStringSet] = useState<StringSet>(DEFAULT_INST.stringSets[0]);
     //const [averageTuning, setAverageTuning] = useState<number[]>([]);
     //const [unitWeights, setUnitWeights] = useState<number[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -72,23 +70,31 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
     //On mount
     useEffect(() => {
         setTensionPresets(userData.tensionPresets);
-        setIsLoading(true);
-        getTunings(userData)
-            .then((data) => {
-                if (data && data.userData && data.userTunings) {
-                    setTunings(data.userTunings);
-                    setSelectedTuning(data.userTunings[0]);
-                }
-                return getInstruments(data);
-            })
-            .then((insts) => {
-                if (insts) {
-                    setInstruments(insts);
-                    setSelectedInstrument(insts[0]);
-                }
-            })
-            .then(() => setIsLoading(false))
-            .catch((e) => console.error(e));
+        if (localMode) {
+            setTunings(localTunings);
+            setSelectedTuning(localTunings[0]);
+            setInstruments(localInstruments);
+            setSelectedInstrument(localInstruments[0]);
+        } else {
+            setIsLoading(true);
+            getTunings(userData)
+                .then((data) => {
+                    if (data && data.userData && data.userTunings) {
+                        setTunings(data.userTunings);
+                        setSelectedTuning(data.userTunings[0]);
+                    }
+                    return getInstruments(data);
+                })
+                .then((insts) => {
+                    if (insts) {
+                        setInstruments(insts);
+                        setSelectedInstrument(insts[0]);
+                    }
+                })
+                .then(() => setIsLoading(false))
+                .catch((e) => console.error(e));
+        }
+
     },[])
 
     // Memoize the instrument options to prevent recalculating on every render
@@ -109,7 +115,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
         ));
     }, [tunings]);
 
-    if (isLoading || userData === undefined) {
+    if (isLoading || (userData === undefined && !localMode)) {
         return (
             <SkeletonTheme
                 baseColor={window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? "#444444" : "#cccccc"}
@@ -144,68 +150,135 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
 
     // Instrument functions
     const onUpdateInstrument = async (changes: object, updatedInst: Instrument) => {
-        updateInstrument(changes, updatedInst.id).then(() => {
-            setInstruments(instruments.map((inst) => {
-                return inst.id === updatedInst.id ? updatedInst : inst
-            }));
-            setSelectedInstrument(updatedInst);
-            showMessage('Instrument updated!', 'success');
-        }).catch((e) => {
-            console.error(e);
-            showMessage('Could not update instrument.', 'error');
-        });
+        if (localMode) {
+            try {
+                const localInsts = localStorage.getItem(LOCAL_INSTS_KEY);
+                if (localInsts) {
+                    const updatedInsts = JSON.parse(localInsts).map((inst: Instrument) => inst.id === updatedInst.id ? updatedInst : inst);
+                    localStorage.setItem(LOCAL_INSTS_KEY, JSON.stringify(updatedInsts));
+                    setInstruments(instruments.map((inst) => {
+                        return inst.id === updatedInst.id ? updatedInst : inst
+                    }));
+                    setSelectedInstrument(updatedInst);
+                    showMessage('Instrument updated!', 'success');
+                }
+            } catch (e) {
+                console.error(e);
+                showMessage('Could not update instrument.', 'error');
+            }
+        } else {
+            updateInstrument(changes, updatedInst.id).then(() => {
+                setInstruments(instruments.map((inst) => {
+                    return inst.id === updatedInst.id ? updatedInst : inst
+                }));
+                setSelectedInstrument(updatedInst);
+                showMessage('Instrument updated!', 'success');
+            }).catch((e) => {
+                console.error(e);
+                showMessage('Could not update instrument.', 'error');
+            });
+        }
     };
 
     const onAddInstrument = async (newInst: Instrument) => {
         const instrument = {...newInst, tunings: newInst.tunings.map((tuning: Tuning) => tuning.id)};
-        addInstrument(instrument)
-            .then((instID) => {
-                newInst.id = instID;
-                const instIDs = instruments.map((inst) => inst.id);
-                updateUser({instruments: [...instIDs, instID]}, userData.id);
-            })
-            .then(() => {
+        if (localMode) {
+            try {
+                instrument.id = Math.random().toString(36);
+                const localInsts = localStorage.getItem(LOCAL_INSTS_KEY);
+                const updatedInsts = localInsts ? [...JSON.parse(localInsts), instrument] : [instrument];
+                console.log(updatedInsts);
+                localStorage.setItem(LOCAL_INSTS_KEY, JSON.stringify(updatedInsts));
                 setInstruments([...instruments, newInst]);
                 setSelectedInstrument(newInst);
-                if (newInst.tunings.length > 0) {
-                    setSelectedTuning(newInst.tunings[0]);
-                }
                 showMessage('Instrument added!', 'success');
-            }).catch((e) => {
-            console.error(e);
-            showMessage('Could not add instrument.', 'error');
-        })
+            } catch (e) {
+                console.error(e);
+                showMessage('Could not add instrument.', 'error');
+            }
+        } else {
+            addInstrument(instrument)
+                .then((instID) => {
+                    newInst.id = instID;
+                    const instIDs = instruments.map((inst) => inst.id);
+                    updateUser({instruments: [...instIDs, instID]}, userData.id);
+                })
+                .then(() => {
+                    setInstruments([...instruments, newInst]);
+                    setSelectedInstrument(newInst);
+                    if (newInst.tunings.length > 0) {
+                        setSelectedTuning(newInst.tunings[0]);
+                    }
+                    showMessage('Instrument added!', 'success');
+                }).catch((e) => {
+                console.error(e);
+                showMessage('Could not add instrument.', 'error');
+            })
+        }
     };
 
     const handleDeleteInst = (instID?: string) => {
         const updatedInstruments = instruments
-            .filter((inst: Instrument) => inst.id !== instID)
-        deleteInstrument(instID)
-            .then(() => updateUser({instruments: updatedInstruments.map((inst: Instrument) => inst.id)}, userData.id))
-            .then(() => {
-                setInstruments(updatedInstruments);
-                setSelectedInstrument(updatedInstruments[0]);
-                if (updatedInstruments[0].tunings.length) {
-                    setSelectedTuning(updatedInstruments[0].tunings[0]);
+            .filter((inst: Instrument) => inst.id !== instID);
+        if (localMode) {
+            try {
+                const localInsts = localStorage.getItem(LOCAL_INSTS_KEY);
+                if (localInsts) {
+                    const updatedInsts = JSON.parse(localInsts).filter((inst: Instrument) => inst.id !== instID);
+                    localStorage.setItem(LOCAL_INSTS_KEY, JSON.stringify(updatedInsts));
+                    setInstruments(updatedInstruments);
+                    setSelectedInstrument(updatedInstruments[0]);
+                    if (updatedInstruments.length && updatedInstruments[0].tunings.length > 0) {
+                        setSelectedTuning(updatedInstruments[0].tunings[0]);
+                    }
+                    showMessage('Instrument deleted.', 'success');
                 }
-                showMessage('Instrument deleted.', 'success');
-            }).catch((e) => {
-            console.error(e);
-            showMessage('Instrument could not be deleted.', 'error');
-        });
+            } catch (e) {
+                console.error(e);
+                showMessage('Instrument could not be deleted.', 'error');
+            }
+        } else {
+            deleteInstrument(instID)
+                .then(() => updateUser({instruments: updatedInstruments.map((inst: Instrument) => inst.id)}, userData.id))
+                .then(() => {
+                    setInstruments(updatedInstruments);
+                    setSelectedInstrument(updatedInstruments[0]);
+                    if (updatedInstruments[0].tunings.length) {
+                        setSelectedTuning(updatedInstruments[0].tunings[0]);
+                    }
+                    showMessage('Instrument deleted.', 'success');
+                }).catch((e) => {
+                console.error(e);
+                showMessage('Instrument could not be deleted.', 'error');
+            });
+        }
+
     };
 
     const updateTensionPresets = async (tensPres: TensionPreset[]) => {
-        return updateUser({tensionPresets: tensPres}, userData.id)
-            .then(() => setTensionPresets(tensPres))
-            .catch((e) => console.error(e));
+        if (localMode) {
+            try {
+                const localUserData = localStorage.getItem(LOCAL_USERDATA_KEY);
+                if (localUserData) {
+                    const updatedUserData = {...JSON.parse(localUserData), tensionPresets: tensPres};
+                    localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify(updatedUserData));
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        } else {
+            return updateUser({tensionPresets: tensPres}, userData.id)
+                .then(() => setTensionPresets(tensPres))
+                .catch((e) => console.error(e));
+        }
+
     }
 
     // Tuning functions
     const onUpdateTuning = async (changes: object, updatedTuning: Tuning) => {
         const updatedInstruments: Instrument[] = [];
         let currentInstHasTuning = false;
-        let currentInst: Instrument;
+        let currentInst: Instrument | null = null;
         instruments.forEach((inst: Instrument) => {
             const updateInst: Instrument = {...inst, tunings: inst.tunings.map((tuning: Tuning) => {
                     if (tuning.id === updatedTuning.id) {
@@ -222,44 +295,80 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
             }
             updatedInstruments.push(updateInst);
         });
-        updateTuning(changes, updatedTuning.id)
-            .then(() => {
-                setTunings(tunings.map((tuning) => {return tuning.id === updatedTuning.id? updatedTuning : tuning}));
-                setSelectedTuning(updatedTuning);
-                setInstruments(updatedInstruments);
-                if (currentInstHasTuning) {
-                    setSelectedInstrument(currentInst);
+        if (localMode) {
+            try {
+                const localTunings = localStorage.getItem(LOCAL_TUNINGS_KEY);
+                if (localTunings) {
+                    const updatedTunings = JSON.parse(localTunings).map((tuning: Tuning) => tuning.id === updatedTuning.id ? updatedTuning : tuning);
+                    localStorage.setItem(LOCAL_TUNINGS_KEY, JSON.stringify(updatedTunings));
+                    setTunings(updatedTunings);
+                    setSelectedTuning(updatedTuning);
+                    setInstruments(updatedInstruments);
+                    if (currentInstHasTuning && currentInst) {
+                        setSelectedInstrument(currentInst);
+                    }
+                    showMessage('Tuning updated!', 'success');
                 }
-                showMessage('Tuning updated!', 'success');
-            })
-            .catch((e) => {
+            } catch (e) {
                 console.error(e);
                 showMessage('Could not update tuning.', 'error');
-            });
+            }
+        } else {
+            updateTuning(changes, updatedTuning.id)
+                .then(() => {
+                    setTunings(tunings.map((tuning) => {return tuning.id === updatedTuning.id? updatedTuning : tuning}));
+                    setSelectedTuning(updatedTuning);
+                    setInstruments(updatedInstruments);
+                    if (currentInstHasTuning && currentInst) {
+                        setSelectedInstrument(currentInst);
+                    }
+                    showMessage('Tuning updated!', 'success');
+                })
+                .catch((e) => {
+                    console.error(e);
+                    showMessage('Could not update tuning.', 'error');
+                });
+        }
     };
 
     const onAddTuning = async (newTuning: Tuning) => {
-        addTuning(newTuning)
-            .then((tuningID) => {
-                newTuning.id = tuningID;
-                const tuningIDs = tunings.map((tuning: Tuning) => tuning.id);
-                updateUser({tunings: [...tuningIDs, tuningID]}, userData.id);
-            })
-            .then(() => {
+        if (localMode) {
+            try {
+                newTuning.id = Math.random().toString(36);
+                const localTunings = localStorage.getItem(LOCAL_TUNINGS_KEY);
+                const updatedTunings = localTunings ? [...JSON.parse(localTunings), newTuning] : [newTuning];
+                console.log(updatedTunings);
+                localStorage.setItem(LOCAL_TUNINGS_KEY, JSON.stringify(updatedTunings));
                 setTunings([...tunings, newTuning]);
                 setSelectedTuning(newTuning);
                 showMessage('Tuning added!', 'success');
-            }).catch((e) => {
-            console.error(e);
-            showMessage('Could not add tuning.', 'error');
-        })
+            } catch (e) {
+                console.error(e);
+                showMessage('Could not add tuning.', 'error');
+            }
+        } else {
+            addTuning(newTuning)
+                .then((tuningID) => {
+                    newTuning.id = tuningID;
+                    const tuningIDs = tunings.map((tuning: Tuning) => tuning.id);
+                    updateUser({tunings: [...tuningIDs, tuningID]}, userData.id);
+                })
+                .then(() => {
+                    setTunings([...tunings, newTuning]);
+                    setSelectedTuning(newTuning);
+                    showMessage('Tuning added!', 'success');
+                }).catch((e) => {
+                console.error(e);
+                showMessage('Could not add tuning.', 'error');
+            })
+        }
     }
 
     const handleDeleteTuning = (tuningID?: string) => {
         const updatedInstruments: Instrument[] = [];
         const instsToUpdate: Instrument[] = [];
         let currentInstHasTuning = false;
-        let currentInst: Instrument;
+        let currentInst: Instrument | null = null;
         instruments.forEach((inst: Instrument) => {
             const updateInst = {...inst, tunings: inst.tunings.filter((tuning: Tuning) => {
                     if (tuning.id !== tuningID){
@@ -279,27 +388,47 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
         });
         const updatedTunings = tunings
             .filter((tuning: Tuning) => tuning.id !== tuningID);
-        deleteTuning(tuningID)
-            .then(() => updateUser({tunings: updatedTunings.map((tuning: Tuning) => tuning.id)}, userData.id))
-            .then(() => {
-                instsToUpdate.forEach((inst: Instrument) => {
-                    updateInstrument({tunings: inst.tunings.map((tuning: Tuning) => tuning.id)}, userData.id)
-                        .catch((e) => console.error(e));
-                })
-            })
-            .then(() => {
-                setInstruments(updatedInstruments);
-                if (currentInstHasTuning && currentInst){
-                    setSelectedInstrument(currentInst);
+        if (localMode) {
+            try {
+                const localTunings = localStorage.getItem(LOCAL_TUNINGS_KEY);
+                if (localTunings) {
+                    localStorage.setItem(LOCAL_TUNINGS_KEY, JSON.stringify(updatedTunings));
+                    localStorage.setItem(LOCAL_INSTS_KEY, JSON.stringify(updatedInstruments));
+                    setTunings(updatedTunings);
+                    setSelectedTuning(updatedTunings[0]);
+                    setInstruments(updatedInstruments);
+                    if (currentInstHasTuning && currentInst) {
+                        setSelectedInstrument(currentInst);
+                    }
+                    showMessage('Tuning deleted.', 'success');
                 }
-                setTunings(updatedTunings);
-                setSelectedTuning(updatedTunings[0]);
-                showMessage('Tuning deleted.', 'success');
-            })
-            .catch((e) => {
+            } catch (e) {
                 console.error(e);
-                showMessage('Error deleting tuning!', 'error');
-            });
+                showMessage('Tuning could not be deleted.', 'error');
+            }
+        } else {
+            deleteTuning(tuningID)
+                .then(() => updateUser({tunings: updatedTunings.map((tuning: Tuning) => tuning.id)}, userData.id))
+                .then(() => {
+                    instsToUpdate.forEach((inst: Instrument) => {
+                        updateInstrument({tunings: inst.tunings.map((tuning: Tuning) => tuning.id)}, userData.id)
+                            .catch((e) => console.error(e));
+                    })
+                })
+                .then(() => {
+                    setInstruments(updatedInstruments);
+                    if (currentInstHasTuning && currentInst){
+                        setSelectedInstrument(currentInst);
+                    }
+                    setTunings(updatedTunings);
+                    setSelectedTuning(updatedTunings[0]);
+                    showMessage('Tuning deleted.', 'success');
+                })
+                .catch((e) => {
+                    console.error(e);
+                    showMessage('Error deleting tuning!', 'error');
+                });
+        }
     };
 
     const handleAddTuningToInstrument = async () => {
@@ -403,13 +532,6 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
         onUpdateInstrument({stringSets: newStringSets}, updatedInstrument).catch((e) => console.error(e));
     };
 
-    const handleOpenEditStringSet = (stringSet: StringSet) => {
-        setAvStringSet(stringSet);
-        setIsEdit(true);
-        setIsStringSetsOpen(false);
-        setIsAveragerOpen(true);
-    }
-
     const handleEditStringSet = (stringSet: StringSet) => {
         const newStringSets = selectedInstrument.stringSets.map((strSet: StringSet) => {
             if (strSet.id === stringSet.id){
@@ -451,6 +573,13 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
         setIsTuningInputOpen(true);
     };
 
+    const handleOpenEditStringSet = (stringSet: StringSet) => {
+        setAvStringSet(stringSet);
+        setIsEdit(true);
+        setIsStringSetsOpen(false);
+        setIsAveragerOpen(true);
+    }
+
     const handleInstrumentChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const instrumentID = event.target.value;
         const instrument = instruments.find(i => i.id === instrumentID);
@@ -472,12 +601,23 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
 
     return (
         <div className="flex flex-col p-6">
-            <div className="flex items-center mb-4 gap-4 ">
-                <UserButton afterSignOutUrl='/'/>
-                <h1 className="text-2xl font-bold">{userData.username}</h1>
-            </div>
-            <div className="flex flex-wrap gap-10">
 
+            {localMode
+                ?
+                <div className="flex items-center mb-4">
+                    <Link to={'/sign-up'}>
+                        <h1 className="text-2xl font-semibold dark:text-white">Sign up to save your instruments and
+                            tunings!</h1>
+                    </Link>
+                </div>
+                :
+                <div className="flex items-center mb-4 gap-4">
+                    <UserButton afterSignOutUrl='/'/>
+                    <h1 className="text-2xl font-bold">{userData.username}</h1>
+                </div>
+            }
+
+            <div className="flex flex-wrap gap-10">
 
                 {/*Instruments*/}
                 <div className="mb-7">
@@ -514,7 +654,7 @@ const HomePage: React.FC<HomeProps> = ({ userData }) => {
                                     >
                                         Delete
                                     </button>
-                                    {selectedInstrument.stringSets.length > 0 &&
+                                    {selectedInstrument.stringSets && selectedInstrument.stringSets.length > 0 &&
                                         <button
                                             className="bg-indigo-500 text-white text-sm m-2 px-3 py-1.5 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2"
                                             onClick={() => setIsStringSetsOpen(true)}
