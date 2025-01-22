@@ -669,12 +669,16 @@ export const INST_PRESETS: InstPreset[] = [
 
 export const defaultUser: UserData = {
     username: 'CoolGuy',
-    instruments: ['0', '1'],
-    tunings: ['0', '1', '2', '3', '4', '5', '6', '7', '8'],
-    instPresets: INST_PRESETS,
+    instruments: [],
+    tunings: [],
+    instPresets: [],
     tensionPresets: [],
     settings: defaultSettings
 }
+
+export const LOCAL_USERDATA_KEY = 'userData'
+export const LOCAL_TUNINGS_KEY = 'tunings'
+export const LOCAL_INSTS_KEY = 'instruments'
 
 export const MULTISCALE_SPAN = 1.5
 

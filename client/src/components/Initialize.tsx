@@ -1,53 +1,64 @@
 import React, { useEffect, useState } from "react";
-import { UserData } from "../../../types.ts";
-import { defaultUser } from "../defaults.ts";
+import {Instrument, Tuning, UserData} from "../../../types.ts";
+import {defaultUser, LOCAL_INSTS_KEY, LOCAL_TUNINGS_KEY, LOCAL_USERDATA_KEY} from "../defaults.ts";
 import { getUser } from "../utils/serverFunctions.ts";
 import { useAuth, useUser, UserButton } from "@clerk/clerk-react";
 import Home from "./Home.tsx";
 
 const Initialize: React.FC = () => {
     const { userId } = useAuth();
-    const { user, isLoaded: isUserLoaded } = useUser(); // Ensure `useUser` is fully loaded
+    const { user, isLoaded: isUserLoaded } = useUser();
     const [currentUser, setCurrentUser] = useState<UserData>(defaultUser);
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null); // Track error state
+    const [error, setError] = useState<string | null>(null);
+    const [isLocal, setIsLocal] = useState<boolean>(false);
+    const [localTunings, setLocalTunings] = useState<Tuning[]>([]);
+    const [localInsts, setLocalInsts] = useState<Instrument[]>([]);
 
     useEffect(() => {
-        // Ensure `userId` is available and `useUser` is loaded before proceeding
         if (!userId || !isUserLoaded) {
-            setError("User ID not found or user data is not loaded.");
+            const localData = localStorage.getItem(LOCAL_USERDATA_KEY);
+            const localStorageTunings = localStorage.getItem(LOCAL_TUNINGS_KEY);
+            const localStorageInstruments = localStorage.getItem(LOCAL_INSTS_KEY);
+            if (localData) {
+                setCurrentUser(JSON.parse(localData));
+                setLocalTunings(localStorageTunings ? JSON.parse(localStorageTunings) : []);
+                setLocalInsts(localStorageInstruments ? JSON.parse(localStorageInstruments) : []);
+            } else {
+                localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify(defaultUser));
+                setCurrentUser(defaultUser);
+            }
+            setIsLocal(true);
             setIsLoading(false);
             return;
         }
 
-        setIsLoading(true); // Set loading state
-        setError(null); // Reset error state on new load
+        setIsLoading(true);
+        setError(null);
 
-        // Fetch user data from the server
         getUser(userId)
             .then((userData) => {
                 if (!userData) {
-                    throw new Error("User not found"); // Trigger error if no user data is returned
+                    throw new Error("User not found");
                 }
                 setCurrentUser((prevUser) => ({
                     ...prevUser,
                     ...userData,
                 }));
+                //localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify(userData));
             })
             .catch((error) => {
                 console.error("Error fetching user data:", error);
                 setError("Unable to find data for user. Please check your account or try again later.");
             })
             .finally(() => {
-                setIsLoading(false); // Always stop loading
+                setIsLoading(false);
             });
-    }, [userId, isUserLoaded]); // Depend on both `userId` and `isUserLoaded`
+    }, [userId, isUserLoaded]);
 
     useEffect(() => {
-        // Update username if `user` has a valid username
         if (user && user.username) {
             setCurrentUser((prevUser) => {
-                // Avoid unnecessary updates if the username is already set
                 if (prevUser.username && prevUser.username === user.username) {
                     return prevUser;
                 }
@@ -80,7 +91,7 @@ const Initialize: React.FC = () => {
         );
     }
 
-    return <Home userData={currentUser}/>;
+    return <Home userData={currentUser} localMode={isLocal} localTunings={localTunings} localInstruments={localInsts}/>;
 };
 
 export default Initialize;

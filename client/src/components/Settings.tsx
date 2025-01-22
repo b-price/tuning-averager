@@ -2,16 +2,29 @@ import React, { useEffect, useState } from "react";
 import { UserButton } from "@clerk/clerk-react";
 import { useAuth } from "@clerk/clerk-react";
 import { UserData, UserSettings } from "../../../types.ts";
-import {defaultSettings, defaultUser, REFERENCE_PITCH} from "../defaults.ts";
+import {
+    defaultSettings,
+    defaultUser,
+    LOCAL_INSTS_KEY,
+    LOCAL_TUNINGS_KEY,
+    LOCAL_USERDATA_KEY,
+    REFERENCE_PITCH
+} from "../defaults.ts";
 import { getUser, updateUser } from "../utils/serverFunctions.ts";
 import ToggleSwitch from "./ToggleSwitch.tsx";
 import {useTernaryDarkMode} from 'usehooks-ts';
+import {Link} from "react-router-dom";
+import DeleteConfirm from "./DeleteConfirm.tsx";
+import {useMessage} from "../hooks/useMessage.ts";
+import Alert from "./Alert.tsx";
 
 const Settings: React.FC = () => {
     const { userId } = useAuth();
     const [user, setUser] = useState<UserData>(defaultUser);
     const [isLoading, setIsLoading] = useState(true);
     const [settings, setSettings] = useState<UserSettings>(defaultSettings);
+    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+    const { message, messageType, showMessage, show, closeMessage } = useMessage();
     const {
         isDarkMode,
         ternaryDarkMode,
@@ -19,29 +32,55 @@ const Settings: React.FC = () => {
         toggleTernaryDarkMode,
     } = useTernaryDarkMode()
 
+    // on mount
     useEffect(() => {
-        getUser(userId)
-            .then((userData) => {
-                setUser(userData);
-                if (userData.settings) {
-                    setSettings(userData.settings);
-                    // if (userData.settings.useOSTheme){
-                    //     removeLocalStorageTheme();
-                    // } else {
-                    //     setLocalStorageTheme(userData.settings.darkMode);
-                    // }
+        if (userId) {
+            getUser(userId)
+                .then((userData) => {
+                    setUser(userData);
+                    if (userData.settings) {
+                        setSettings(userData.settings);
+                        // if (userData.settings.useOSTheme){
+                        //     removeLocalStorageTheme();
+                        // } else {
+                        //     setLocalStorageTheme(userData.settings.darkMode);
+                        // }
+                    }
+                })
+                .then(() => setIsLoading(false))
+                .catch((e) => console.error(e));
+        } else {
+            try {
+                const userData = localStorage.getItem(LOCAL_USERDATA_KEY);
+                if (userData) {
+                    setUser(JSON.parse(userData));
+                    setSettings(JSON.parse(userData).settings);
+                    setIsLoading(false);
                 }
-            })
-            .then(() => setIsLoading(false))
-            .catch((e) => console.error(e));
+            } catch (e) {
+                console.error(e);
+            }
+        }
     }, [userId]);
 
     const handleUseOSThemeSwitch = (checked: boolean) => {
-        updateUser({ settings: { ...settings, useOSTheme: checked } }, user.id).then(() => {
-            setSettings({ ...settings, useOSTheme: checked });
-            setUser({ ...user, settings: { ...settings, useOSTheme: checked } });
-            setTernaryDarkMode(checked ? "system" : settings.darkMode ? "dark" : "light")
-        });
+        if (userId) {
+            updateUser({ settings: { ...settings, useOSTheme: checked } }, user.id).then(() => {
+                setSettings({ ...settings, useOSTheme: checked });
+                setUser({ ...user, settings: { ...settings, useOSTheme: checked } });
+                setTernaryDarkMode(checked ? "system" : settings.darkMode ? "dark" : "light");
+            });
+        } else {
+            try {
+                localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify({ settings: { ...settings, useOSTheme: checked } }));
+                setSettings({ ...settings, useOSTheme: checked });
+                setUser({ ...user, settings: { ...settings, useOSTheme: checked } });
+                setTernaryDarkMode(checked ? "system" : settings.darkMode ? "dark" : "light");
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
         // if (checked) {
         //     removeLocalStorageTheme();
         //     console.log(localStorage.getItem('theme'));
@@ -63,32 +102,76 @@ const Settings: React.FC = () => {
     // }
 
     const handleDarkModeSwitch = (checked: boolean) => {
-        updateUser({ settings: { ...settings, darkMode: checked } }, user.id).then(() => {
-            setSettings({ ...settings, darkMode: checked });
-            setUser({ ...user, settings: { ...settings, darkMode: checked } });
-            setTernaryDarkMode(checked ? "dark" : "light");
-        });
-        // if (!settings.useOSTheme) {
-        //     setLocalStorageTheme(checked);
-        // }
-
+        if (userId) {
+            updateUser({ settings: { ...settings, darkMode: checked } }, user.id).then(() => {
+                setSettings({ ...settings, darkMode: checked });
+                setUser({ ...user, settings: { ...settings, darkMode: checked } });
+                setTernaryDarkMode(checked ? "dark" : "light");
+            });
+            // if (!settings.useOSTheme) {
+            //     setLocalStorageTheme(checked);
+            // }
+        } else {
+            try {
+                localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify({...user, settings: { ...settings, darkMode: checked }}));
+                setSettings({ ...settings, darkMode: checked });
+                setUser({ ...user, settings: { ...settings, darkMode: checked } });
+                setTernaryDarkMode(checked ? "dark" : "light");
+            } catch (e) {
+                console.error(e);
+            }
+        }
     };
 
     const handleWeightedModeSwitch = (checked: boolean) => {
-        updateUser({ settings: { ...settings, weightedMode: checked } }, user.id).then(() => {
-            setSettings({ ...settings, weightedMode: checked });
-            setUser({ ...user, settings: { ...settings, weightedMode: checked } });
-        });
+        if (userId) {
+            updateUser({ settings: { ...settings, weightedMode: checked } }, user.id).then(() => {
+                setSettings({ ...settings, weightedMode: checked });
+                setUser({ ...user, settings: { ...settings, weightedMode: checked } });
+            });
+        } else {
+            try {
+                localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify({...user, settings: { ...settings, weightedMode: checked }}));
+                setSettings({ ...settings, weightedMode: checked });
+                setUser({ ...user, settings: { ...settings, weightedMode: checked } });
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
     };
 
     const handleRefPitchChange = (pitch: number) => {
         if (pitch > 0 && pitch < 2000) {
-            updateUser({ settings: { ...settings, referencePitch: pitch } }, user.id).then(() => {
-                setSettings({ ...settings, referencePitch: pitch });
-                setUser({ ...user, settings: { ...settings, referencePitch: pitch } });
-            });
+            if (userId) {
+                updateUser({ settings: { ...settings, referencePitch: pitch } }, user.id).then(() => {
+                    setSettings({ ...settings, referencePitch: pitch });
+                    setUser({ ...user, settings: { ...settings, referencePitch: pitch } });
+                });
+            } else {
+                try {
+                    localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify({ ...user, settings: { ...settings, referencePitch: pitch } }));
+                    setSettings({ ...settings, referencePitch: pitch });
+                    setUser({ ...user, settings: { ...settings, referencePitch: pitch } });
+                } catch (error) {
+                    console.error(error);
+                }
+            }
         }
+    }
 
+    const deleteLocalData = () => {
+        try {
+            localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify(defaultUser));
+            localStorage.setItem(LOCAL_INSTS_KEY, JSON.stringify([]));
+            localStorage.setItem(LOCAL_TUNINGS_KEY, JSON.stringify([]));
+            setUser(defaultUser);
+            setSettings(defaultSettings);
+            showMessage('Local data deleted.', 'success');
+        } catch (e) {
+            console.error(e);
+            showMessage('Could not delete local data.', 'error');
+        }
     }
 
     if (isLoading) {
@@ -100,10 +183,19 @@ const Settings: React.FC = () => {
             <h1 className="text-2xl font-bold mb-6 text-center sm:text-left">Settings</h1>
             <div className="grid gap-6 w-full mx-auto">
                 {/* Profile Settings */}
-                <div className="flex flex-row items-center gap-4">
-                    <h2 className="text-xl font-semibold">Profile Settings →</h2>
-                    <UserButton afterSignOutUrl="/"/>
-                </div>
+                {userId ?
+                    <div className="flex flex-row items-center gap-4">
+                        <h2 className="text-xl font-semibold">Profile Settings →</h2>
+                        <UserButton afterSignOutUrl="/"/>
+                    </div>
+                    :
+                    <div className="flex items-center mb-4">
+                        <Link to={'/sign-up'}>
+                            <h1 className="text-2xl font-semibold dark:text-white">Sign up to save your settings!</h1>
+                        </Link>
+                    </div>
+                }
+
 
                 <h2 className="text-xl font-semibold sm:text-left">App Settings</h2>
                 {/* Weighted Mode */}
@@ -131,6 +223,15 @@ const Settings: React.FC = () => {
                     />
                     <label className="px-1">hz</label>
                 </div>
+                {/*Local Mode Delete Data*/}
+                {!userId &&
+                    <div className="flex sm:justify-start justify-center">
+                        <button
+                            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-400 focus:outline-none focus:ring-2"
+                            onClick={() => setIsDeleteConfirmOpen(true)}
+                        >Delete Local Data</button>
+                    </div>
+                }
 
                 {/*Theme*/}
                 <h2 className="text-xl font-semibold sm:text-left">Theme</h2>
@@ -151,6 +252,8 @@ const Settings: React.FC = () => {
                     </ToggleSwitch>
                 )}
             </div>
+            <DeleteConfirm isOpen={isDeleteConfirmOpen} onClose={() => setIsDeleteConfirmOpen(false)} deleteFunction={deleteLocalData} />
+            <Alert show={show} message={message} type={messageType} onClose={closeMessage} style="mt-6 mb-4 justify-center"/>
         </div>
     );
 };

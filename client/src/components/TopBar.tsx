@@ -14,7 +14,7 @@ const TopBar: React.FC<TopBarProps> = ({ loggedIn, linkURL }) => {
                 <h1 className='mx-4 dark:text-gray-200 dark:hover:text-gray-100 text-3xl md:text-4xl'>{APP_NAME}</h1>
             </Link>
 
-            {loggedIn && linkURL ? (
+            {linkURL ? (
                 <Link to={linkURL} className="text-indigo-500 hover:text-indigo-400">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="size-16 fill-current">
                         <path fillRule="evenodd"

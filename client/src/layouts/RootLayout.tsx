@@ -23,7 +23,7 @@ export default function RootLayout() {
                         <TopBar loggedIn={true} linkURL='/settings' />
                     </SignedIn>
                     <SignedOut>
-                        <TopBar loggedIn={false} />
+                        <TopBar loggedIn={false} linkURL='/settings' />
                     </SignedOut>
                 </header>
                 <main>
