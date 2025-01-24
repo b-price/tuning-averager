@@ -1,5 +1,13 @@
 import {Tuning} from "../../../types";
-import {MULTISCALE_SPAN, notes, PLAIN_CHAR, REFERENCE_PITCH, WOUND_CHAR, woundOverlap} from "../defaults.ts";
+import {
+    MULTISCALE_SPAN,
+    notes,
+    PLAIN_CHAR,
+    REFERENCE_PITCH,
+    STRING_MATERIAL_FACTORS,
+    WOUND_CHAR,
+    woundOverlap
+} from "../defaults.ts";
 
 export function tuningWeight(tuning: Tuning){
     let sum = 0;
@@ -163,6 +171,21 @@ export function round(num: number, precision: number) {
 
 export const capitalize = (word: string) => {
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+}
+
+export const formatMaterial = (material: string) => {
+    return material.replace(/_[a-zA-Z]+_/, ` `).replace('-', ' ');
+}
+
+export const getPlain = (material: string) => {
+    return material === 'Kalium' ? 'Kalium' : material.split('_')[0] + '_plain'
+}
+
+export const coeffPower = (material: string, wound: boolean) => {
+    const plain = getPlain(material);
+    const coeff = wound ? STRING_MATERIAL_FACTORS[material].coeff : STRING_MATERIAL_FACTORS[plain].coeff;
+    const power = wound ? STRING_MATERIAL_FACTORS[material].power : STRING_MATERIAL_FACTORS[plain].power;
+    return {coeff: coeff, power: power};
 }
 
 export const getCents = (noteValue: number) => {

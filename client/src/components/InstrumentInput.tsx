@@ -153,11 +153,11 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
         setSelectedTunings([]);
     }
 
-    const handleTypeChange = (type: InstType) => {
-        setType(type);
-        setStrings(defaultStrings[type]);
-        setScale(defaultScales[type]);
-        stringTypeChangeUpdate(strings, type);
+    const handleTypeChange = (newType: InstType) => {
+        setType(newType);
+        setStrings(defaultStrings[newType]);
+        setScale(defaultScales[newType]);
+        stringTypeChangeUpdate(defaultStrings[newType], newType);
     }
 
     const handleTuningChange = (tuning: Tuning, checked: boolean) => {

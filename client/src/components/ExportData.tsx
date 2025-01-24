@@ -1,4 +1,4 @@
-import { Instrument, Tuning } from "../../../types.ts";
+import {ExportSelection, Instrument, Tuning} from "../../../types.ts";
 import React, { useState } from "react";
 import Modal from "./Modal.tsx";
 import { useMessage } from "../hooks/useMessage.ts";
@@ -6,6 +6,7 @@ import Alert from "./Alert.tsx";
 import { CSVLink } from "react-csv";
 import ToggleSwitch from "./ToggleSwitch.tsx";
 import {EXPORT_TEXT, PLAIN_CHAR} from "../defaults.ts";
+import {formatMaterial} from "../utils/calculate.ts";
 
 interface ExportDataProps {
     tunings: Tuning[];
@@ -14,12 +15,10 @@ interface ExportDataProps {
     onClose: () => void;
 }
 
-type ExportSelection = "Instruments" | "Tunings" | "StringSets" | "Strings" | "All";
-
 const ExportData: React.FC<ExportDataProps> = ({ tunings, instruments, isOpen, onClose }) => {
     const [dataSelection, setDataSelection] = useState<ExportSelection>("Instruments");
     const [onlyFavorites, setOnlyFavorites] = useState(false);
-    const { message, messageType, showMessage, show } = useMessage();
+    const { message, messageType, showMessage, show, closeMessage } = useMessage();
 
     const getCSVData = () => {
         switch (dataSelection) {
@@ -65,48 +64,56 @@ const ExportData: React.FC<ExportDataProps> = ({ tunings, instruments, isOpen, o
                         { label: "Instrument", key: "instrument" },
                         { label: "Name", key: "name" },
                         { label: "Gauges", key: "gauges" },
+                        { label: "Material", key: "material" },
                     ],
                     data: instruments.flatMap(instrument =>
                         instrument.stringSets.map(strSet => ({
                             instrument: instrument.name,
                             name: strSet.name,
                             gauges: strSet.gauges.map((g, idx) => !strSet.woundStrings[idx] ? `${g}${PLAIN_CHAR}` : g).join(", "),
+                            material: strSet.stringMaterial ? formatMaterial(strSet.stringMaterial) : "",
                             favorite: strSet.favorite,
                         })).filter(strSet => onlyFavorites ? strSet.favorite : strSet)
                     ),
                     filename: 'string_sets.csv'
                 };
             case "Strings":
-                { const allGauges = instruments.flatMap(instrument =>
+                {
+                    const allGauges = instruments.flatMap(instrument =>
                     instrument.stringSets.filter(s => onlyFavorites ? s.favorite : s).flatMap(strSet => strSet.gauges)
-                );
+                    );
 
-                const gaugeCounts = allGauges.reduce((acc, gauge) => {
-                    acc[gauge] = (acc[gauge] || 0) + 1;
-                    return acc;
-                }, {} as { [key: number]: number });
+                    const gaugeCounts = allGauges.reduce((acc, gauge) => {
+                        acc[gauge] = (acc[gauge] || 0) + 1;
+                        return acc;
+                    }, {} as { [key: number]: number });
 
-                const gaugeData = Object.entries(gaugeCounts)
-                    .map(([gauge, count]) => ({
-                        gauge: parseFloat(gauge), // Convert key back to number
-                        count: count
-                    }))
-                    .sort((a, b) => a.gauge - b.gauge); // Sort by gauge numerically
+                    const gaugeData = Object.entries(gaugeCounts)
+                        .map(([gauge, count]) => ({
+                            gauge: parseFloat(gauge), // Convert key back to number
+                            count: count
+                        }))
+                        .sort((a, b) => a.gauge - b.gauge); // Sort by gauge numerically
 
-                return {
-                    headers: [
-                        { label: "Gauge", key: "gauge" },
-                        { label: "Count", key: "count" },
-                    ],
-                    data: gaugeData,
-                    filename: 'strings.csv'
-                }; }
+                    return {
+                        headers: [
+                            { label: "Gauge", key: "gauge" },
+                            { label: "Count", key: "count" },
+                        ],
+                        data: gaugeData,
+                        filename: 'strings.csv'
+                    };
+                }
             default:
                 return { headers: [], data: [], filename: 'data.csv' };
         }
     };
 
     const { headers, data, filename } = getCSVData();
+
+    const onButtonClick = () => {
+        showMessage('CSV Downloaded!', 'success');
+    }
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
@@ -135,6 +142,7 @@ const ExportData: React.FC<ExportDataProps> = ({ tunings, instruments, isOpen, o
                             data={data}
                             headers={headers}
                             filename={filename}
+                            onClick={onButtonClick}
                             className="w-full bg-indigo-500 text-white m-2 px-4 py-2 rounded-md hover:bg-indigo-400 hover:text-white focus:outline-none focus:ring-2"
                         >
                             Download CSV
@@ -144,7 +152,7 @@ const ExportData: React.FC<ExportDataProps> = ({ tunings, instruments, isOpen, o
                         <p className="text-sm">{EXPORT_TEXT[dataSelection]}</p>
                     </div>
                 </div>
-                <Alert show={show} message={message} type={messageType} />
+                <Alert show={show} message={message} type={messageType} onClose={closeMessage} style="mt-6 mb-4 justify-center"/>
             </div>
         </Modal>
     );

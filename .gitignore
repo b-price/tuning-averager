@@ -17,6 +17,7 @@ dist-ssr
 client/src/oldComponents/
 oldComponents
 client/src/aicomponents/
+client/CorrelationPlots
 
 # Editor directories and files
 .vscode/*

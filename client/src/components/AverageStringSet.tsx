@@ -1,15 +1,20 @@
 import { Instrument, StringSet, Note } from "../../../types.ts";
 import React, { useEffect, useState } from "react";
 import Modal from "./Modal.tsx";
-import { convertToNote, tension, uwFromGauge } from "../utils/calculate.ts";
+import {coeffPower, convertToNote, formatMaterial, tension, uwFromGauge} from "../utils/calculate.ts";
 import {
     notes,
-    stringTypeFactors,
     STRING_GAUGES,
     WOUND_CHAR,
     PLAIN_CHAR,
     REFERENCE_PITCH,
-    MIN_TAPER_GAUGE, LONG_THIN_GAUGE, GUITAR_WARNING_SCALE, TAPER_WARNING, LENGTH_WARNING, defaultScales
+    MIN_TAPER_GAUGE,
+    LONG_THIN_GAUGE,
+    GUITAR_WARNING_SCALE,
+    TAPER_WARNING,
+    LENGTH_WARNING,
+    defaultScales,
+    STRING_MATERIAL_FACTORS, DEFAULT_STRING_MATERIAL
 } from "../defaults.ts";
 import ArrowSelector from "./ArrowSelector.tsx";
 import {useMessage} from "../hooks/useMessage.ts";
@@ -33,6 +38,9 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
     const [tensions, setTensions] = useState<number[]>([]);
     const [noteObjects, setNoteObjects] = useState<Note[]>([]);
     const [favorite, setFavorite] = useState<boolean>(false);
+    const [stringMaterial, setStringMaterial] = useState<string>(
+        stringSet.stringMaterial || DEFAULT_STRING_MATERIAL[instrument.type]
+    );
     const { message, messageType, showMessage, show, closeMessage } = useMessage();
 
     useEffect(() => {
@@ -72,6 +80,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
         setNoteObjects(stringSet.noteValues.map((noteValue) => convertToNote(noteValue)));
         setName(stringSet.name);
         setFavorite(stringSet.favorite || false);
+        setStringMaterial(stringSet.stringMaterial || DEFAULT_STRING_MATERIAL[instrument.type]);
     };
 
     const handleStringGaugeChange = (stringIndex: number, gauge: number) => {
@@ -80,7 +89,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
             newSet[stringIndex] = gauge;
             return newSet;
         });
-        adjustTension(stringIndex, gauge, noteObjects[stringIndex].noteValue);
+        adjustTension(stringIndex, gauge, noteObjects[stringIndex].noteValue, stringMaterial);
     };
 
     const handleCentsChange = (stringIndex: number, cents: number) => {
@@ -96,21 +105,24 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
                 newNotes[stringIndex] = note;
                 return newNotes;
             });
-            adjustTension(stringIndex, newGauges[stringIndex], noteValue);
+            adjustTension(stringIndex, newGauges[stringIndex], noteValue, stringMaterial);
         }
     };
 
-    const adjustTension = (stringIndex: number, gauge: number, noteValue: number, wound?: boolean) => {
+    const adjustTension = (stringIndex: number, gauge: number, noteValue: number, strMaterial: string, wound?: boolean) => {
         if (instrument) {
             const woundState = typeof wound === 'boolean' ? wound : woundStrings[stringIndex];
-            const woundString = woundState ? 'wound' : 'plain';
+            //const woundString = woundState ? 'wound' : 'plain';
+            const material = coeffPower(strMaterial, woundState);
             setTensions((prevTensions) => {
                 const newTensions = [...prevTensions];
                 newTensions[stringIndex] = tension(
                     uwFromGauge(
                         gauge,
-                        stringTypeFactors[instrument.type][woundString].coeff,
-                        stringTypeFactors[instrument.type][woundString].power
+                        // stringTypeFactors[instrument.type][woundString].coeff,
+                        // stringTypeFactors[instrument.type][woundString].power
+                        material.coeff,
+                        material.power,
                     ),
                     noteValue,
                     instrument.scale,
@@ -129,7 +141,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
             newNotes[stringIndex] = newNote;
             return newNotes;
         });
-        adjustTension(stringIndex, newGauges[stringIndex], newNote.noteValue);
+        adjustTension(stringIndex, newGauges[stringIndex], newNote.noteValue, stringMaterial);
     };
 
     const toggleWoundString = (stringIndex: number) => {
@@ -139,8 +151,15 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
             newWoundStrings[stringIndex] = wound;
             return newWoundStrings;
         });
-        adjustTension(stringIndex, newGauges[stringIndex], noteObjects[stringIndex].noteValue, wound);
+        adjustTension(stringIndex, newGauges[stringIndex], noteObjects[stringIndex].noteValue, stringMaterial, wound);
     };
+
+    const handleMaterialChange = (material: string) => {
+        setStringMaterial(material);
+        newGauges.forEach((gauge, index) => {
+            adjustTension(index, gauge, noteObjects[index].noteValue, material, woundStrings[index]);
+        });
+    }
 
     const handleSubmit = () => {
         const newStringSet: StringSet = {
@@ -151,6 +170,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
             tensions: tensions,
             noteValues: stringSet.noteValues,
             favorite: favorite,
+            stringMaterial: stringMaterial
         };
         if (isEdit) {
             editStringSet(newStringSet);
@@ -166,8 +186,8 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
                 <h2 className="text-2xl font-bold mb-2 mt-0">{isEdit ? "Editing " : "Average "}String Set</h2>
                 {instrument ? <h3 className="text-md font-semibold mb-4">for {instrument.name}</h3> : <></>}
 
-                {/* String Set Name / Favorite */}
-                <div className="flex items-center justify-evenly mb-4">
+                {/* String Set Name / Material / Favorite */}
+                <div className="flex flex-wrap items-center justify-evenly gap-2 mb-4">
                     <div className="justify-items-center">
                         <label className="block text-sm font-medium">String Set Name</label>
                         <input
@@ -181,6 +201,20 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
                         <label className="block text-sm font-medium">Favorite</label>
                         <button onClick={() => setFavorite(!favorite)}
                                 className="text-2xl font-bold x-button py-1 px-3 focus:outline-none">{favorite ? "★" : "☆"}</button>
+                    </div>
+                    <div className="">
+                        <label className="block text-sm font-medium">String Material</label>
+                        <select
+                            onChange={(e) => handleMaterialChange(e.target.value)}
+                            className="mt-1 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            value={stringMaterial}
+                        >
+                            {Object.keys(STRING_MATERIAL_FACTORS)
+                                .filter(sm => sm.includes(instrument.type) || sm === 'Kalium')
+                                .map((str, index) => (
+                                    <option key={index} value={str}>{formatMaterial(str)}</option>
+                                ))}
+                        </select>
                     </div>
                 </div>
 

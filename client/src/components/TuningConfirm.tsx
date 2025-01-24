@@ -1,39 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
-import { Tuning } from '../../../types.ts';
+import {Instrument, Tuning} from '../../../types.ts';
 import ToggleSwitch from "./ToggleSwitch.tsx";
 import {useMessage} from "../hooks/useMessage.ts";
 import Alert from "./Alert.tsx";
+import {DEFAULT_STRING_MATERIAL, STRING_MATERIAL_FACTORS} from "../defaults.ts";
+import {formatMaterial} from "../utils/calculate.ts";
 
 interface TuningConfirmProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (selectedTunings: Tuning[], wound3rd: boolean) => void;
+    onSubmit: (selectedTunings: Tuning[], wound3rd: boolean, stringMaterial: string) => void;
     tunings?: Tuning[];
     defaultChecked?: boolean[];
-    instrument?: string;
+    instrument: Instrument;
 }
 
 const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit, tunings, defaultChecked, instrument }) => {
     const [selected, setSelected] = useState<boolean[]>(Array(tunings ? tunings.length : 1).fill(true));
     const [wound3rd, setWound3rd] = useState<boolean>(false);
-    const { message, messageType, showMessage, show } = useMessage();
+    const [stringMaterial, setStringMaterial] = useState<string>(DEFAULT_STRING_MATERIAL[instrument.type]);
+    const { message, messageType, showMessage, show, closeMessage } = useMessage();
 
     useEffect(() => {
         // Set the initial state based on the defaultChecked prop
         if (isOpen && tunings && tunings.length && defaultChecked && defaultChecked.length) {
             setSelected(defaultChecked);
         }
+        setStringMaterial(DEFAULT_STRING_MATERIAL[instrument.type]);
     }, [isOpen, tunings, defaultChecked]);
 
-    if (!isOpen || !tunings || !tunings.length || !defaultChecked || !defaultChecked.length || !instrument) {
+    if (!isOpen || !tunings || !tunings.length || !defaultChecked || !defaultChecked.length) {
         return null;
     }
 
     const handleSubmit = () => {
         if (selected.length > 0 && selected.includes(true)) {
             const selectedTunings = tunings.filter((_, index) => selected[index]);
-            onSubmit(selectedTunings, wound3rd);
+            onSubmit(selectedTunings, wound3rd, stringMaterial);
             setWound3rd(false);
             onClose();
         } else {
@@ -62,7 +66,7 @@ const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <h2 className="text-xl font-semibold mb-1 mt-0">Select Tunings</h2>
-            <h3 className="text-md font-semibold mb-2">for {instrument}</h3>
+            <h3 className="text-md font-semibold mb-2">for {instrument.name}</h3>
             <div className="grid justify-items-center">
 
                 {/*Tunings*/}
@@ -96,6 +100,22 @@ const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit
                     ))}
                 </ul>
 
+                {/*Select String Type*/}
+                <div className="m-4">
+                    <label className="block text-sm font-medium">String Material</label>
+                    <select
+                        onChange={(e) => setStringMaterial(e.target.value)}
+                        className="mt-1 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        value={stringMaterial}
+                    >
+                        {Object.keys(STRING_MATERIAL_FACTORS)
+                            .filter(sm => sm.includes(instrument.type) || sm === 'Kalium')
+                            .map((str, index) => (
+                                <option key={index} value={str}>{formatMaterial(str)}</option>
+                        ))}
+                    </select>
+                </div>
+
                 {/*Wound 3rd Switch*/}
                 {tunings[0].type === 'guitar' ? (
                     <ToggleSwitch
@@ -107,10 +127,11 @@ const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit
                 ) : (<div></div>)}
             </div>
 
-            <button onClick={handleSubmit} className="bg-indigo-500 text-white m-6 px-4 py-2 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2">
+            <button onClick={handleSubmit}
+                    className="bg-indigo-500 text-white m-6 px-4 py-2 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2">
                 Get Average String Set
             </button>
-            <Alert show={show} message={message} type={messageType} style="m-3" />
+            <Alert show={show} message={message} type={messageType} onClose={closeMessage} style="m-3"/>
         </Modal>
     );
 };

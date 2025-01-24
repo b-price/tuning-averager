@@ -1,4 +1,4 @@
-import {Instrument, InstPreset, Tuning, UserData} from "../../types.ts";
+import {Instrument, InstPreset, Tuning, UserData, StringFactors, ExportText} from "../../types.ts";
 
 export const APP_NAME = "Ideal Strings"
 
@@ -299,6 +299,82 @@ export const stringTypeFactors = {
         plain: {coeff: 2.215, power: 2},
         wound: {coeff: 2.07, power: 1.97},
     },
+}
+
+export const STRING_MATERIAL_FACTORS: StringFactors = {
+    Daddario_plain: {coeff: 2.21492927, power: 2.00004625},
+    Daddario_guitar_XL: {coeff: 2.03048974, power: 1.97385195},
+    Daddario_guitar_XLS: {coeff: 2.25914446, power: 1.95713584},
+    Daddario_guitar_HalfRound: {coeff: 4.7130929, power: 1.76056849},
+    Daddario_guitar_Chromes: {coeff: 1.21940071, power: 2.12075013},
+    Daddario_guitar_PhosphorBronze: {coeff: 2.40143563, power: 1.95752345},
+    Daddario_guitar_8515: {coeff: 2.08953162, power: 1.99082979},
+    Daddario_guitar_FlatTopsBronze: {coeff: 4.40613273, power: 1.80524054},
+    Daddario_guitar_8020: {coeff: 2.11933174, power: 1.98040335},
+    Daddario_guitar_RectifiedNylon: {coeff: 0.282545283, power: 2.00006866},
+    Daddario_guitar_SilverCopperNylon: {coeff: 0.442552831, power: 2.36219868},
+    Daddario_guitar_BlackNylon: {coeff: 0.078774083, power: 2.36553601},
+    Daddario_guitar_ClearNylon: {coeff: 0.199522437, power: 2.08940857},
+    Daddario_guitar_8020Nylon: {coeff: 0.163766125, power: 2.58628814},
+    Daddario_guitar_BassVIXL: {coeff: 1.36914611, power: 2.06065643},
+    Daddario_bass_XL: {coeff: 2.86193722, power: 1.90016626},
+    Daddario_bass_HalfRound: {coeff: 2.74646209, power: 1.91241999},
+    Daddario_bass_Chromes: {coeff: 2.60626822, power: 1.92675277},
+    Daddario_bass_ProSteels: {coeff: 3.73137984, power: 1.83062765},
+    Daddario_bass_PhosphorBronze: {coeff: 3.11439502, power: 1.90107888},
+    Daddario_other_BanjoXL: {coeff: 1.89404597, power: 1.98678875},
+    Daddario_other_BanjoPhosphorBronze: {coeff: 2.11777804, power: 1.98704533},
+    Daddario_other_PedalSteelXLS: {coeff: 2.33950923, power: 1.95004413},
+    GHS_plain: {coeff: 2.03170652, power: 2.04187443},
+    GHS_guitar_Boomers: {coeff: 2.1627709, power: 1.97673144},
+    GHS_guitar_ThinCoreBoomers: {coeff: 2.32199706, power: 1.93449862},
+    GHS_guitar_CoatedBoomers: {coeff: 1.71103459, power: 2.02017694},
+    GHS_guitar_ThickCoreBoomers: {coeff: 3.21813278, power: 1.85489437},
+    GHS_guitar_NickelRockers: {coeff: 1.80711638, power: 2.0435134},
+    GHS_guitar_BurnishedNickel: {coeff: 4.82005642, power: 1.76560969},
+    GHS_guitar_BigCoreNickel: {coeff: 3.24043155, power: 1.88022238},
+    GHS_guitar_BriteFlats: {coeff: 4.99711707, power: 1.76531521},
+    GHS_guitar_SuperSteels: {coeff: 1.93685245, power: 2.00543412},
+    GHS_guitar_Progressives: {coeff: 2.46563163, power: 1.94376591},
+    GHS_guitar_PrecisionFlats: {coeff: 3.75762993, power: 1.82191622},
+    GHS_guitar_BrightBronze: {coeff: 1.84307113, power: 2.02163758},
+    GHS_guitar_ContactCoreBronze: {coeff: 2.61347879, power: 1.92546173},
+    GHS_guitar_BronzeRollerwound: {coeff: 4.86791779, power: 1.77968681},
+    GHS_guitar_BrightBronzeGround: {coeff: 3.56575273, power: 1.86679482},
+    GHS_guitar_PhosphorBronze: {coeff: 2.9371083, power: 1.90060464},
+    GHS_guitar_ThinCoreBronze: {coeff: 3.79546768, power: 1.82671529},
+    GHS_guitar_Americana: {coeff: 2.12207513, power: 1.98367437},
+    GHS_guitar_WhiteBronze: {coeff: 1.21011053, power: 2.12869026},
+    GHS_guitar_InfinityBronze: {coeff: 3.80170885, power: 1.83630341},
+    GHS_guitar_SilkAndBronze: {coeff: 4.19580302, power: 1.82622626},
+    GHS_guitar_SilkAndSteel: {coeff: 1.35103577, power: 2.13381003},
+    GHS_guitar_VintageBronze: {coeff: 2.62795121, power: 1.9307925},
+    GHS_bass_Boomers: {coeff: 2.70417181, power: 1.92225375},
+    GHS_bass_SuperSteels: {coeff: 1.76219083, power: 2.01260904},
+    GHS_bass_ContactCoreSteel: {coeff: 1.06813673, power: 2.10532432},
+    GHS_bass_Bassics: {coeff: 1.3305054, power: 2.07171211},
+    GHS_bass_BalancedNickels: {coeff: 10.7328016, power: 1.6185116},
+    GHS_bass_Tapewound: {coeff: 4.09751649, power: 1.77567975},
+    GHS_bass_RoundCoreBoomers: {coeff: 1.85575465, power: 1.99404547},
+    GHS_bass_Crossovers: {coeff: 2.94953361, power: 1.91215541},
+    GHS_bass_Pressurewound: {coeff: 2.50641374, power: 1.93936705},
+    GHS_bass_PWBronze: {coeff: 3.41366687, power: 1.8733797},
+    GHS_bass_BriteFlats: {coeff: 1.27304018, power: 2.08728165},
+    GHS_bass_PrecisionFlats: {coeff: 2.29057868, power: 1.96108142},
+    Kalium: {coeff: 2.19325412, power: 1.96681613},
+    StringJoy_plain: {coeff: 2.43796891, power: 2.0000626},
+    StringJoy_guitar_Signatures: {coeff: 2.04848737, power: 1.98133765},
+    StringJoy_guitar_Broadways: {coeff: 2.83779503, power: 1.89630505},
+    StringJoy_guitar_PhosphorBronze: {coeff: 2.26940493, power: 1.98305114},
+    StringJoy_guitar_Brights8020: {coeff: 1.9354414, power: 2.02551248},
+    StringJoy_bass_Signatures: {coeff: 3.90556455, power: 1.84285261},
+
+}
+
+export const DEFAULT_STRING_MATERIAL = {
+    guitar: 'Daddario_guitar_XL',
+    bass: 'Daddario_bass_XL',
+    other: 'Daddario_other_BanjoXL',
 }
 
 export const serverURL = 'http://localhost:8080';
@@ -701,7 +777,8 @@ export const FAQS = [
         question: `What does 'Target Tension' mean?`,
         answer: `These are the tensions of each string of your instrument, in pounds per inch. Think of it as how tight
             you'd like your strings to be. The higher the number, the tighter the string will be. Higher tension usually
-            results in brighter tone and more sustain.`
+            results in brighter tone and more sustain. You can create your own tension presets or try some common ones in the
+            "Use Preset" section of Instrument Input.`
     },
     {
         question: `What is 'Weighted Mode'?`,
@@ -715,8 +792,9 @@ export const FAQS = [
                     A is not counted twice.`
     },
     {
-        question: `Why do I have to make an account?`,
-        answer: `So you can save all your instruments, tunings, and string sets. You wouldn't wanna lose all that hard work!`
+        question: `Why should I make an account?`,
+        answer: `So you can save all your instruments, tunings, and string sets. You wouldn't wanna lose all that hard work!
+            Otherwise, data is saved in your browser in Local Storage.`
     },
     {
         question: `Is ${APP_NAME} free?`,
@@ -728,10 +806,10 @@ export const FAQS = [
             what string gauges to use. I also always like doing random coding projects!`
     },
     {
-        question: `What sort of strings are the gauges based on?`,
-        answer: `Because D'Addario has exhaustive information on their strings (and they're popular), I went with them.
-            Guitar and bass strings are Nickel Wound XLs. I'm working on adding more options for this, but for now these
-            strings are a good representative for what's out there. You can tweak the preset tensions of your instrument
+        question: `Why don't you have Ernie Ball/etc. strings?`,
+        answer: `Of the major manufacturers, only D'Addario and GHS have their string unit weights/tension publicly available.
+            I also was able to figure out data for StringJoy and Kalium strings, two smaller custom manufacturers I'd
+            highly recommend. You can also tweak the preset tensions of your instrument
             to approximate variations in the materials/manufacturing of strings.`
     },
     {
@@ -740,7 +818,8 @@ export const FAQS = [
     },
     {
         question: `Other? Why don't you have x instrument?`,
-        answer: `I'd like to add more explicit support for different instruments in the future, but for now you should be
+        answer: `I might add more explicit support for different instruments in the future, but for now, try the "Use Preset" 
+            section of the Instrument Input for some different instruments. Also, you should be
             able to make pretty much anything you can think of with a combination of string count, scale length, and tension.`
     },
     {
@@ -754,7 +833,7 @@ export const FAQS = [
     },
 ]
 
-export const EXPORT_TEXT = {
+export const EXPORT_TEXT: ExportText = {
     Strings: "Shows how often each string gauge appears in your saved string sets. Good for making bulk string orders!",
     StringSets: "A list of all of your saved string sets and to what instrument they belong.",
     Instruments: "A list of all of your saved instruments.",

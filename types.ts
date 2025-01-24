@@ -37,6 +37,7 @@ export interface StringSet {
     tensions: number[];
     noteValues: number[];
     favorite?: boolean;
+    stringMaterial?: string;
 }
 
 export interface Transpose {
@@ -94,3 +95,12 @@ export interface Note {
 }
 
 export type MessageType = 'success' | 'error' | 'warning';
+
+export type StringFactors = {
+    [material: string]: {coeff: number, power: number}
+}
+
+export type ExportSelection = "Instruments" | "Tunings" | "StringSets" | "Strings";
+export type ExportText = {
+    [option in ExportSelection]: string;
+};

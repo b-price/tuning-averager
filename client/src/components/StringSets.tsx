@@ -65,7 +65,7 @@ const StringSets: React.FC<StringSetsProps> = ({ instrument, isOpen, onClose, on
                                     </tr>
 
                                     {/*String Gauges*/}
-                                    {set.gauges.length < 10 ?
+                                    {(set.gauges.length < 10 && instrument.type === "guitar") || set.gauges.length < 8 || set.gauges.length === 9?
                                         <tr className="hover:bg-gray-300 dark:hover:bg-gray-700 border-slate-700 dark:border-white border-x border-b mb-3">
                                             {set.gauges.map((gauge, index) => (
                                                 <td
@@ -77,7 +77,7 @@ const StringSets: React.FC<StringSetsProps> = ({ instrument, isOpen, onClose, on
                                             ))}
                                         </tr>
                                         :
-                                        // Split the Table for 10+ Strings
+                                        // Split the Table for Multi-bout instruments
                                         <>
                                             {/*The case of a 12 string bass lol*/}
                                             {instrument.type === "bass" && set.gauges.length === 12 ?
@@ -124,7 +124,7 @@ const StringSets: React.FC<StringSetsProps> = ({ instrument, isOpen, onClose, on
                                                 </>
                                                 :
                                                 <>
-                                                    {/*Other 10+ String Instruments*/}
+                                                    {/*Other Multi-bout Instruments*/}
                                                     <tr className="hover:bg-gray-300 dark:hover:bg-gray-700 border-slate-700 dark:border-white border-x mb-3">
                                                         {set.gauges.map((gauge, index) => (
                                                             index % 2 === 0 ?

@@ -4,12 +4,11 @@ import TuningInput from "./TuningInput.tsx";
 import InstrumentInput from "./InstrumentInput.tsx";
 import {
     DECIMAL_POINTS, DEFAULT_INST, DEFAULT_TUNING, INST_PRESETS, LOCAL_INSTS_KEY, LOCAL_TUNINGS_KEY, LOCAL_USERDATA_KEY,
-    notes, REFERENCE_PITCH,
-    stringTypeFactors,
+    notes, REFERENCE_PITCH, woundOverlap,
 } from "../defaults.ts";
 import {Instrument, StringSet, TensionPreset, Tuning, UserData} from "../../../types.ts";
 import {
-    capitalize,
+    capitalize, coeffPower,
     getUnitWeight,
     round,
     stringAverage,
@@ -187,7 +186,6 @@ const HomePage: React.FC<HomeProps> = ({ userData, localMode, localInstruments, 
                 instrument.id = Math.random().toString(36);
                 const localInsts = localStorage.getItem(LOCAL_INSTS_KEY);
                 const updatedInsts = localInsts ? [...JSON.parse(localInsts), instrument] : [instrument];
-                console.log(updatedInsts);
                 localStorage.setItem(LOCAL_INSTS_KEY, JSON.stringify(updatedInsts));
                 setInstruments([...instruments, newInst]);
                 setSelectedInstrument(newInst);
@@ -337,7 +335,6 @@ const HomePage: React.FC<HomeProps> = ({ userData, localMode, localInstruments, 
                 newTuning.id = Math.random().toString(36);
                 const localTunings = localStorage.getItem(LOCAL_TUNINGS_KEY);
                 const updatedTunings = localTunings ? [...JSON.parse(localTunings), newTuning] : [newTuning];
-                console.log(updatedTunings);
                 localStorage.setItem(LOCAL_TUNINGS_KEY, JSON.stringify(updatedTunings));
                 setTunings([...tunings, newTuning]);
                 setSelectedTuning(newTuning);
@@ -459,7 +456,7 @@ const HomePage: React.FC<HomeProps> = ({ userData, localMode, localInstruments, 
         }
     };
 
-    const handleSubmitGetAv = (selectedTunings: Tuning[], wound3rd: boolean) => {
+    const handleSubmitGetAv = (selectedTunings: Tuning[], wound3rd: boolean, stringMaterial: string) => {
         const avTuning = userData.settings.weightedMode ? stringAverage(selectedTunings) : stringAverageUnweighted(selectedTunings);
         if (avTuning) {
             //setAverageTuning(avTuning);
@@ -468,7 +465,8 @@ const HomePage: React.FC<HomeProps> = ({ userData, localMode, localInstruments, 
                 woundStrings: [],
                 name: '',
                 tensions: [],
-                noteValues: avTuning
+                noteValues: avTuning,
+                stringMaterial: stringMaterial,
             };
             const UWs: number[] = [];
             avTuning.forEach((note: number, index) => {
@@ -484,13 +482,24 @@ const HomePage: React.FC<HomeProps> = ({ userData, localMode, localInstruments, 
                         wound = true;
                     }
                 }
-                const coeff = stringTypeFactors[selectedInstrument.type][wound? 'wound' : 'plain'].coeff;
-                const power = stringTypeFactors[selectedInstrument.type][wound? 'wound' : 'plain'].power;
-                const gauge = stringGauge(UWs[index], coeff, power);
+                // const coeff = stringTypeFactors[selectedInstrument.type][wound? 'wound' : 'plain'].coeff;
+                // const power = stringTypeFactors[selectedInstrument.type][wound? 'wound' : 'plain'].power;
+                // const plain = getPlain(stringMaterial);
+                // const coeff = wound ? STRING_MATERIAL_FACTORS[stringMaterial].coeff : STRING_MATERIAL_FACTORS[plain].coeff;
+                // const power = wound ? STRING_MATERIAL_FACTORS[stringMaterial].power : STRING_MATERIAL_FACTORS[plain].power;
+                let material = coeffPower(stringMaterial, wound)
+                let gauge = stringGauge(UWs[index], material.coeff, material.power);
+                if (selectedInstrument.type !== 'guitar') {
+                    wound = gauge > (woundOverlap[0] + woundOverlap[1]) / 2;
+                    if (!wound) {
+                        material = coeffPower(stringMaterial, wound);
+                        gauge = stringGauge(UWs[index], material.coeff, material.power);
+                    }
+                }
 
                 stringSet.gauges.push(gauge);
                 stringSet.woundStrings.push(wound);
-                stringSet.tensions.push(tension(uwFromGauge(gauge, coeff, power), note, selectedInstrument.scale, userData.settings.referencePitch || REFERENCE_PITCH));
+                stringSet.tensions.push(tension(uwFromGauge(gauge, material.coeff, material.power), note, selectedInstrument.scale, userData.settings.referencePitch || REFERENCE_PITCH));
             });
             //setUnitWeights(UWs);
             setAvStringSet(stringSet);
@@ -802,7 +811,7 @@ const HomePage: React.FC<HomeProps> = ({ userData, localMode, localInstruments, 
                 onClose={() => setIsTuningConfirmOpen(false)}
                 onSubmit={handleSubmitGetAv}
                 tunings={selectedInstrument?.tunings}
-                instrument={selectedInstrument?.name}
+                instrument={selectedInstrument}
                 defaultChecked={Array(selectedInstrument?.tunings.length).fill(true)}
             />
             <TuningInput
