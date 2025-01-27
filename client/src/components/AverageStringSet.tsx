@@ -14,7 +14,7 @@ import {
     TAPER_WARNING,
     LENGTH_WARNING,
     defaultScales,
-    STRING_MATERIAL_FACTORS, DEFAULT_STRING_MATERIAL
+    STRING_MATERIAL_FACTORS, DEFAULT_STRING_MATERIAL, DEFAULT_INST
 } from "../defaults.ts";
 import ArrowSelector from "./ArrowSelector.tsx";
 import {useMessage} from "../hooks/useMessage.ts";
@@ -31,7 +31,7 @@ interface AverageStringSetProps {
     referencePitch: number;
 }
 
-const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, onClose, onSubmit, instrument, isEdit, editStringSet, referencePitch = REFERENCE_PITCH }) => {
+const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, onClose, onSubmit, instrument = DEFAULT_INST, isEdit, editStringSet, referencePitch = REFERENCE_PITCH }) => {
     const [newGauges, setNewGauges] = useState<number[]>([]);
     const [woundStrings, setWoundStrings] = useState<boolean[]>([]);
     const [name, setName] = useState<string>('');
@@ -162,28 +162,33 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
     }
 
     const handleSubmit = () => {
-        const newStringSet: StringSet = {
-            id: isEdit ? stringSet.id : Math.random().toString(36),
-            name: name,
-            gauges: newGauges,
-            woundStrings: woundStrings,
-            tensions: tensions,
-            noteValues: stringSet.noteValues,
-            favorite: favorite,
-            stringMaterial: stringMaterial
-        };
-        if (isEdit) {
-            editStringSet(newStringSet);
+        if (name && name !== '') {
+            const newStringSet: StringSet = {
+                id: isEdit ? stringSet.id : Math.random().toString(36),
+                name: name,
+                gauges: newGauges,
+                woundStrings: woundStrings,
+                tensions: tensions,
+                noteValues: stringSet.noteValues,
+                favorite: favorite,
+                stringMaterial: stringMaterial
+            };
+            if (isEdit) {
+                editStringSet(newStringSet);
+            } else {
+                onSubmit(newStringSet);
+            }
+            onClose();
         } else {
-            onSubmit(newStringSet);
+            showMessage('String Set name is required.', 'error');
         }
-        onClose();
+
     };
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <div className="flex-col mx-auto sm:px-8 px-4 pb-6 rounded-xl md:max-w-xl">
-                <h2 className="text-2xl font-bold mb-2 mt-0">{isEdit ? "Editing " : "Average "}String Set</h2>
+                <h2 className="text-2xl font-bold mb-2 mt-0">{isEdit ? "Editing " : "Ideal "}String Set</h2>
                 {instrument ? <h3 className="text-md font-semibold mb-4">for {instrument.name}</h3> : <></>}
 
                 {/* String Set Name / Material / Favorite */}

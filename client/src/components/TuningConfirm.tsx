@@ -4,7 +4,7 @@ import {Instrument, Tuning} from '../../../types.ts';
 import ToggleSwitch from "./ToggleSwitch.tsx";
 import {useMessage} from "../hooks/useMessage.ts";
 import Alert from "./Alert.tsx";
-import {DEFAULT_STRING_MATERIAL, STRING_MATERIAL_FACTORS} from "../defaults.ts";
+import {DEFAULT_INST, DEFAULT_STRING_MATERIAL, STRING_MATERIAL_FACTORS} from "../defaults.ts";
 import {formatMaterial} from "../utils/calculate.ts";
 
 interface TuningConfirmProps {
@@ -16,7 +16,7 @@ interface TuningConfirmProps {
     instrument: Instrument;
 }
 
-const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit, tunings, defaultChecked, instrument }) => {
+const TuningConfirm: React.FC<TuningConfirmProps> = ({ isOpen, onClose, onSubmit, tunings, defaultChecked, instrument = DEFAULT_INST }) => {
     const [selected, setSelected] = useState<boolean[]>(Array(tunings ? tunings.length : 1).fill(true));
     const [wound3rd, setWound3rd] = useState<boolean>(false);
     const [stringMaterial, setStringMaterial] = useState<string>(DEFAULT_STRING_MATERIAL[instrument.type]);

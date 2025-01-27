@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {Instrument, Tuning, UserData} from "../../../types.ts";
-import {defaultUser, LOCAL_INSTS_KEY, LOCAL_TUNINGS_KEY, LOCAL_USERDATA_KEY} from "../defaults.ts";
+import {
+    defaultUser,
+    INITIAL_TUNINGS,
+    LOCAL_INSTS_KEY,
+    LOCAL_TUNINGS_KEY,
+    LOCAL_USERDATA_KEY
+} from "../defaults.ts";
 import { getUser } from "../utils/serverFunctions.ts";
 import { useAuth, useUser, UserButton } from "@clerk/clerk-react";
 import Home from "./Home.tsx";
@@ -27,6 +33,8 @@ const Initialize: React.FC = () => {
             } else {
                 localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify(defaultUser));
                 setCurrentUser(defaultUser);
+                localStorage.setItem(LOCAL_TUNINGS_KEY, JSON.stringify(INITIAL_TUNINGS));
+                setLocalTunings(INITIAL_TUNINGS);
             }
             setIsLocal(true);
             setIsLoading(false);

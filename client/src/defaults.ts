@@ -1,4 +1,4 @@
-import {Instrument, InstPreset, Tuning, UserData, StringFactors, ExportText} from "../../types.ts";
+import {Instrument, InstPreset, Tuning, UserData, StringFactors, ExportText} from "../../types";
 
 export const APP_NAME = "Ideal Strings"
 
@@ -13,19 +13,26 @@ export const notes = [
     'C7', 'C#7', 'D7', 'D#7', 'E7', 'F7', 'F#7', 'G7', 'G#7', 'A7', 'A#7', 'B7',
     'C8', 'C#8', 'D8', 'D#8', 'E8', 'F8', 'F#8', 'G8', 'G#8', 'A8', 'A#8', 'B8',
     'C9', 'C#9', 'D9', 'D#9', 'E9', 'F9', 'F#9', 'G9', 'G#9', 'A9', 'A#9', 'B9'
-];
+]
+
+export const A4_OFFSET = 57
 
 export const REFERENCE_PITCH = 440
 
-export const MAX_STRING_GAUGE = 300
-const intStrings = Array.from({length: MAX_STRING_GAUGE + 1 - 13}, (_v, k) => k + 13)
-export const STRING_GAUGES = [5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, ...intStrings]
+export const MAX_STRING_GAUGE = 500
+export const MIN_STRING_GAUGE = 5
+export const PRECISE_GAUGE = 13
+const intStrings = Array.from({length: MAX_STRING_GAUGE + 1 - PRECISE_GAUGE}, (_v, k) => k + PRECISE_GAUGE)
+const halfStrings = Array.from({length: (PRECISE_GAUGE - MIN_STRING_GAUGE) * 2}, (_v, k) => k / 2 + MIN_STRING_GAUGE)
+export const STRING_GAUGES = [...halfStrings, ...intStrings]
 
 export const SCALE_LENGTH_RANGE = [10, 100]
 
 export const MIN_TAPER_GAUGE = 65
 export const LONG_THIN_GAUGE = 24
 export const GUITAR_WARNING_SCALE = 29
+
+export const MAX_TENSION = 1000
 
 export const DEFAULT_TUNING: Tuning = {
     id: '0',
@@ -311,12 +318,18 @@ export const STRING_MATERIAL_FACTORS: StringFactors = {
     Daddario_guitar_8515: {coeff: 2.08953162, power: 1.99082979},
     Daddario_guitar_FlatTopsBronze: {coeff: 4.40613273, power: 1.80524054},
     Daddario_guitar_8020: {coeff: 2.11933174, power: 1.98040335},
+    Daddario_guitar_BassVIXL: {coeff: 1.36914611, power: 2.06065643},
     Daddario_guitar_RectifiedNylon: {coeff: 0.282545283, power: 2.00006866},
     Daddario_guitar_SilverCopperNylon: {coeff: 0.442552831, power: 2.36219868},
     Daddario_guitar_BlackNylon: {coeff: 0.078774083, power: 2.36553601},
     Daddario_guitar_ClearNylon: {coeff: 0.199522437, power: 2.08940857},
+    Daddario_guitar_LaserNylonClear: {coeff: 0.12678731, power: 2.21982913},
+    Daddario_guitar_LaserNylonBlack: {coeff: 0.134728744, power: 2.20360921},
+    Daddario_guitar_SilverplatedWound: {coeff: 0.170024114, power: 2.60364919},
+    Daddario_guitar_8020BrassWound: {coeff: 0.179265409, power: 2.57647324},
+    Daddario_guitar_CompSilverCopper: {coeff: 0.280532991, power: 2.46852076},
+    Daddario_guitar_CompSilCopPolished: {coeff: 0.341905187, power: 2.42980507},
     Daddario_guitar_8020Nylon: {coeff: 0.163766125, power: 2.58628814},
-    Daddario_guitar_BassVIXL: {coeff: 1.36914611, power: 2.06065643},
     Daddario_bass_XL: {coeff: 2.86193722, power: 1.90016626},
     Daddario_bass_HalfRound: {coeff: 2.74646209, power: 1.91241999},
     Daddario_bass_Chromes: {coeff: 2.60626822, power: 1.92675277},
@@ -325,6 +338,11 @@ export const STRING_MATERIAL_FACTORS: StringFactors = {
     Daddario_other_BanjoXL: {coeff: 1.89404597, power: 1.98678875},
     Daddario_other_BanjoPhosphorBronze: {coeff: 2.11777804, power: 1.98704533},
     Daddario_other_PedalSteelXLS: {coeff: 2.33950923, power: 1.95004413},
+    Daddario_other_MandolinPhosphorBr: {coeff: 1.86993624, power: 2.03972215},
+    Daddario_other_Mandolin8020: {coeff: 2.5333114, power: 1.92142171},
+    Daddario_other_MandolinNickel: {coeff: 2.75788341, power: 1.88338031},
+    Daddario_other_MandolinFlatTops: {coeff: 1.43821824, power: 2.15767558},
+    Daddario_other_Mandobass: {coeff: 1.51486634, power: 2.03294771},
     GHS_plain: {coeff: 2.03170652, power: 2.04187443},
     GHS_guitar_Boomers: {coeff: 2.1627709, power: 1.97673144},
     GHS_guitar_ThinCoreBoomers: {coeff: 2.32199706, power: 1.93449862},
@@ -349,6 +367,18 @@ export const STRING_MATERIAL_FACTORS: StringFactors = {
     GHS_guitar_SilkAndBronze: {coeff: 4.19580302, power: 1.82622626},
     GHS_guitar_SilkAndSteel: {coeff: 1.35103577, power: 2.13381003},
     GHS_guitar_VintageBronze: {coeff: 2.62795121, power: 1.9307925},
+    GHS_other_BrightBronze: {coeff: 1.84307113, power: 2.02163758},
+    GHS_other_ContactCoreBronze: {coeff: 2.61347879, power: 1.92546173},
+    GHS_other_BronzeRollerwound: {coeff: 4.86791779, power: 1.77968681},
+    GHS_other_BrightBronzeGround: {coeff: 3.56575273, power: 1.86679482},
+    GHS_other_PhosphorBronze: {coeff: 2.9371083, power: 1.90060464},
+    GHS_other_ThinCoreBronze: {coeff: 3.79546768, power: 1.82671529},
+    GHS_other_Americana: {coeff: 2.12207513, power: 1.98367437},
+    GHS_other_WhiteBronze: {coeff: 1.21011053, power: 2.12869026},
+    GHS_other_InfinityBronze: {coeff: 3.80170885, power: 1.83630341},
+    GHS_other_SilkAndBronze: {coeff: 4.19580302, power: 1.82622626},
+    GHS_other_SilkAndSteel: {coeff: 1.35103577, power: 2.13381003},
+    GHS_other_VintageBronze: {coeff: 2.62795121, power: 1.9307925},
     GHS_bass_Boomers: {coeff: 2.70417181, power: 1.92225375},
     GHS_bass_SuperSteels: {coeff: 1.76219083, power: 2.01260904},
     GHS_bass_ContactCoreSteel: {coeff: 1.06813673, power: 2.10532432},
@@ -368,6 +398,9 @@ export const STRING_MATERIAL_FACTORS: StringFactors = {
     StringJoy_guitar_PhosphorBronze: {coeff: 2.26940493, power: 1.98305114},
     StringJoy_guitar_Brights8020: {coeff: 1.9354414, power: 2.02551248},
     StringJoy_bass_Signatures: {coeff: 3.90556455, power: 1.84285261},
+    StringJoy_other_Signatures: {coeff: 2.04848737, power: 1.98133765},
+    StringJoy_other_PhosphorBronze: {coeff: 2.26940493, power: 1.98305114},
+    StringJoy_other_Brights8020: {coeff: 1.9354414, power: 2.02551248},
 
 }
 
@@ -404,7 +437,7 @@ export const defaultScales = {
 
 export const INST_PRESETS: InstPreset[] = [
     {
-        name: "Guitar 25.5 10-46 E",
+        name: `Guitar 25.5" 10-46 E`,
         instrument: "guitar",
         scale: 25.5,
         forStrings: [1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -417,7 +450,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "guitar1-6",
     },
     {
-        name: "Guitar 25.5 10-46 E 12",
+        name: `Guitar 25.5" 12 String`,
         instrument: "guitar",
         scale: 25.5,
         forStrings: [12],
@@ -430,7 +463,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "guitar1-12",
     },
     {
-        name: "Guitar 25.5 10-46 E 10",
+        name: `Guitar 25.5" 10 String`,
         instrument: "guitar",
         scale: 25.5,
         forStrings: [10],
@@ -443,7 +476,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "guitar1-10",
     },
     {
-        name: "Guitar 25.5 10-46 E 11",
+        name: `Guitar 25.5" 11 String`,
         instrument: "guitar",
         scale: 25.5,
         forStrings: [11],
@@ -456,7 +489,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "guitar1-11",
     },
     {
-        name: "Bass 34 100 E",
+        name: `Bass 34" 100 E`,
         instrument: "bass",
         scale: 34,
         forStrings: [1, 2, 3, 4, 5],
@@ -469,7 +502,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "bass1-4",
     },
     {
-        name: "Bass 34 105 E",
+        name: `Bass 34" 105 E`,
         instrument: "bass",
         scale: 34,
         forStrings: [1, 2, 3, 4, 5],
@@ -482,7 +515,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "bass2-4",
     },
     {
-        name: "Bass 30 105 E",
+        name: `Bass 30" 105 E`,
         instrument: "bass",
         scale: 30,
         forStrings: [1, 2, 3, 4, 5],
@@ -495,7 +528,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "bass3-4",
     },
     {
-        name: "Bass 32 105 E",
+        name: `Bass 32" 105 E`,
         instrument: "bass",
         scale: 32,
         forStrings: [1, 2, 3, 4, 5],
@@ -508,7 +541,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "bass4-4",
     },
     {
-        name: "Bass 34 100 E 6",
+        name: `Bass 34" 6 String`,
         instrument: "bass",
         scale: 34,
         forStrings: [6],
@@ -521,7 +554,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "bass1-6",
     },
     {
-        name: "Bass 34 100 E 7",
+        name: `Bass 34" 7 String`,
         instrument: "bass",
         scale: 34,
         forStrings: [7],
@@ -534,7 +567,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "bass1-7",
     },
     {
-        name: "Bass 34 100 E 8",
+        name: `Bass 34" 8 String`,
         instrument: "bass",
         scale: 34,
         forStrings: [8, 10],
@@ -547,7 +580,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "bass1-8",
     },
     {
-        name: "Bass 34 100 E 9",
+        name: `Bass 34" 9 String`,
         instrument: "bass",
         scale: 34,
         forStrings: [9, 11],
@@ -560,7 +593,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "bass1-9",
     },
     {
-        name: "Bass 34 100 E 12",
+        name: `Bass 34" 12 String`,
         instrument: "bass",
         scale: 34,
         forStrings: [12],
@@ -573,7 +606,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "bass1-11",
     },
     {
-        name: "Banjo 11 G 5",
+        name: "Banjo G 5 String",
         instrument: "other",
         scale: 26.25,
         forStrings: [5, 6, 7, 9, 11],
@@ -586,7 +619,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "banjo1",
     },
     {
-        name: "Mandolin 13 G 36",
+        name: "Mandolin G",
         instrument: "other",
         scale: 13.875,
         forStrings: [8, 12],
@@ -599,7 +632,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "mandolin1",
     },
     {
-        name: "Pedal Steel 24.25 B9 10",
+        name: `Pedal Steel B9 10 String`,
         instrument: "other",
         scale: 24.25,
         forStrings: [10],
@@ -625,7 +658,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "uke1",
     },
     {
-        name: "Guitar 24.75 10-46 E",
+        name: `Guitar 24.75" 10-46 E`,
         instrument: "guitar",
         scale: 24.75,
         forStrings: [3, 4, 5, 6, 7, 8, 9],
@@ -638,7 +671,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "guitar2-6",
     },
     {
-        name: "Guitar 25.5 9-42 E",
+        name: `Guitar 25.5" 9-42 E`,
         instrument: "guitar",
         scale: 25.5,
         forStrings: [3, 4, 5, 6, 7, 8, 9],
@@ -651,7 +684,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "guitar3-6",
     },
     {
-        name: "Guitar 24.75 9-42 E",
+        name: `Guitar 24.75" 9-42 E`,
         instrument: "guitar",
         scale: 24.75,
         forStrings: [3, 4, 5, 6, 7, 8, 9],
@@ -664,7 +697,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "guitar4-6",
     },
     {
-        name: "Guitar 24 9-42 E",
+        name: `Guitar 24" 9-42 E`,
         instrument: "guitar",
         scale: 24,
         forStrings: [3, 4, 5, 6, 7, 8, 9],
@@ -677,7 +710,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "guitar5-6",
     },
     {
-        name: "Guitar 24 10-46 E",
+        name: `Guitar 24" 10-46 E`,
         instrument: "guitar",
         scale: 24,
         forStrings: [3, 4, 5, 6, 7, 8, 9],
@@ -690,7 +723,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "guitar6-6",
     },
     {
-        name: "Guitar 25.5 12-52 E",
+        name: `Guitar 25.5" 12-52 E`,
         instrument: "guitar",
         scale: 25.5,
         forStrings: [3, 4, 5, 6, 7, 8, 9],
@@ -703,8 +736,8 @@ export const INST_PRESETS: InstPreset[] = [
         id: "guitar7-6",
     },
     {
-        name: "Bass VI 30 84-24 E",
-        instrument: "bass",
+        name: `Bass VI 30" 84-24 E`,
+        instrument: "guitar",
         scale: 30,
         forStrings: [6],
         tensions: [27.4, 30.0, 30.6, 27.7, 25.6, 19.8],
@@ -716,7 +749,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "bassVI1",
     },
     {
-        name: "Baritone 27 14-68 B",
+        name: `Baritone 27" 14-68 B`,
         instrument: "guitar",
         scale: 27,
         forStrings: [6, 7, 8],
@@ -729,7 +762,7 @@ export const INST_PRESETS: InstPreset[] = [
         id: "baritone1-6",
     },
     {
-        name: "Baritone 27 13-62 B",
+        name: `Baritone 27" 13-62 B`,
         instrument: "guitar",
         scale: 27,
         forStrings: [6, 7, 8],
@@ -740,6 +773,57 @@ export const INST_PRESETS: InstPreset[] = [
             strings: defaultTunings.guitar_baritone
         },
         id: "baritone2-6",
+    },
+]
+
+export const INITIAL_TUNINGS: Tuning[] = [
+    {
+        id: 'guitar6estandard',
+        name: 'E Standard',
+        strings: defaultTunings.guitar.slice(0, 6),
+        type: 'guitar',
+    },
+    {
+        id: 'guitar6dropd',
+        name: 'Dropped D',
+        strings: [...defaultTunings.guitar.slice(0, 5), { note: 'D2', noteValue: notes.indexOf('D2') }],
+        type: 'guitar',
+    },
+    {
+        id: 'bass4estandard',
+        name: 'E Standard',
+        strings: defaultTunings.bass.slice(0, 4),
+        type: 'bass',
+    },
+    {
+        id: 'bass5standard',
+        name: '5 String Standard',
+        strings: defaultTunings.bass.slice(0, 5),
+        type: 'bass',
+    },
+    {
+        id: 'bass4dropd',
+        name: 'Dropped D',
+        strings: [...defaultTunings.bass.slice(0, 3), { note: 'D1', noteValue: notes.indexOf('D1') }],
+        type: 'bass',
+    },
+    {
+        id: 'banjo5g',
+        name: 'Banjo G',
+        strings: defaultTunings.other_banjo.slice(0, 5),
+        type: 'other',
+    },
+    {
+        id: 'mandolin8g',
+        name: 'Mandolin G',
+        strings: defaultTunings.other_mandolin.slice(0, 8),
+        type: 'other',
+    },
+    {
+        id: 'pedalsteel10b9',
+        name: 'Pedal Steel 10 String B9',
+        strings: defaultTunings.other_pedalsteel,
+        type: 'other',
     },
 ]
 
@@ -830,6 +914,10 @@ export const FAQS = [
             or extra/super long (X or E) - 35+". This can be an issue with the Bass VI as well. On the other hand, it can also
             be an issue to put a string normally intended for a standard scale guitar on one 30+": the string might not be
             long enough. I've found that StringJoy and GHS have the longest and Ernie Ball has the shortest strings.`
+    },
+    {
+        question: `Dark mode/light mode?`,
+        answer: `${APP_NAME} uses whatever your system preference is for light or dark themes.`
     },
 ]
 

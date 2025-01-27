@@ -180,21 +180,24 @@ const HomePage: React.FC<HomeProps> = ({ userData, localMode, localInstruments, 
     };
 
     const onAddInstrument = async (newInst: Instrument) => {
-        const instrument = {...newInst, tunings: newInst.tunings.map((tuning: Tuning) => tuning.id)};
         if (localMode) {
             try {
-                instrument.id = Math.random().toString(36);
+                newInst.id = Math.random().toString(36);
                 const localInsts = localStorage.getItem(LOCAL_INSTS_KEY);
-                const updatedInsts = localInsts ? [...JSON.parse(localInsts), instrument] : [instrument];
+                const updatedInsts = localInsts ? [...JSON.parse(localInsts), newInst] : [newInst];
                 localStorage.setItem(LOCAL_INSTS_KEY, JSON.stringify(updatedInsts));
                 setInstruments([...instruments, newInst]);
                 setSelectedInstrument(newInst);
+                if (newInst.tunings.length > 0) {
+                    setSelectedTuning(newInst.tunings[0]);
+                }
                 showMessage('Instrument added!', 'success');
             } catch (e) {
                 console.error(e);
                 showMessage('Could not add instrument.', 'error');
             }
         } else {
+            const instrument = {...newInst, tunings: newInst.tunings.map((tuning: Tuning) => tuning.id)};
             addInstrument(instrument)
                 .then((instID) => {
                     newInst.id = instID;
@@ -260,6 +263,7 @@ const HomePage: React.FC<HomeProps> = ({ userData, localMode, localInstruments, 
                 if (localUserData) {
                     const updatedUserData = {...JSON.parse(localUserData), tensionPresets: tensPres};
                     localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify(updatedUserData));
+                    setTensionPresets(tensPres);
                 }
             } catch (e) {
                 console.error(e);
@@ -716,13 +720,15 @@ const HomePage: React.FC<HomeProps> = ({ userData, localMode, localInstruments, 
                         >
                             New Instrument
                         </button>
-                        <button
-                            className="bg-indigo-500 text-white m-2 px-4 py-2 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2"
-                            onClick={handleOpenGetAv}
-                            disabled={instruments.length < 1}
-                        >
-                            Get Av. String Set
-                        </button>
+                        {instruments.length > 0 &&
+                            <button
+                                className="bg-indigo-500 text-white m-2 px-4 py-2 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2"
+                                onClick={handleOpenGetAv}
+                                disabled={instruments.length < 1}
+                            >
+                                Get Av. String Set
+                            </button>
+                        }
                     </div>
                 </div>
 
@@ -787,13 +793,15 @@ const HomePage: React.FC<HomeProps> = ({ userData, localMode, localInstruments, 
                         >
                             New Tuning
                         </button>
-                        <button
-                            className="bg-indigo-500 text-white m-2 px-4 py-2 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2"
-                            onClick={handleAddTuningToInstrument}
-                            disabled={instruments.length < 1 || tunings.length < 1}
-                        >
-                            Add to Current Inst.
-                        </button>
+                        {(tunings.length > 0 && instruments.length > 0) &&
+                            <button
+                                className="bg-indigo-500 text-white m-2 px-4 py-2 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2"
+                                onClick={handleAddTuningToInstrument}
+                                disabled={instruments.length < 1 || tunings.length < 1}
+                            >
+                                Add to Current Inst.
+                            </button>
+                        }
                     </div>
                 </div>
             </div>

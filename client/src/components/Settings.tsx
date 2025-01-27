@@ -12,7 +12,6 @@ import {
 } from "../defaults.ts";
 import { getUser, updateUser } from "../utils/serverFunctions.ts";
 import ToggleSwitch from "./ToggleSwitch.tsx";
-import {useTernaryDarkMode} from 'usehooks-ts';
 import {Link} from "react-router-dom";
 import DeleteConfirm from "./DeleteConfirm.tsx";
 import {useMessage} from "../hooks/useMessage.ts";
@@ -25,12 +24,6 @@ const Settings: React.FC = () => {
     const [settings, setSettings] = useState<UserSettings>(defaultSettings);
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const { message, messageType, showMessage, show, closeMessage } = useMessage();
-    const {
-        isDarkMode,
-        ternaryDarkMode,
-        setTernaryDarkMode,
-        toggleTernaryDarkMode,
-    } = useTernaryDarkMode()
 
     // on mount
     useEffect(() => {
@@ -63,33 +56,33 @@ const Settings: React.FC = () => {
         }
     }, [userId]);
 
-    const handleUseOSThemeSwitch = (checked: boolean) => {
-        if (userId) {
-            updateUser({ settings: { ...settings, useOSTheme: checked } }, user.id).then(() => {
-                setSettings({ ...settings, useOSTheme: checked });
-                setUser({ ...user, settings: { ...settings, useOSTheme: checked } });
-                setTernaryDarkMode(checked ? "system" : settings.darkMode ? "dark" : "light");
-            });
-        } else {
-            try {
-                localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify({ settings: { ...settings, useOSTheme: checked } }));
-                setSettings({ ...settings, useOSTheme: checked });
-                setUser({ ...user, settings: { ...settings, useOSTheme: checked } });
-                setTernaryDarkMode(checked ? "system" : settings.darkMode ? "dark" : "light");
-            } catch (e) {
-                console.error(e);
-            }
-        }
-
-        // if (checked) {
-        //     removeLocalStorageTheme();
-        //     console.log(localStorage.getItem('theme'));
-        // } else {
-        //     setLocalStorageTheme(settings.darkMode);
-        //     console.log(localStorage.getItem('theme'));
-        // }
-
-    };
+    // const handleUseOSThemeSwitch = (checked: boolean) => {
+    //     if (userId) {
+    //         updateUser({ settings: { ...settings, useOSTheme: checked } }, user.id).then(() => {
+    //             setSettings({ ...settings, useOSTheme: checked });
+    //             setUser({ ...user, settings: { ...settings, useOSTheme: checked } });
+    //             setTernaryDarkMode(checked ? "system" : settings.darkMode ? "dark" : "light");
+    //         });
+    //     } else {
+    //         try {
+    //             localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify({ settings: { ...settings, useOSTheme: checked } }));
+    //             setSettings({ ...settings, useOSTheme: checked });
+    //             setUser({ ...user, settings: { ...settings, useOSTheme: checked } });
+    //             setTernaryDarkMode(checked ? "system" : settings.darkMode ? "dark" : "light");
+    //         } catch (e) {
+    //             console.error(e);
+    //         }
+    //     }
+    //
+    //     // if (checked) {
+    //     //     removeLocalStorageTheme();
+    //     //     console.log(localStorage.getItem('theme'));
+    //     // } else {
+    //     //     setLocalStorageTheme(settings.darkMode);
+    //     //     console.log(localStorage.getItem('theme'));
+    //     // }
+    //
+    // };
 
     // const removeLocalStorageTheme = () => {
     //     localStorage.removeItem('theme');
@@ -101,27 +94,27 @@ const Settings: React.FC = () => {
     //     window.dispatchEvent(new Event('storage'));
     // }
 
-    const handleDarkModeSwitch = (checked: boolean) => {
-        if (userId) {
-            updateUser({ settings: { ...settings, darkMode: checked } }, user.id).then(() => {
-                setSettings({ ...settings, darkMode: checked });
-                setUser({ ...user, settings: { ...settings, darkMode: checked } });
-                setTernaryDarkMode(checked ? "dark" : "light");
-            });
-            // if (!settings.useOSTheme) {
-            //     setLocalStorageTheme(checked);
-            // }
-        } else {
-            try {
-                localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify({...user, settings: { ...settings, darkMode: checked }}));
-                setSettings({ ...settings, darkMode: checked });
-                setUser({ ...user, settings: { ...settings, darkMode: checked } });
-                setTernaryDarkMode(checked ? "dark" : "light");
-            } catch (e) {
-                console.error(e);
-            }
-        }
-    };
+    // const handleDarkModeSwitch = (checked: boolean) => {
+    //     if (userId) {
+    //         updateUser({ settings: { ...settings, darkMode: checked } }, user.id).then(() => {
+    //             setSettings({ ...settings, darkMode: checked });
+    //             setUser({ ...user, settings: { ...settings, darkMode: checked } });
+    //             setTernaryDarkMode(checked ? "dark" : "light");
+    //         });
+    //         // if (!settings.useOSTheme) {
+    //         //     setLocalStorageTheme(checked);
+    //         // }
+    //     } else {
+    //         try {
+    //             localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify({...user, settings: { ...settings, darkMode: checked }}));
+    //             setSettings({ ...settings, darkMode: checked });
+    //             setUser({ ...user, settings: { ...settings, darkMode: checked } });
+    //             setTernaryDarkMode(checked ? "dark" : "light");
+    //         } catch (e) {
+    //             console.error(e);
+    //         }
+    //     }
+    // };
 
     const handleWeightedModeSwitch = (checked: boolean) => {
         if (userId) {
@@ -234,23 +227,23 @@ const Settings: React.FC = () => {
                 }
 
                 {/*Theme*/}
-                <h2 className="text-xl font-semibold sm:text-left">Theme</h2>
-                <ToggleSwitch
-                    checked={settings.useOSTheme}
-                    onChange={(e) => handleUseOSThemeSwitch(e.target.checked)}
-                    twStyle="flex flex-col gap-2"
-                >
-                    <span className="ml-3 font-semibold">Use OS color theme</span>
-                </ToggleSwitch>
-                {!settings.useOSTheme && (
-                    <ToggleSwitch
-                        checked={settings.darkMode}
-                        onChange={(e) => handleDarkModeSwitch(e.target.checked)}
-                        twStyle="flex flex-col gap-2"
-                    >
-                        <span className="ml-3 font-semibold">Dark Mode</span>
-                    </ToggleSwitch>
-                )}
+                {/*<h2 className="text-xl font-semibold sm:text-left">Theme</h2>*/}
+                {/*<ToggleSwitch*/}
+                {/*    checked={settings.useOSTheme}*/}
+                {/*    onChange={(e) => handleUseOSThemeSwitch(e.target.checked)}*/}
+                {/*    twStyle="flex flex-col gap-2"*/}
+                {/*>*/}
+                {/*    <span className="ml-3 font-semibold">Use OS color theme</span>*/}
+                {/*</ToggleSwitch>*/}
+                {/*{!settings.useOSTheme && (*/}
+                {/*    <ToggleSwitch*/}
+                {/*        checked={settings.darkMode}*/}
+                {/*        onChange={(e) => handleDarkModeSwitch(e.target.checked)}*/}
+                {/*        twStyle="flex flex-col gap-2"*/}
+                {/*    >*/}
+                {/*        <span className="ml-3 font-semibold">Dark Mode</span>*/}
+                {/*    </ToggleSwitch>*/}
+                {/*)}*/}
             </div>
             <DeleteConfirm isOpen={isDeleteConfirmOpen} onClose={() => setIsDeleteConfirmOpen(false)} deleteFunction={deleteLocalData} />
             <Alert show={show} message={message} type={messageType} onClose={closeMessage} style="mt-6 mb-4 justify-center"/>

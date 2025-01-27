@@ -1,8 +1,12 @@
 import {Tuning} from "../../../types";
 import {
+    A4_OFFSET,
+    MAX_STRING_GAUGE,
+    MIN_STRING_GAUGE,
     MULTISCALE_SPAN,
     notes,
     PLAIN_CHAR,
+    PRECISE_GAUGE,
     REFERENCE_PITCH,
     STRING_MATERIAL_FACTORS,
     WOUND_CHAR,
@@ -96,19 +100,11 @@ export function convertToNoteValue(note: string){
 export function convertToNote(noteValue: number){
     if (noteValue < 0 || noteValue >= notes.length){
         return {note: 'invalid', cents: 0, noteValue: noteValue};
-        //return 'invalid note';
     }
     const intNote = Math.floor(noteValue);
     const cents = Math.round(((noteValue - intNote) * 100));
-    // let cents = ``;
-    // if (remainder < 0) {
-    //     cents = `${remainder.toFixed()}`;
-    // } else if (remainder > 0){
-    //     cents = `+${remainder.toFixed()}`;
-    // }
-    return {note: notes[intNote], cents: cents, noteValue: noteValue};
-    //return `${notes[intNote]}${cents}`
 
+    return {note: notes[intNote], cents: cents, noteValue: noteValue};
 }
 
 function checkStringMatch(tunings: Tuning[]){
@@ -126,7 +122,7 @@ export function getFrequency(noteValue: number, referencePitch = REFERENCE_PITCH
     if (noteValue < 0) {
         return 0;
     }
-    noteValue -= 57;
+    noteValue -= A4_OFFSET;
     return referencePitch * (Math.pow(2, noteValue / 12))
 }
 
@@ -140,16 +136,22 @@ export function getUnitWeight(noteValue: number, scale: number, tension: number,
 
 export function stringGauge(uw: number, coefficient: number, power: number) {
     if (uw <= 0) {
-        return 0;
+        return MIN_STRING_GAUGE;
     }
     const factor = (10000000 * uw) / coefficient;
     const gauge = Math.pow(factor, 1 / power);
 
-    if (gauge < 13){
-        return Math.round(gauge * 2) / 2;
-    } else {
-        return Math.round(gauge);
+    if (gauge < MIN_STRING_GAUGE) {
+        return MIN_STRING_GAUGE;
     }
+    if (gauge > MAX_STRING_GAUGE) {
+        return MAX_STRING_GAUGE;
+    }
+    if (gauge < PRECISE_GAUGE){
+        return Math.round(gauge * 2) / 2;
+    }
+
+    return Math.round(gauge);
 }
 
 export function tension(uw: number, noteValue: number, scale: number, referencePitch = REFERENCE_PITCH) {

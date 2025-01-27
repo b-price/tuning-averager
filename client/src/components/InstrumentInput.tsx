@@ -8,7 +8,7 @@ import {
     DECIMAL_POINTS,
     defaultScales,
     defaultStrings,
-    INST_PRESETS,
+    INST_PRESETS, MAX_TENSION,
     SCALE_LENGTH_RANGE,
     STRING_RANGE
 } from "../defaults.ts";
@@ -57,7 +57,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
     const [targetTension, setTargetTension] = useState<number[]>(defaultState.targetTension);
     const [type, setType] = useState<InstType>('guitar');
     const [useAverageTension, setUseAverageTension] = useState(false);
-    const [averageTension, setAverageTension] = useState(0);
+    const [averageTension, setAverageTension] = useState(1);
     const [strings, setStrings] = useState(defaultStrings.guitar);
     const [titleText, setTitleText] = useState('New Instrument');
     const [buttonText, setButtonText] = useState('Submit');
@@ -108,7 +108,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
     }, [isEdit]);
 
     const handleTensionChange = (index: number, value: number) => {
-        if (!isNaN(value) && value !== undefined) {
+        if (!isNaN(value) && value !== undefined && value > 0 && value < MAX_TENSION) {
             setTargetTension((prevTensions) => {
                 const newTensions = [...prevTensions];
                 newTensions[index] = value;
@@ -120,6 +120,12 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
             }
         }
     };
+
+    const handleAvTensionChange = (value: number) => {
+        if (!isNaN(value) && value !== undefined && value > 0 && value < MAX_TENSION) {
+            setAverageTension(value);
+        }
+    }
 
     const handleAvTensionSwitch = (checked: boolean) => {
         setUseAverageTension(checked);
@@ -447,7 +453,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                                         type="number"
                                         min="0"
                                         step="0.2"
-                                        value={tension}
+                                        value={round(tension, DECIMAL_POINTS)}
                                         onChange={(e) => handleTensionChange(index, parseFloat(e.target.value))}
                                         className="mt-1 block w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                     />
@@ -465,7 +471,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                                     min="0"
                                     step="0.2"
                                     value={round(averageTension, DECIMAL_POINTS)}
-                                    onChange={(e) => setAverageTension(parseFloat(e.target.value))}
+                                    onChange={(e) => handleAvTensionChange(parseFloat(e.target.value))}
                                     className="mt-1 block w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 />
                                 <p className="ml-1">lbs.</p>
