@@ -1,7 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import {Webhook} from "svix";
-import {UserData} from "../../types";
+import {Instrument, Tuning, UserData} from "../../types";
 import {collections} from "../services/database.service";
 import {INST_PRESETS_SERVER} from "../instPresets";
 import {ObjectId} from "mongodb";
@@ -57,16 +57,27 @@ webhookRouter.post(
                 const eventType = evt.type;
                 if (eventType === 'user.created') {
                     console.log(`User ${id} was ${eventType} in Clerk, trying Mongo...`);
-                    console.log(attributes);
                     const userData = attributes.unsafe_metadata.userData ? attributes.unsafe_metadata.userData : null;
-                    const tunings = attributes.unsafe_metadata.tunings.length ? attributes.unsafe_metadata.tunings : [];
+                    const tunings: Tuning[] = attributes.unsafe_metadata.tunings.length ? attributes.unsafe_metadata.tunings : [];
                     const instruments = attributes.unsafe_metadata.instruments.length ? attributes.unsafe_metadata.instruments : [];
-                    console.log(`Raw insts0: ${instruments[0].name}`);
-                    console.log(`Raw tunings0: ${tunings[0].name}`);
-                    const newUser: UserData = {
-                        id: id,
-                        username: attributes.username,
-                        tunings: tunings.length && collections.tunings ? await collections.tunings.insertMany(tunings)
+                    let tuningIDMap: {[tempID: string]: string} = {};
+                    let instIDs: string[] = [];
+                    if (tunings.length && collections.tunings) {
+                        for (const tuning of tunings) {
+                            const dbTuningID = await collections.tunings.insertOne(tuning)
+                                .then(result => result.insertedId.toString())
+                                .catch(e => console.log(e));
+                            if (dbTuningID && tuning.id) {
+                                tuningIDMap[tuning.id] = dbTuningID;
+                            }
+                        }
+                    }
+                    const finalInsts = instruments.map((inst: { tunings: any[]; }) => {
+                        return {...inst, tunings: inst.tunings.map(tun => tun.id ? tuningIDMap[tun.id] : '')}
+                    })
+
+                    if (instruments.length && collections.instruments) {
+                        instIDs = await collections.instruments.insertMany(finalInsts)
                             .then(ids => {
                                 const ovs = Object.values(ids.insertedIds)
                                 console.log(ovs);
@@ -75,19 +86,14 @@ webhookRouter.post(
                             .catch(e => {
                                 console.log(e);
                                 return [];
-                            })
-                            : [],
-                        instruments: instruments.length && collections.instruments ? await collections.instruments.insertMany(instruments)
-                                .then(ids => {
-                                    const ovs = Object.values(ids.insertedIds)
-                                    console.log(ovs);
-                                    return ovs.map(id => id.toString())
-                                })
-                                .catch(e => {
-                                    console.log(e);
-                                    return [];
-                                })
-                            : [],
+                            });
+                    }
+
+                    const newUser: UserData = {
+                        id: id,
+                        username: attributes.username,
+                        tunings: Object.values(tuningIDMap),
+                        instruments: instIDs,
                         instPresets: userData ? userData.instPresets : [],
                         tensionPresets: userData ? userData.tensionPresets : [],
                         settings: userData ? userData.settings : {
@@ -101,7 +107,6 @@ webhookRouter.post(
                     };
                     const result = await collections?.users?.insertOne(newUser);
                     console.log(`User ${id} was ${eventType}`);
-                    //console.log(`User insts0: ${newUser.instruments[0]}`);
 
                 } else if (eventType === 'user.deleted'){
                     const query = { id: id };
