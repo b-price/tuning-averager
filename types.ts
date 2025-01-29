@@ -97,7 +97,7 @@ export interface Note {
 export type MessageType = 'success' | 'error' | 'warning';
 
 export type StringFactors = {
-    [material: string]: {coeff: number, power: number}
+    [material: string]: {coeff: number, power: number, altPlain?: string}
 }
 
 export type ExportSelection = "Instruments" | "Tunings" | "StringSets" | "Strings";

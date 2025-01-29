@@ -180,11 +180,13 @@ export const formatMaterial = (material: string) => {
 }
 
 export const getPlain = (material: string) => {
-    return material === 'Kalium' ? 'Kalium' : material.split('_')[0] + '_plain'
+    if (material === 'Kalium') return material;
+    if (STRING_MATERIAL_FACTORS[material].altPlain) return STRING_MATERIAL_FACTORS[material].altPlain;
+    return material.split('_')[0] + '_plain'
 }
 
 export const coeffPower = (material: string, wound: boolean) => {
-    const plain = getPlain(material);
+    const plain = wound? material : getPlain(material);
     const coeff = wound ? STRING_MATERIAL_FACTORS[material].coeff : STRING_MATERIAL_FACTORS[plain].coeff;
     const power = wound ? STRING_MATERIAL_FACTORS[material].power : STRING_MATERIAL_FACTORS[plain].power;
     return {coeff: coeff, power: power};

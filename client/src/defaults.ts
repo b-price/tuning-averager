@@ -33,6 +33,7 @@ export const LONG_THIN_GAUGE = 24
 export const GUITAR_WARNING_SCALE = 29
 
 export const MAX_TENSION = 1000
+export const TENSILE_STRENGTH = 300000
 
 export const DEFAULT_TUNING: Tuning = {
     id: '0',
@@ -319,17 +320,18 @@ export const STRING_MATERIAL_FACTORS: StringFactors = {
     Daddario_guitar_FlatTopsBronze: {coeff: 4.40613273, power: 1.80524054},
     Daddario_guitar_8020: {coeff: 2.11933174, power: 1.98040335},
     Daddario_guitar_BassVIXL: {coeff: 1.36914611, power: 2.06065643},
-    Daddario_guitar_RectifiedNylon: {coeff: 0.282545283, power: 2.00006866},
-    Daddario_guitar_SilverCopperNylon: {coeff: 0.442552831, power: 2.36219868},
-    Daddario_guitar_BlackNylon: {coeff: 0.078774083, power: 2.36553601},
-    Daddario_guitar_ClearNylon: {coeff: 0.199522437, power: 2.08940857},
-    Daddario_guitar_LaserNylonClear: {coeff: 0.12678731, power: 2.21982913},
-    Daddario_guitar_LaserNylonBlack: {coeff: 0.134728744, power: 2.20360921},
-    Daddario_guitar_SilverplatedWound: {coeff: 0.170024114, power: 2.60364919},
-    Daddario_guitar_8020BrassWound: {coeff: 0.179265409, power: 2.57647324},
-    Daddario_guitar_CompSilverCopper: {coeff: 0.280532991, power: 2.46852076},
-    Daddario_guitar_CompSilCopPolished: {coeff: 0.341905187, power: 2.42980507},
-    Daddario_guitar_8020Nylon: {coeff: 0.163766125, power: 2.58628814},
+    Daddario_plain_RectifiedNylon: {coeff: 0.282545283, power: 2.00006866},
+    Daddario_plain_BlackNylon: {coeff: 0.078774083, power: 2.36553601},
+    Daddario_plain_ClearNylon: {coeff: 0.199522437, power: 2.08940857},
+    Daddario_plain_LaserNylonClear: {coeff: 0.12678731, power: 2.21982913},
+    Daddario_plain_LaserNylonBlack: {coeff: 0.134728744, power: 2.20360921},
+    Daddario_guitar_ClassicSilverplated: {coeff: 0.442552831, power: 2.36219868, altPlain: 'Daddario_plain_ClearNylon'},
+    Daddario_guitar_ProArteSilverplated: {coeff: 0.170024114, power: 2.60364919, altPlain: 'Daddario_plain_LaserNylonClear'},
+    Daddario_guitar_ProArte8020: {coeff: 0.179265409, power: 2.57647324, altPlain: 'Daddario_plain_LaserNylonClear'},
+    Daddario_guitar_Classic8020: {coeff: 0.163766125, power: 2.58628814, altPlain: 'Daddario_plain_ClearNylon'},
+    Daddario_guitar_CompSilverplated: {coeff: 0.280532991, power: 2.46852076, altPlain: 'Daddario_plain_LaserNylonClear'},
+    Daddario_guitar_CompSilverPolished: {coeff: 0.341905187, power: 2.42980507, altPlain: 'Daddario_plain_LaserNylonClear'},
+    Daddario_guitar_RectifiedNylon: {coeff: 0.170024114, power: 2.60364919, altPlain: 'Daddario_plain_RectifiedNylon'},
     Daddario_bass_XL: {coeff: 2.86193722, power: 1.90016626},
     Daddario_bass_HalfRound: {coeff: 2.74646209, power: 1.91241999},
     Daddario_bass_Chromes: {coeff: 2.60626822, power: 1.92675277},
@@ -487,6 +489,32 @@ export const INST_PRESETS: InstPreset[] = [
             strings: defaultTunings.guitar_11
         },
         id: "guitar1-11",
+    },
+    {
+        name: `Acoustic Guitar 12-53`,
+        instrument: "guitar",
+        scale: 25.5,
+        forStrings: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        tensions: [23.4, 23.3, 30.1, 29.9, 28.9, 24.9, 20.0, 16.0, 14.0],
+        tuning: {
+            name: "E Standard",
+            type: "guitar",
+            strings: defaultTunings.guitar
+        },
+        id: "acguitar1-6",
+    },
+    {
+        name: `Acoustic 12 String 10-47`,
+        instrument: "guitar",
+        scale: 25.5,
+        forStrings: [12],
+        tensions: [16.2, 16.2, 17.8, 17.8, 27.9, 14.7, 26.7, 18.5, 24.7, 23.4, 19.9, 26.9],
+        tuning: {
+            name: "E Standard",
+            type: "guitar",
+            strings: defaultTunings.guitar_12
+        },
+        id: "acguitar1-12",
     },
     {
         name: `Bass 34" 100 E`,
@@ -656,6 +684,19 @@ export const INST_PRESETS: InstPreset[] = [
             strings: defaultTunings.other_ukulele
         },
         id: "uke1",
+    },
+    {
+        name: `Classical Guitar 28-43`,
+        instrument: "guitar",
+        scale: 25.6,
+        forStrings: [3, 4, 5, 6, 7, 8, 9],
+        tensions: [16.2, 12.0, 11.9, 15.6, 15.9, 14.2, 14.0, 12.0, 10.0],
+        tuning: {
+            name: "E Standard",
+            type: "guitar",
+            strings: defaultTunings.guitar
+        },
+        id: "cguitar1",
     },
     {
         name: `Guitar 24.75" 10-46 E`,
