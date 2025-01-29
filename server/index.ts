@@ -7,7 +7,7 @@ import {instrumentRouter} from "./routes/instruments.router";
 import cors from "cors";
 import {webhookRouter} from "./routes/webhook.router";
 
-export const app = express();
+const app = express();
 const port = process.env.LISTENING_PORT || 8080;
 
 dbConnect().then(() => {
@@ -21,3 +21,5 @@ dbConnect().then(() => {
     console.error("Database connection failed", error);
     process.exit();
 });
+
+export default app;
