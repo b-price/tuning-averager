@@ -8,7 +8,7 @@ import cors from "cors";
 import {webhookRouter} from "./routes/webhook.router";
 
 const app = express();
-const port = 8080;
+const port = process.env.LISTENING_PORT || 8080;
 
 dbConnect().then(() => {
     app.use(cors());
