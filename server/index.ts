@@ -7,7 +7,7 @@ import {instrumentRouter} from "./routes/instruments.router";
 import cors from "cors";
 import {webhookRouter} from "./routes/webhook.router";
 
-const app = express();
+export const app = express();
 const port = process.env.LISTENING_PORT || 8080;
 
 dbConnect().then(() => {
