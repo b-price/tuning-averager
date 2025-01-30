@@ -14,12 +14,16 @@ export async function dbConnect() {
     dotenv.config();
     const client = new MongoClient(process.env.DB_CONN_STRING || '');
 
-    await client.connect();
-    const db = client.db(process.env.DB_NAME);
-    collections.users = db.collection<UserData>(process.env.USER_COLLECTION_NAME || '');
-    collections.tunings = db.collection<Tuning>(process.env.TUNINGS_COLLECTION_NAME || '');
-    collections.instruments = db.collection<Instrument>(process.env.INSTRUMENTS_COLLECTION_NAME || '');
-    console.log(`Successfully connected to database: ${db.databaseName}`);
+    await client.connect()
+        .then(() => {
+            const db = client.db(process.env.DB_NAME);
+            collections.users = db.collection<UserData>(process.env.USER_COLLECTION_NAME || '');
+            collections.tunings = db.collection<Tuning>(process.env.TUNINGS_COLLECTION_NAME || '');
+            collections.instruments = db.collection<Instrument>(process.env.INSTRUMENTS_COLLECTION_NAME || '');
+            console.log(`Successfully connected to database: ${db.databaseName}`);
+        })
+        .catch(e => console.error(e));
+
 }
 //     try {
 //         // Connect the client to the server (optional starting in v4.7)
