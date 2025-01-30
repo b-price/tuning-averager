@@ -12,7 +12,6 @@ export let collections: {
 
 export async function dbConnect() {
     dotenv.config();
-    console.log(process.env.DB_CONN_STRING);
     const client = new MongoClient(process.env.DB_CONN_STRING || '');
 
     await client.connect();
