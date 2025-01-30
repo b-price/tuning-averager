@@ -21,5 +21,3 @@ dbConnect().then(() => {
     console.error("Database connection failed", error);
     process.exit();
 });
-
-export default app;
