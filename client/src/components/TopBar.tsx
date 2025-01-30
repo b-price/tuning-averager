@@ -7,7 +7,7 @@ interface TopBarProps {
     linkURL?: string;
 }
 
-const TopBar: React.FC<TopBarProps> = ({ loggedIn, linkURL }) => {
+const TopBar: React.FC<TopBarProps> = ({ linkURL }) => {
     return (
         <div className="flex items-center justify-between my-4">
             <Link to="/">

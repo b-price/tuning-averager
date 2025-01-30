@@ -11,6 +11,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^5.22.8",
     "@tippy.js/react": "^3.1.1",
     "axios": "^1.7.7",
     "csv-writer": "^1.6.0",
@@ -26,6 +27,7 @@
     "@eslint/js": "^9.13.0",
     "@types/jest": "^29.5.14",
     "@types/react": "^18.3.12",
+    "@types/react-csv": "^1.1.10",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
     "autoprefixer": "^10.4.20",
