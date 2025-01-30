@@ -22,7 +22,7 @@ export async function dbConnect() {
             collections.instruments = db.collection<Instrument>(process.env.INSTRUMENTS_COLLECTION_NAME || '');
             console.log(`Successfully connected to database: ${db.databaseName}`);
         })
-        .catch(e => console.error(e));
+        .catch(e => console.error(`Could not connect to database: ${e}`));
 
 }
 //     try {
