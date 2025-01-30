@@ -7,7 +7,7 @@ export const tuningsRouter = express.Router();
 
 tuningsRouter.use(express.json());
 
-tuningsRouter.get("/", async (req, res: Response) => {
+tuningsRouter.get("/", async (_req: Request, res: Response) => {
     try {
         const tunings = (await collections?.tunings?.find({}).toArray()) as Tuning[];
         res.status(200).send(tunings);

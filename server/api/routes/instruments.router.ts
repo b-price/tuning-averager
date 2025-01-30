@@ -7,7 +7,7 @@ export const instrumentRouter = express.Router();
 
 instrumentRouter.use(express.json());
 
-instrumentRouter.get("/", async (req, res: Response) => {
+instrumentRouter.get("/", async (_req: Request, res: Response) => {
     try {
         const instruments = (await collections?.instruments?.find({}).toArray()) as Instrument[];
         res.status(200).send(instruments);
