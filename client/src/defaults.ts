@@ -412,7 +412,7 @@ export const DEFAULT_STRING_MATERIAL = {
     other: 'Daddario_other_BanjoXL',
 }
 
-export const serverURL = 'https://ideal-strings.vercel.app';
+export const serverURL = 'https://ideal-strings.onrender.com';
 
 export const DECIMAL_POINTS = 2
 
