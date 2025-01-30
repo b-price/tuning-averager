@@ -16,7 +16,7 @@ dbConnect().then(() => {
     app.use("/api/tunings", tuningsRouter);
     app.use("/api/instruments", instrumentRouter);
     app.use("/api/api/webhook", webhookRouter);
-    app.listen(8080, () => console.log(`Server running on port: ${port}`));
+    app.listen(port, () => console.log(`Server running on port: ${port}`));
 }).catch((error) => {
     console.error("Database connection failed", error);
     process.exit();
