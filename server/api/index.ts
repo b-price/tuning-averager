@@ -12,10 +12,10 @@ const port = process.env.LISTENING_PORT || 8080;
 
 dbConnect().then(() => {
     app.use(cors());
-    app.use("/api/users", userRouter);
-    app.use("/api/tunings", tuningsRouter);
-    app.use("/api/instruments", instrumentRouter);
-    app.use("/api/api/webhook", webhookRouter);
+    app.use("/users", userRouter);
+    app.use("/tunings", tuningsRouter);
+    app.use("/instruments", instrumentRouter);
+    app.use("/api/webhook", webhookRouter);
     app.listen(port, () => console.log(`Server running on port: ${port}`));
 }).catch((error) => {
     console.error("Database connection failed", error);

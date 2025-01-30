@@ -13,7 +13,6 @@ export let collections: {
 export async function dbConnect() {
     dotenv.config();
     const client = new MongoClient(process.env.MONGODB_URI || '');
-    console.log(`Port from env: ${process.env.LISTENING_PORT}`);
 
     await client.connect()
         .then(() => {
