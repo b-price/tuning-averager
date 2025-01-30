@@ -1,6 +1,6 @@
 import React, {useEffect, useState,} from 'react';
 import ArrowSelector from './ArrowSelector.tsx';
-import {GuitarString, Tuning, Transpose, InstType} from "../../../types.ts";
+import {GuitarString, Tuning, Transpose, InstType} from "../../types.ts";
 import Modal from "./Modal.tsx";
 import {capitalize} from "../utils/calculate.ts";
 import {defaultStrings, INST_PRESETS, VALID_STRINGS} from "../defaults.ts";

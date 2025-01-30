@@ -1,5 +1,5 @@
 import React from 'react';
-import {MessageType} from "../../../types.ts";
+import {MessageType} from "../../types.ts";
 
 interface AlertProps {
     message: string;

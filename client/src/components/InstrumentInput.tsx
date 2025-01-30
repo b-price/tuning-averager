@@ -1,6 +1,6 @@
 // InstrumentInput.tsx
 import React, { useState, useEffect } from 'react';
-import { InstPreset, Instrument, InstType, TensionPreset, Tuning } from "../../../types.ts";
+import { InstPreset, Instrument, InstType, TensionPreset, Tuning } from "../../types.ts";
 import Modal from "./Modal.tsx";
 import DeleteConfirm from "./DeleteConfirm.tsx"; // Import DeleteConfirm component
 import { getMultiscale, round } from "../utils/calculate.ts";

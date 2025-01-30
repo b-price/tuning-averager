@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import { ObjectId } from "mongodb";
 import {collections} from "../services/database.service";
-import {Tuning} from "../../types";
+import {Tuning} from "../types";
 
 export const tuningsRouter = express.Router();
 

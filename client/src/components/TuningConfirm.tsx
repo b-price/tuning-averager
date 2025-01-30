@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
-import {Instrument, Tuning} from '../../../types.ts';
+import {Instrument, Tuning} from '../../types.ts';
 import ToggleSwitch from "./ToggleSwitch.tsx";
 import {useMessage} from "../hooks/useMessage.ts";
 import Alert from "./Alert.tsx";

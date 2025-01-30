@@ -6,7 +6,7 @@ import {
     DECIMAL_POINTS, DEFAULT_INST, DEFAULT_TUNING, INST_PRESETS, LOCAL_INSTS_KEY, LOCAL_TUNINGS_KEY, LOCAL_USERDATA_KEY,
     notes, REFERENCE_PITCH, woundOverlap,
 } from "../defaults.ts";
-import {Instrument, StringSet, TensionPreset, Tuning, UserData} from "../../../types.ts";
+import {Instrument, StringSet, TensionPreset, Tuning, UserData} from "../../types.ts";
 import {
     capitalize, coeffPower,
     getUnitWeight,

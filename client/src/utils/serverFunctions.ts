@@ -1,6 +1,6 @@
 import axios, {AxiosError} from "axios";
 import {serverURL} from "../defaults";
-import {Instrument, Tuning, UserData} from "../../../types";
+import {Instrument, Tuning, UserData} from "../../types.ts";
 
 // user CRUD
 export const getUser = async (userID?: string | null) => {

@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import { ObjectId } from "mongodb";
 import {collections} from "../services/database.service";
-import {Instrument} from "../../types";
+import {Instrument} from "../types";
 
 export const instrumentRouter = express.Router();
 

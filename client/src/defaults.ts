@@ -1,4 +1,4 @@
-import {Instrument, InstPreset, Tuning, UserData, StringFactors, ExportText} from "../../types";
+import {Instrument, InstPreset, Tuning, UserData, StringFactors, ExportText} from "../types.ts";
 
 export const APP_NAME = "Ideal Strings"
 

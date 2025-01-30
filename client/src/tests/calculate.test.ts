@@ -1,5 +1,5 @@
 import {stringAverage, convertToNoteValue} from "../utils/calculate.ts";
-import {Tuning} from "../../../types.ts";
+import {Tuning} from "../../types.ts";
 
 const standardTuning: Tuning = {
     name: 'E Standard',

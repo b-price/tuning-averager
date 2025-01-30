@@ -1,5 +1,5 @@
 import Modal from './Modal';
-import {StringSet, Instrument} from '../../../types.ts';
+import {StringSet, Instrument} from '../../types.ts';
 import React, {useState} from "react";
 import {getPW} from "../utils/calculate.ts";
 import DeleteConfirm from "./DeleteConfirm.tsx";

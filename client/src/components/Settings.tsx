@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { UserButton } from "@clerk/clerk-react";
 import { useAuth } from "@clerk/clerk-react";
-import { UserData, UserSettings } from "../../../types.ts";
+import { UserData, UserSettings } from "../../types.ts";
 import {
     defaultSettings,
     defaultUser,

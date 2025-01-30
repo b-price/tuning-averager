@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {MessageType} from "../../../types.ts";
+import {MessageType} from "../../types.ts";
 
 export const useMessage = () => {
     const [message, setMessage] = useState<string>('');

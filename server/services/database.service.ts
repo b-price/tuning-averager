@@ -2,7 +2,7 @@ import * as mongoDB from "mongodb";
 import {MongoClient} from "mongodb";
 import * as dotenv from "dotenv";
 import * as process from "node:process";
-import {Instrument, Tuning, UserData} from "../../types";
+import {Instrument, Tuning, UserData} from "../types";
 
 export let collections: {
     users?: mongoDB.Collection<UserData>,

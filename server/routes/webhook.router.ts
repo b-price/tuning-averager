@@ -1,9 +1,8 @@
 import express from "express";
 import bodyParser from "body-parser";
 import {Webhook} from "svix";
-import {Instrument, Tuning, UserData} from "../../types";
+import {Tuning, UserData} from "../types";
 import {collections} from "../services/database.service";
-import {INST_PRESETS_SERVER} from "../instPresets";
 import {ObjectId} from "mongodb";
 
 export const webhookRouter = express.Router();

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {Instrument, Tuning, UserData} from "../../../types.ts";
+import {Instrument, Tuning, UserData} from "../../types.ts";
 import {
     defaultUser,
     INITIAL_TUNINGS,

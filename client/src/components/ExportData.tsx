@@ -1,4 +1,4 @@
-import {ExportSelection, Instrument, Tuning} from "../../../types.ts";
+import {ExportSelection, Instrument, Tuning} from "../../types.ts";
 import React, { useState } from "react";
 import Modal from "./Modal.tsx";
 import { useMessage } from "../hooks/useMessage.ts";
