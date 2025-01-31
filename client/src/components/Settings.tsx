@@ -179,7 +179,7 @@ const Settings: React.FC = () => {
                 {userId ?
                     <div className="flex flex-row items-center gap-4">
                         <h2 className="text-xl font-semibold">Profile Settings →</h2>
-                        <UserButton afterSignOutUrl="/"/>
+                        <UserButton />
                     </div>
                     :
                     <div className="flex items-center mb-4">

@@ -93,7 +93,7 @@ const Initialize: React.FC = () => {
                 <div className="text-red-500 mb-4">{error}</div>
                 <div className="flex items-center mb-4 gap-4 ">
                     <h1 className="text-xl font-bold">Profile Settings:</h1>
-                    <UserButton afterSignOutUrl='sign-in'/>
+                    <UserButton />
                 </div>
             </div>
         );

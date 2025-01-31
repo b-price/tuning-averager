@@ -625,7 +625,7 @@ const HomePage: React.FC<HomeProps> = ({ userData, localMode, localInstruments, 
                 </div>
                 :
                 <div className="flex items-center mb-4 gap-4">
-                    <UserButton afterSignOutUrl='/'/>
+                    <UserButton />
                     <h1 className="text-2xl font-bold">{userData.username}</h1>
                 </div>
             }
