@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {Instrument, Tuning, UserData} from "../../types.ts";
 import {
-    defaultUser,
+    DEFAULT_USER,
     INITIAL_TUNINGS,
     LOCAL_INSTS_KEY,
     LOCAL_TUNINGS_KEY,
@@ -14,7 +14,7 @@ import Home from "./Home.tsx";
 const Initialize: React.FC = () => {
     const { userId } = useAuth();
     const { user, isLoaded: isUserLoaded } = useUser();
-    const [currentUser, setCurrentUser] = useState<UserData>(defaultUser);
+    const [currentUser, setCurrentUser] = useState<UserData>(DEFAULT_USER);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isLocal, setIsLocal] = useState<boolean>(false);
@@ -31,8 +31,8 @@ const Initialize: React.FC = () => {
                 setLocalTunings(localStorageTunings ? JSON.parse(localStorageTunings) : []);
                 setLocalInsts(localStorageInstruments ? JSON.parse(localStorageInstruments) : []);
             } else {
-                localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify(defaultUser));
-                setCurrentUser(defaultUser);
+                localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify(DEFAULT_USER));
+                setCurrentUser(DEFAULT_USER);
                 localStorage.setItem(LOCAL_TUNINGS_KEY, JSON.stringify(INITIAL_TUNINGS));
                 setLocalTunings(INITIAL_TUNINGS);
             }

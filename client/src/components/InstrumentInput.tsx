@@ -6,8 +6,8 @@ import DeleteConfirm from "./DeleteConfirm.tsx"; // Import DeleteConfirm compone
 import { getMultiscale, round } from "../utils/calculate.ts";
 import {
     DECIMAL_POINTS,
-    defaultScales,
-    defaultStrings,
+    DEFAULT_SCALES,
+    DEFAULT_STRING_COUNT,
     INST_PRESETS, MAX_TENSION,
     SCALE_LENGTH_RANGE,
     STRING_RANGE
@@ -58,7 +58,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
     const [type, setType] = useState<InstType>('guitar');
     const [useAverageTension, setUseAverageTension] = useState(false);
     const [averageTension, setAverageTension] = useState(1);
-    const [strings, setStrings] = useState(defaultStrings.guitar);
+    const [strings, setStrings] = useState(DEFAULT_STRING_COUNT.guitar);
     const [titleText, setTitleText] = useState('New Instrument');
     const [buttonText, setButtonText] = useState('Submit');
     const [multiscale, setMultiscale] = useState<boolean>(false);
@@ -79,8 +79,8 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
         setName(defaultState.name);
         setSelectedTunings(defaultState.selectedTunings);
         setScale(defaultState.scale);
-        setStrings(defaultStrings.guitar);
-        setTargetTension(INST_PRESETS[0].tensions.slice(0, defaultStrings.guitar));
+        setStrings(DEFAULT_STRING_COUNT.guitar);
+        setTargetTension(INST_PRESETS[0].tensions.slice(0, DEFAULT_STRING_COUNT.guitar));
         setType('guitar');
         setTitleText('New Instrument');
         setButtonText('Submit');
@@ -161,9 +161,9 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
 
     const handleTypeChange = (newType: InstType) => {
         setType(newType);
-        setStrings(defaultStrings[newType]);
-        setScale(defaultScales[newType]);
-        stringTypeChangeUpdate(defaultStrings[newType], newType);
+        setStrings(DEFAULT_STRING_COUNT[newType]);
+        setScale(DEFAULT_SCALES[newType]);
+        stringTypeChangeUpdate(DEFAULT_STRING_COUNT[newType], newType);
     }
 
     const handleTuningChange = (tuning: Tuning, checked: boolean) => {
@@ -285,8 +285,8 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
         if (newPreset) {
             const stringCount = newPreset.forStrings.length === 1
                 ? newPreset.forStrings[0]
-                : newPreset.forStrings.includes(defaultStrings[newPreset.instrument])
-                    ? defaultStrings[newPreset.instrument]
+                : newPreset.forStrings.includes(DEFAULT_STRING_COUNT[newPreset.instrument])
+                    ? DEFAULT_STRING_COUNT[newPreset.instrument]
                     : newPreset.forStrings[0];
             setType(newPreset.instrument);
             setScale(newPreset.scale);

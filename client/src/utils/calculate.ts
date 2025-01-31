@@ -1,26 +1,17 @@
 import {Tuning} from "../../types.ts";
 import {
-    A4_OFFSET,
+    A4_OFFSET, DEFAULT_STRING_MATERIAL,
     MAX_STRING_GAUGE,
     MIN_STRING_GAUGE,
     MULTISCALE_SPAN,
-    notes,
+    NOTES,
     PLAIN_CHAR,
     PRECISE_GAUGE,
     REFERENCE_PITCH,
     STRING_MATERIAL_FACTORS,
     WOUND_CHAR,
-    woundOverlap
+    WOUND_OVERLAP
 } from "../defaults.ts";
-
-export function tuningWeight(tuning: Tuning){
-    let sum = 0;
-
-    tuning.strings.forEach(str => {
-        sum += str.noteValue;
-    })
-    return sum / tuning.strings.length;
-}
 
 export function stringAverage(tunings: Tuning[]){
     const sameType = checkStringMatch(tunings);
@@ -62,49 +53,14 @@ export function stringAverageUnweighted(tunings: Tuning[]){
     return avNoteValues;
 }
 
-export function convertToNoteValue(note: string){
-    if (note.length != 3 || (note[1] !== ' ' && note[1] !== '#'))
-        return 0;
-    const letter = note[0].toLowerCase();
-    const sharp = note[1] === '#'? 1: 0;
-    const octave = parseInt(note[2]) > 0 ? (parseInt(note[2]) * 12) - 1 : 0;
-    let letterValue;
-    switch(letter){
-        case 'c':
-            letterValue = 0;
-            break;
-        case 'd':
-            letterValue = 2;
-            break;
-        case 'e':
-            letterValue = 4;
-            break;
-        case 'f':
-            letterValue = 5;
-            break;
-        case 'g':
-            letterValue = 7;
-            break;
-        case 'a':
-            letterValue = 9;
-            break;
-        case 'b':
-            letterValue = 11;
-            break;
-        default:
-            return 0;
-    }
-    return octave + letterValue + sharp;
-}
-
 export function convertToNote(noteValue: number){
-    if (noteValue < 0 || noteValue >= notes.length){
+    if (noteValue < 0 || noteValue >= NOTES.length){
         return {note: 'invalid', cents: 0, noteValue: noteValue};
     }
     const intNote = Math.floor(noteValue);
     const cents = Math.round(((noteValue - intNote) * 100));
 
-    return {note: notes[intNote], cents: cents, noteValue: noteValue};
+    return {note: NOTES[intNote], cents: cents, noteValue: noteValue};
 }
 
 function checkStringMatch(tunings: Tuning[]){
@@ -119,7 +75,7 @@ function checkStringMatch(tunings: Tuning[]){
 }
 
 export function getFrequency(noteValue: number, referencePitch = REFERENCE_PITCH) {
-    if (noteValue < 0) {
+    if (noteValue < 0 || referencePitch < 0) {
         return 0;
     }
     noteValue -= A4_OFFSET;
@@ -128,7 +84,7 @@ export function getFrequency(noteValue: number, referencePitch = REFERENCE_PITCH
 
 export function getUnitWeight(noteValue: number, scale: number, tension: number, referencePitch = REFERENCE_PITCH) {
     const frequency = getFrequency(noteValue, referencePitch);
-    if (frequency <= 0){
+    if (frequency <= 0 || tension <= 0 || scale <= 0){
         return 0;
     }
     return (tension * 386.4) / Math.pow(2 * scale * frequency, 2);
@@ -138,7 +94,7 @@ export function stringGauge(uw: number, coefficient: number, power: number) {
     if (uw <= 0) {
         return MIN_STRING_GAUGE;
     }
-    const factor = (10000000 * uw) / coefficient;
+    const factor = (10000000 * uw) / (coefficient === 0 ? 0.1 : coefficient);
     const gauge = Math.pow(factor, 1 / power);
 
     if (gauge < MIN_STRING_GAUGE) {
@@ -156,7 +112,7 @@ export function stringGauge(uw: number, coefficient: number, power: number) {
 
 export function tension(uw: number, noteValue: number, scale: number, referencePitch = REFERENCE_PITCH) {
     const frequency = getFrequency(noteValue, referencePitch);
-    if (frequency <= 0){
+    if (frequency <= 0 || scale <= 0 || uw <= 0){
         return 0;
     }
     return (uw * Math.pow(2 * scale * frequency, 2)) / 386.4
@@ -181,11 +137,16 @@ export const formatMaterial = (material: string) => {
 
 export const getPlain = (material: string) => {
     if (material === 'Kalium') return material;
-    if (STRING_MATERIAL_FACTORS[material].altPlain) return STRING_MATERIAL_FACTORS[material].altPlain;
+    if (STRING_MATERIAL_FACTORS[material] && STRING_MATERIAL_FACTORS[material].altPlain) {
+        return STRING_MATERIAL_FACTORS[material].altPlain;
+    }
     return material.split('_')[0] + '_plain'
 }
 
 export const coeffPower = (material: string, wound: boolean) => {
+    if (!STRING_MATERIAL_FACTORS[material]) {
+        return STRING_MATERIAL_FACTORS[DEFAULT_STRING_MATERIAL.guitar];
+    }
     const plain = wound? material : getPlain(material);
     const coeff = wound ? STRING_MATERIAL_FACTORS[material].coeff : STRING_MATERIAL_FACTORS[plain].coeff;
     const power = wound ? STRING_MATERIAL_FACTORS[material].power : STRING_MATERIAL_FACTORS[plain].power;
@@ -197,30 +158,19 @@ export const getCents = (noteValue: number) => {
 }
 
 export const getPW = (gauge: number, wound: boolean) => {
-    if (gauge >= woundOverlap[0] && gauge <= woundOverlap[1]) {
+    if (gauge >= WOUND_OVERLAP[0] && gauge <= WOUND_OVERLAP[1]) {
         return wound ? WOUND_CHAR : PLAIN_CHAR;
     } else {
         return "";
     }
 }
 
-export const getMultiscale = (scale: number, strings: number) => {
+export const getMultiscale = (scale: number, strings: number, span = MULTISCALE_SPAN) => {
+    if (strings === 1) return [scale];
     const scales = [];
-    const gap = MULTISCALE_SPAN / (strings - 1);
+    const gap = span / (strings - 1);
     for (let i = 0; i < strings; i++) {
         scales.push(i * gap + scale);
     }
     return scales;
 }
-
-/*
-To calculate the tension of a string in pounds use the formula below,
-inserting the three variables described above:
-T (Tension) = (UW x (2 x L x F)2
-) / 386.4
-To convert the result into Newtons, simply multiply by 4.45.
-If you know what tension you want the string to have, you can calculate the string
-unit weight. You can then use the charts in this guide to locate a string with
-approximately the same desired unit weight.
-UW (unit weight) = (T x 386.4) / (2 x L x F)2
- */

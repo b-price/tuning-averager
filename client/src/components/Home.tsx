@@ -4,7 +4,7 @@ import TuningInput from "./TuningInput.tsx";
 import InstrumentInput from "./InstrumentInput.tsx";
 import {
     DECIMAL_POINTS, DEFAULT_INST, DEFAULT_TUNING, INST_PRESETS, LOCAL_INSTS_KEY, LOCAL_TUNINGS_KEY, LOCAL_USERDATA_KEY,
-    notes, REFERENCE_PITCH, woundOverlap,
+    NOTES, REFERENCE_PITCH, WOUND_OVERLAP,
 } from "../defaults.ts";
 import {Instrument, StringSet, TensionPreset, Tuning, UserData} from "../../types.ts";
 import {
@@ -494,7 +494,7 @@ const HomePage: React.FC<HomeProps> = ({ userData, localMode, localInstruments, 
                 let material = coeffPower(stringMaterial, wound)
                 let gauge = stringGauge(UWs[index], material.coeff, material.power);
                 if (selectedInstrument.type !== 'guitar') {
-                    wound = gauge > (woundOverlap[0] + woundOverlap[1]) / 2;
+                    wound = gauge > (WOUND_OVERLAP[0] + WOUND_OVERLAP[1]) / 2;
                     if (!wound) {
                         material = coeffPower(stringMaterial, wound);
                         gauge = stringGauge(UWs[index], material.coeff, material.power);
@@ -823,7 +823,7 @@ const HomePage: React.FC<HomeProps> = ({ userData, localMode, localInstruments, 
                 defaultChecked={Array(selectedInstrument?.tunings.length).fill(true)}
             />
             <TuningInput
-                notes={notes}
+                notes={NOTES}
                 presetTunings={tunings}
                 onSubmit={onAddTuning}
                 isOpen={isTuningInputOpen}

@@ -1,5 +1,5 @@
 import axios, {AxiosError} from "axios";
-import {serverURL} from "../defaults";
+import {SERVER_URL} from "../defaults";
 import {Instrument, Tuning, UserData} from "../../types.ts";
 
 // user CRUD
@@ -8,7 +8,7 @@ export const getUser = async (userID?: string | null) => {
         if (!userID){
             throw new Error("No user ID");
         }
-        const response = await axios.get(`${serverURL}/users/${userID}`);
+        const response = await axios.get(`${SERVER_URL}/users/${userID}`);
         if (response.status === 200) {
             return {...response.data, id: response.data._id};
         }
@@ -25,7 +25,7 @@ export const getUser = async (userID?: string | null) => {
 
 export const getUserByUsername = async (username: string) => {
     try {
-        const response = await axios.get(`${serverURL}/users/?field=username&value=${username}`);
+        const response = await axios.get(`${SERVER_URL}/users/?field=username&value=${username}`);
         return {...response.data, id: response.data._id};
     }
     catch (error) {
@@ -37,7 +37,7 @@ export const getUserByUsername = async (username: string) => {
 
 export const addUser = async (user: UserData) => {
     try {
-        const response = await axios.post(`${serverURL}/users/`, user);
+        const response = await axios.post(`${SERVER_URL}/users/`, user);
         return response;
     } catch (error) {
         if (error instanceof AxiosError) {
@@ -48,7 +48,7 @@ export const addUser = async (user: UserData) => {
 
 export const updateUser = async (changes: object, userID?: string) => {
     try {
-        const response = await axios.patch(`${serverURL}/users/${userID}`, changes);
+        const response = await axios.patch(`${SERVER_URL}/users/${userID}`, changes);
         return response;
     } catch (error) {
         if (error instanceof AxiosError) {
@@ -59,7 +59,7 @@ export const updateUser = async (changes: object, userID?: string) => {
 
 export const deleteUser = async (userID: string) => {
     try {
-        const response = await axios.delete(`${serverURL}/users/${userID}`);
+        const response = await axios.delete(`${SERVER_URL}/users/${userID}`);
         return response;
     } catch (error) {
         if (error instanceof AxiosError) {
@@ -80,7 +80,7 @@ export const getTunings = async (userData?: UserData) => {
             return {userData: userData, userTunings: []};
         }
         for (const tuning of userData.tunings) {
-            const response = await axios.get(`${serverURL}/tunings/${tuning}`);
+            const response = await axios.get(`${SERVER_URL}/tunings/${tuning}`);
             userTunings.push({...response.data, id: response.data._id});
         }
         const data = {userData: userData, userTunings: userTunings}
@@ -95,7 +95,7 @@ export const getTunings = async (userData?: UserData) => {
 
 export const addTuning = async (tuning: object) => {
     try {
-        const response = await axios.post(`${serverURL}/tunings/`, tuning);
+        const response = await axios.post(`${SERVER_URL}/tunings/`, tuning);
         return response.data.id;
     } catch (error) {
         if (error instanceof AxiosError) {
@@ -106,7 +106,7 @@ export const addTuning = async (tuning: object) => {
 
 export const updateTuning = async (changes: object, tuningID?: string) => {
     try {
-        const response = await axios.patch(`${serverURL}/tunings/${tuningID}`, changes);
+        const response = await axios.patch(`${SERVER_URL}/tunings/${tuningID}`, changes);
         return response;
     } catch (error) {
         if (error instanceof AxiosError) {
@@ -120,7 +120,7 @@ export const deleteTuning = async (tuningID?: string) => {
         if (!tuningID){
             throw new Error('No tuning id found.');
         }
-        const response = await axios.delete(`${serverURL}/tunings/${tuningID}`);
+        const response = await axios.delete(`${SERVER_URL}/tunings/${tuningID}`);
         return response;
     } catch (error) {
         if (error instanceof AxiosError) {
@@ -141,7 +141,7 @@ export const getInstruments = async (data?: { userData: UserData, userTunings: T
             return userInstruments;
         }
         for (const instrument of data.userData.instruments) {
-            const response = await axios.get(`${serverURL}/instruments/${instrument}`);
+            const response = await axios.get(`${SERVER_URL}/instruments/${instrument}`);
             const instTunings = data.userTunings.filter((tuning) => {
                 if (response.data.tunings.includes(tuning.id)){
                     return true;
@@ -160,7 +160,7 @@ export const getInstruments = async (data?: { userData: UserData, userTunings: T
 
 export const updateInstrument = async (changes: object, instID?: string) => {
     try {
-        const response = await axios.patch(`${serverURL}/instruments/${instID}`, changes);
+        const response = await axios.patch(`${SERVER_URL}/instruments/${instID}`, changes);
         return response;
     } catch (error) {
         if (error instanceof AxiosError) {
@@ -171,7 +171,7 @@ export const updateInstrument = async (changes: object, instID?: string) => {
 
 export const addInstrument = async (instrument: object) => {
     try {
-        const response = await axios.post(`${serverURL}/instruments/`, instrument);
+        const response = await axios.post(`${SERVER_URL}/instruments/`, instrument);
         return response.data.id;
     } catch (error) {
         if (error instanceof AxiosError) {
@@ -185,7 +185,7 @@ export const deleteInstrument = async (instrumentId?: string) => {
         if (!instrumentId) {
             throw new Error('No instrument id found.');
         }
-        const response = await axios.delete(`${serverURL}/instruments/${instrumentId}`);
+        const response = await axios.delete(`${SERVER_URL}/instruments/${instrumentId}`);
         return response;
     } catch (error) {
         if (error instanceof AxiosError) {

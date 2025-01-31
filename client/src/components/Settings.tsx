@@ -3,8 +3,8 @@ import { UserButton } from "@clerk/clerk-react";
 import { useAuth } from "@clerk/clerk-react";
 import { UserData, UserSettings } from "../../types.ts";
 import {
-    defaultSettings,
-    defaultUser,
+    DEFAULT_SETTINGS,
+    DEFAULT_USER,
     LOCAL_INSTS_KEY,
     LOCAL_TUNINGS_KEY,
     LOCAL_USERDATA_KEY,
@@ -19,9 +19,9 @@ import Alert from "./Alert.tsx";
 
 const Settings: React.FC = () => {
     const { userId } = useAuth();
-    const [user, setUser] = useState<UserData>(defaultUser);
+    const [user, setUser] = useState<UserData>(DEFAULT_USER);
     const [isLoading, setIsLoading] = useState(true);
-    const [settings, setSettings] = useState<UserSettings>(defaultSettings);
+    const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS);
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const { message, messageType, showMessage, show, closeMessage } = useMessage();
 
@@ -155,11 +155,11 @@ const Settings: React.FC = () => {
 
     const deleteLocalData = () => {
         try {
-            localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify(defaultUser));
+            localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify(DEFAULT_USER));
             localStorage.setItem(LOCAL_INSTS_KEY, JSON.stringify([]));
             localStorage.setItem(LOCAL_TUNINGS_KEY, JSON.stringify([]));
-            setUser(defaultUser);
-            setSettings(defaultSettings);
+            setUser(DEFAULT_USER);
+            setSettings(DEFAULT_SETTINGS);
             showMessage('Local data deleted.', 'success');
         } catch (e) {
             console.error(e);

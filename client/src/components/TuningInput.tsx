@@ -3,7 +3,7 @@ import ArrowSelector from './ArrowSelector.tsx';
 import {GuitarString, Tuning, Transpose, InstType} from "../../types.ts";
 import Modal from "./Modal.tsx";
 import {capitalize} from "../utils/calculate.ts";
-import {defaultStrings, INST_PRESETS, VALID_STRINGS} from "../defaults.ts";
+import {DEFAULT_STRING_COUNT, INST_PRESETS, VALID_STRINGS} from "../defaults.ts";
 
 interface TuningInputProps {
     notes: string[];
@@ -97,7 +97,7 @@ const TuningInput: React.FC<TuningInputProps> = ({
     const handleTypeChange = (newType: InstType) => {
         if (!isEdit){
             setType(newType);
-            handleStringCountChange(defaultStrings[newType], newType);
+            handleStringCountChange(DEFAULT_STRING_COUNT[newType], newType);
         }
     };
 

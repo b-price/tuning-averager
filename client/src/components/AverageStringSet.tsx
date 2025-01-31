@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Modal from "./Modal.tsx";
 import {coeffPower, convertToNote, formatMaterial, tension, uwFromGauge} from "../utils/calculate.ts";
 import {
-    notes,
+    NOTES,
     STRING_GAUGES,
     WOUND_CHAR,
     PLAIN_CHAR,
@@ -13,7 +13,7 @@ import {
     GUITAR_WARNING_SCALE,
     TAPER_WARNING,
     LENGTH_WARNING,
-    defaultScales,
+    DEFAULT_SCALES,
     STRING_MATERIAL_FACTORS, DEFAULT_STRING_MATERIAL, DEFAULT_INST
 } from "../defaults.ts";
 import ArrowSelector from "./ArrowSelector.tsx";
@@ -53,7 +53,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
         const taperWarnings: number[] = [];
         const lengthWarnings: number[] = [];
         newGauges.forEach((gauge) => {
-            if (gauge >= MIN_TAPER_GAUGE && instrument.scale < defaultScales.bass) {
+            if (gauge >= MIN_TAPER_GAUGE && instrument.scale < DEFAULT_SCALES.bass) {
                 taperWarnings.push(gauge);
             }
             if (gauge < LONG_THIN_GAUGE && instrument.scale >= GUITAR_WARNING_SCALE) {
@@ -135,7 +135,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
 
     const handleNotesChange = (stringIndex: number, note: string | number) => {
         note = typeof note === 'number' ? note.toString() : note;
-        const newNote = { note: note, cents: 0, noteValue: notes.indexOf(note) };
+        const newNote = { note: note, cents: 0, noteValue: NOTES.indexOf(note) };
         setNoteObjects((prevNotes) => {
             const newNotes = [...prevNotes];
             newNotes[stringIndex] = newNote;
@@ -243,7 +243,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({ stringSet, isOpen, 
                                 <div className="w-3/4 scale-90">
                                     <ArrowSelector
                                         key={index + noteObjects[index].note}
-                                        options={notes}
+                                        options={NOTES}
                                         initialValue={noteObjects[index].note}
                                         onChange={(note) => handleNotesChange(index, note)}
                                     />

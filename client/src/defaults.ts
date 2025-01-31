@@ -2,7 +2,7 @@ import {Instrument, InstPreset, Tuning, UserData, StringFactors, ExportText} fro
 
 export const APP_NAME = "Ideal Strings"
 
-export const notes = [
+export const NOTES = [
     'C0', 'C#0', 'D0', 'D#0', 'E0', 'F0', 'F#0', 'G0', 'G#0', 'A0', 'A#0', 'B0',
     'C1', 'C#1', 'D1', 'D#1', 'E1', 'F1', 'F#1', 'G1', 'G#1', 'A1', 'A#1', 'B1',
     'C2', 'C#2', 'D2', 'D#2', 'E2', 'F2', 'F#2', 'G2', 'G#2', 'A2', 'A#2', 'B2',
@@ -39,12 +39,12 @@ export const DEFAULT_TUNING: Tuning = {
     id: '0',
     name: 'E Standard',
     strings: [
-        { note: 'E4', noteValue: notes.indexOf('E4') },
-        { note: 'B3', noteValue: notes.indexOf('B3') },
-        { note: 'G3', noteValue: notes.indexOf('G3') },
-        { note: 'D3', noteValue: notes.indexOf('D3') },
-        { note: 'A2', noteValue: notes.indexOf('A2') },
-        { note: 'E2', noteValue: notes.indexOf('E2') },
+        { note: 'E4', noteValue: NOTES.indexOf('E4') },
+        { note: 'B3', noteValue: NOTES.indexOf('B3') },
+        { note: 'G3', noteValue: NOTES.indexOf('G3') },
+        { note: 'D3', noteValue: NOTES.indexOf('D3') },
+        { note: 'A2', noteValue: NOTES.indexOf('A2') },
+        { note: 'E2', noteValue: NOTES.indexOf('E2') },
     ],
     type: 'guitar',
 }
@@ -97,199 +97,199 @@ export const DEFAULT_INST: Instrument = {
     ]
 }
 
-export const defaultTunings = {
+export const DEFAULT_TUNINGS = {
     guitar: [
-        { note: 'E4', noteValue: notes.indexOf('E4') },
-        { note: 'B3', noteValue: notes.indexOf('B3') },
-        { note: 'G3', noteValue: notes.indexOf('G3') },
-        { note: 'D3', noteValue: notes.indexOf('D3') },
-        { note: 'A2', noteValue: notes.indexOf('A2') },
-        { note: 'E2', noteValue: notes.indexOf('E2') },
-        { note: 'B1', noteValue: notes.indexOf('B1') },
-        { note: 'F#1', noteValue: notes.indexOf('F#1') },
-        { note: 'C#1', noteValue: notes.indexOf('C#1') },
-        { note: 'G#0', noteValue: notes.indexOf('G#0') },
-        { note: 'D#0', noteValue: notes.indexOf('D#0') },
+        { note: 'E4', noteValue: NOTES.indexOf('E4') },
+        { note: 'B3', noteValue: NOTES.indexOf('B3') },
+        { note: 'G3', noteValue: NOTES.indexOf('G3') },
+        { note: 'D3', noteValue: NOTES.indexOf('D3') },
+        { note: 'A2', noteValue: NOTES.indexOf('A2') },
+        { note: 'E2', noteValue: NOTES.indexOf('E2') },
+        { note: 'B1', noteValue: NOTES.indexOf('B1') },
+        { note: 'F#1', noteValue: NOTES.indexOf('F#1') },
+        { note: 'C#1', noteValue: NOTES.indexOf('C#1') },
+        { note: 'G#0', noteValue: NOTES.indexOf('G#0') },
+        { note: 'D#0', noteValue: NOTES.indexOf('D#0') },
     ],
     guitar_12: [
-        { note: 'E4', noteValue: notes.indexOf('E4') },
-        { note: 'E4', noteValue: notes.indexOf('E4') },
-        { note: 'B3', noteValue: notes.indexOf('B3') },
-        { note: 'B3', noteValue: notes.indexOf('B3') },
-        { note: 'G3', noteValue: notes.indexOf('G3') },
-        { note: 'G4', noteValue: notes.indexOf('G4') },
-        { note: 'D3', noteValue: notes.indexOf('D3') },
-        { note: 'D4', noteValue: notes.indexOf('D4') },
-        { note: 'A2', noteValue: notes.indexOf('A2') },
-        { note: 'A3', noteValue: notes.indexOf('A3') },
-        { note: 'E2', noteValue: notes.indexOf('E2') },
-        { note: 'E3', noteValue: notes.indexOf('E3') },
+        { note: 'E4', noteValue: NOTES.indexOf('E4') },
+        { note: 'E4', noteValue: NOTES.indexOf('E4') },
+        { note: 'B3', noteValue: NOTES.indexOf('B3') },
+        { note: 'B3', noteValue: NOTES.indexOf('B3') },
+        { note: 'G3', noteValue: NOTES.indexOf('G3') },
+        { note: 'G4', noteValue: NOTES.indexOf('G4') },
+        { note: 'D3', noteValue: NOTES.indexOf('D3') },
+        { note: 'D4', noteValue: NOTES.indexOf('D4') },
+        { note: 'A2', noteValue: NOTES.indexOf('A2') },
+        { note: 'A3', noteValue: NOTES.indexOf('A3') },
+        { note: 'E2', noteValue: NOTES.indexOf('E2') },
+        { note: 'E3', noteValue: NOTES.indexOf('E3') },
     ],
     guitar_10: [
-        { note: 'E4', noteValue: notes.indexOf('E4') },
-        { note: 'E4', noteValue: notes.indexOf('E4') },
-        { note: 'B3', noteValue: notes.indexOf('B3') },
-        { note: 'B3', noteValue: notes.indexOf('B3') },
-        { note: 'G3', noteValue: notes.indexOf('G3') },
-        { note: 'G4', noteValue: notes.indexOf('G4') },
-        { note: 'D3', noteValue: notes.indexOf('D3') },
-        { note: 'D4', noteValue: notes.indexOf('D4') },
-        { note: 'A2', noteValue: notes.indexOf('A2') },
-        { note: 'E2', noteValue: notes.indexOf('E2') },
+        { note: 'E4', noteValue: NOTES.indexOf('E4') },
+        { note: 'E4', noteValue: NOTES.indexOf('E4') },
+        { note: 'B3', noteValue: NOTES.indexOf('B3') },
+        { note: 'B3', noteValue: NOTES.indexOf('B3') },
+        { note: 'G3', noteValue: NOTES.indexOf('G3') },
+        { note: 'G4', noteValue: NOTES.indexOf('G4') },
+        { note: 'D3', noteValue: NOTES.indexOf('D3') },
+        { note: 'D4', noteValue: NOTES.indexOf('D4') },
+        { note: 'A2', noteValue: NOTES.indexOf('A2') },
+        { note: 'E2', noteValue: NOTES.indexOf('E2') },
     ],
     guitar_11: [
-        { note: 'E4', noteValue: notes.indexOf('E4') },
-        { note: 'E4', noteValue: notes.indexOf('E4') },
-        { note: 'B3', noteValue: notes.indexOf('B3') },
-        { note: 'B3', noteValue: notes.indexOf('B3') },
-        { note: 'G3', noteValue: notes.indexOf('G3') },
-        { note: 'G4', noteValue: notes.indexOf('G4') },
-        { note: 'D3', noteValue: notes.indexOf('D3') },
-        { note: 'D4', noteValue: notes.indexOf('D4') },
-        { note: 'A2', noteValue: notes.indexOf('A2') },
-        { note: 'A3', noteValue: notes.indexOf('A3') },
-        { note: 'E3', noteValue: notes.indexOf('E3') },
+        { note: 'E4', noteValue: NOTES.indexOf('E4') },
+        { note: 'E4', noteValue: NOTES.indexOf('E4') },
+        { note: 'B3', noteValue: NOTES.indexOf('B3') },
+        { note: 'B3', noteValue: NOTES.indexOf('B3') },
+        { note: 'G3', noteValue: NOTES.indexOf('G3') },
+        { note: 'G4', noteValue: NOTES.indexOf('G4') },
+        { note: 'D3', noteValue: NOTES.indexOf('D3') },
+        { note: 'D4', noteValue: NOTES.indexOf('D4') },
+        { note: 'A2', noteValue: NOTES.indexOf('A2') },
+        { note: 'A3', noteValue: NOTES.indexOf('A3') },
+        { note: 'E3', noteValue: NOTES.indexOf('E3') },
     ],
     bass: [
-        { note: 'G2', noteValue: notes.indexOf('G2') },
-        { note: 'D2', noteValue: notes.indexOf('D2') },
-        { note: 'A1', noteValue: notes.indexOf('A1') },
-        { note: 'E1', noteValue: notes.indexOf('E1') },
-        { note: 'B0', noteValue: notes.indexOf('B0') },
-        { note: 'F#0', noteValue: notes.indexOf('F#0') },
-        { note: 'C#0', noteValue: notes.indexOf('C#0') },
+        { note: 'G2', noteValue: NOTES.indexOf('G2') },
+        { note: 'D2', noteValue: NOTES.indexOf('D2') },
+        { note: 'A1', noteValue: NOTES.indexOf('A1') },
+        { note: 'E1', noteValue: NOTES.indexOf('E1') },
+        { note: 'B0', noteValue: NOTES.indexOf('B0') },
+        { note: 'F#0', noteValue: NOTES.indexOf('F#0') },
+        { note: 'C#0', noteValue: NOTES.indexOf('C#0') },
     ],
     bass_6: [
-        { note: 'C3', noteValue: notes.indexOf('C3') },
-        { note: 'G2', noteValue: notes.indexOf('G2') },
-        { note: 'D2', noteValue: notes.indexOf('D2') },
-        { note: 'A1', noteValue: notes.indexOf('A1') },
-        { note: 'E1', noteValue: notes.indexOf('E1') },
-        { note: 'B0', noteValue: notes.indexOf('B0') },
+        { note: 'C3', noteValue: NOTES.indexOf('C3') },
+        { note: 'G2', noteValue: NOTES.indexOf('G2') },
+        { note: 'D2', noteValue: NOTES.indexOf('D2') },
+        { note: 'A1', noteValue: NOTES.indexOf('A1') },
+        { note: 'E1', noteValue: NOTES.indexOf('E1') },
+        { note: 'B0', noteValue: NOTES.indexOf('B0') },
     ],
     bass_7: [
-        { note: 'F#3', noteValue: notes.indexOf('F#3') },
-        { note: 'C3', noteValue: notes.indexOf('C3') },
-        { note: 'G2', noteValue: notes.indexOf('G2') },
-        { note: 'D2', noteValue: notes.indexOf('D2') },
-        { note: 'A1', noteValue: notes.indexOf('A1') },
-        { note: 'E1', noteValue: notes.indexOf('E1') },
-        { note: 'B0', noteValue: notes.indexOf('B0') },
+        { note: 'F#3', noteValue: NOTES.indexOf('F#3') },
+        { note: 'C3', noteValue: NOTES.indexOf('C3') },
+        { note: 'G2', noteValue: NOTES.indexOf('G2') },
+        { note: 'D2', noteValue: NOTES.indexOf('D2') },
+        { note: 'A1', noteValue: NOTES.indexOf('A1') },
+        { note: 'E1', noteValue: NOTES.indexOf('E1') },
+        { note: 'B0', noteValue: NOTES.indexOf('B0') },
     ],
     bass_8: [
-        { note: 'G2', noteValue: notes.indexOf('G2') },
-        { note: 'G3', noteValue: notes.indexOf('G3') },
-        { note: 'D2', noteValue: notes.indexOf('D2') },
-        { note: 'D3', noteValue: notes.indexOf('D3') },
-        { note: 'A1', noteValue: notes.indexOf('A1') },
-        { note: 'A2', noteValue: notes.indexOf('A2') },
-        { note: 'E1', noteValue: notes.indexOf('E1') },
-        { note: 'E2', noteValue: notes.indexOf('E2') },
-        { note: 'B0', noteValue: notes.indexOf('B0') },
-        { note: 'B1', noteValue: notes.indexOf('B1') },
+        { note: 'G2', noteValue: NOTES.indexOf('G2') },
+        { note: 'G3', noteValue: NOTES.indexOf('G3') },
+        { note: 'D2', noteValue: NOTES.indexOf('D2') },
+        { note: 'D3', noteValue: NOTES.indexOf('D3') },
+        { note: 'A1', noteValue: NOTES.indexOf('A1') },
+        { note: 'A2', noteValue: NOTES.indexOf('A2') },
+        { note: 'E1', noteValue: NOTES.indexOf('E1') },
+        { note: 'E2', noteValue: NOTES.indexOf('E2') },
+        { note: 'B0', noteValue: NOTES.indexOf('B0') },
+        { note: 'B1', noteValue: NOTES.indexOf('B1') },
     ],
     bass_9: [
-        { note: 'B3', noteValue: notes.indexOf('B3') },
-        { note: 'F#3', noteValue: notes.indexOf('F#3') },
-        { note: 'C3', noteValue: notes.indexOf('C3') },
-        { note: 'G2', noteValue: notes.indexOf('G2') },
-        { note: 'D2', noteValue: notes.indexOf('D2') },
-        { note: 'A1', noteValue: notes.indexOf('A1') },
-        { note: 'E1', noteValue: notes.indexOf('E1') },
-        { note: 'B0', noteValue: notes.indexOf('B0') },
-        { note: 'F#0', noteValue: notes.indexOf('F#0') },
-        { note: 'C#0', noteValue: notes.indexOf('C#0') },
-        { note: 'C#0', noteValue: notes.indexOf('C#0') },
+        { note: 'B3', noteValue: NOTES.indexOf('B3') },
+        { note: 'F#3', noteValue: NOTES.indexOf('F#3') },
+        { note: 'C3', noteValue: NOTES.indexOf('C3') },
+        { note: 'G2', noteValue: NOTES.indexOf('G2') },
+        { note: 'D2', noteValue: NOTES.indexOf('D2') },
+        { note: 'A1', noteValue: NOTES.indexOf('A1') },
+        { note: 'E1', noteValue: NOTES.indexOf('E1') },
+        { note: 'B0', noteValue: NOTES.indexOf('B0') },
+        { note: 'F#0', noteValue: NOTES.indexOf('F#0') },
+        { note: 'C#0', noteValue: NOTES.indexOf('C#0') },
+        { note: 'C#0', noteValue: NOTES.indexOf('C#0') },
     ],
     bass_12: [
-        { note: 'G2', noteValue: notes.indexOf('G2') },
-        { note: 'G3', noteValue: notes.indexOf('G3') },
-        { note: 'G3', noteValue: notes.indexOf('G3') },
-        { note: 'D2', noteValue: notes.indexOf('D2') },
-        { note: 'D3', noteValue: notes.indexOf('D3') },
-        { note: 'D3', noteValue: notes.indexOf('D3') },
-        { note: 'A1', noteValue: notes.indexOf('A1') },
-        { note: 'A2', noteValue: notes.indexOf('A2') },
-        { note: 'A2', noteValue: notes.indexOf('A2') },
-        { note: 'E1', noteValue: notes.indexOf('E1') },
-        { note: 'E2', noteValue: notes.indexOf('E2') },
-        { note: 'E2', noteValue: notes.indexOf('E2') },
+        { note: 'G2', noteValue: NOTES.indexOf('G2') },
+        { note: 'G3', noteValue: NOTES.indexOf('G3') },
+        { note: 'G3', noteValue: NOTES.indexOf('G3') },
+        { note: 'D2', noteValue: NOTES.indexOf('D2') },
+        { note: 'D3', noteValue: NOTES.indexOf('D3') },
+        { note: 'D3', noteValue: NOTES.indexOf('D3') },
+        { note: 'A1', noteValue: NOTES.indexOf('A1') },
+        { note: 'A2', noteValue: NOTES.indexOf('A2') },
+        { note: 'A2', noteValue: NOTES.indexOf('A2') },
+        { note: 'E1', noteValue: NOTES.indexOf('E1') },
+        { note: 'E2', noteValue: NOTES.indexOf('E2') },
+        { note: 'E2', noteValue: NOTES.indexOf('E2') },
     ],
     other: [
-        { note: 'A4', noteValue: notes.indexOf('A4') },
-        { note: 'E4', noteValue: notes.indexOf('E4') },
-        { note: 'C4', noteValue: notes.indexOf('C4') },
-        { note: 'G4', noteValue: notes.indexOf('G4') },
+        { note: 'A4', noteValue: NOTES.indexOf('A4') },
+        { note: 'E4', noteValue: NOTES.indexOf('E4') },
+        { note: 'C4', noteValue: NOTES.indexOf('C4') },
+        { note: 'G4', noteValue: NOTES.indexOf('G4') },
     ],
     other_ukulele: [
-        { note: 'A4', noteValue: notes.indexOf('A4') },
-        { note: 'E4', noteValue: notes.indexOf('E4') },
-        { note: 'C4', noteValue: notes.indexOf('C4') },
-        { note: 'G4', noteValue: notes.indexOf('G4') },
+        { note: 'A4', noteValue: NOTES.indexOf('A4') },
+        { note: 'E4', noteValue: NOTES.indexOf('E4') },
+        { note: 'C4', noteValue: NOTES.indexOf('C4') },
+        { note: 'G4', noteValue: NOTES.indexOf('G4') },
     ],
     other_banjo: [
-        { note: 'D4', noteValue: notes.indexOf('D4') },
-        { note: 'B3', noteValue: notes.indexOf('B3') },
-        { note: 'G3', noteValue: notes.indexOf('G3') },
-        { note: 'D3', noteValue: notes.indexOf('D3') },
-        { note: 'G4', noteValue: notes.indexOf('G4') },
-        { note: 'G4', noteValue: notes.indexOf('G4') },
-        { note: 'D3', noteValue: notes.indexOf('D3') },
-        { note: 'D3', noteValue: notes.indexOf('D3') },
-        { note: 'G2', noteValue: notes.indexOf('G2') },
-        { note: 'G3', noteValue: notes.indexOf('G3') },
-        { note: 'G4', noteValue: notes.indexOf('G4') },
+        { note: 'D4', noteValue: NOTES.indexOf('D4') },
+        { note: 'B3', noteValue: NOTES.indexOf('B3') },
+        { note: 'G3', noteValue: NOTES.indexOf('G3') },
+        { note: 'D3', noteValue: NOTES.indexOf('D3') },
+        { note: 'G4', noteValue: NOTES.indexOf('G4') },
+        { note: 'G4', noteValue: NOTES.indexOf('G4') },
+        { note: 'D3', noteValue: NOTES.indexOf('D3') },
+        { note: 'D3', noteValue: NOTES.indexOf('D3') },
+        { note: 'G2', noteValue: NOTES.indexOf('G2') },
+        { note: 'G3', noteValue: NOTES.indexOf('G3') },
+        { note: 'G4', noteValue: NOTES.indexOf('G4') },
     ],
     other_mandolin: [
-        { note: 'E5', noteValue: notes.indexOf('E5') },
-        { note: 'E5', noteValue: notes.indexOf('E5') },
-        { note: 'A4', noteValue: notes.indexOf('A4') },
-        { note: 'A4', noteValue: notes.indexOf('A4') },
-        { note: 'D4', noteValue: notes.indexOf('D4') },
-        { note: 'D4', noteValue: notes.indexOf('D4') },
-        { note: 'G3', noteValue: notes.indexOf('G3') },
-        { note: 'G3', noteValue: notes.indexOf('G3') },
-        { note: 'C3', noteValue: notes.indexOf('C3') },
-        { note: 'C3', noteValue: notes.indexOf('C3') },
-        { note: 'F2', noteValue: notes.indexOf('F2') },
-        { note: 'F2', noteValue: notes.indexOf('F2') },
+        { note: 'E5', noteValue: NOTES.indexOf('E5') },
+        { note: 'E5', noteValue: NOTES.indexOf('E5') },
+        { note: 'A4', noteValue: NOTES.indexOf('A4') },
+        { note: 'A4', noteValue: NOTES.indexOf('A4') },
+        { note: 'D4', noteValue: NOTES.indexOf('D4') },
+        { note: 'D4', noteValue: NOTES.indexOf('D4') },
+        { note: 'G3', noteValue: NOTES.indexOf('G3') },
+        { note: 'G3', noteValue: NOTES.indexOf('G3') },
+        { note: 'C3', noteValue: NOTES.indexOf('C3') },
+        { note: 'C3', noteValue: NOTES.indexOf('C3') },
+        { note: 'F2', noteValue: NOTES.indexOf('F2') },
+        { note: 'F2', noteValue: NOTES.indexOf('F2') },
     ],
     other_pedalsteel: [
-        { note: 'F#4', noteValue: notes.indexOf('F#4') },
-        { note: 'D#4', noteValue: notes.indexOf('D#4') },
-        { note: 'G#4', noteValue: notes.indexOf('G#4') },
-        { note: 'E4', noteValue: notes.indexOf('E4') },
-        { note: 'B3', noteValue: notes.indexOf('B3') },
-        { note: 'G#3', noteValue: notes.indexOf('G#3') },
-        { note: 'F#3', noteValue: notes.indexOf('F#3') },
-        { note: 'E3', noteValue: notes.indexOf('E3') },
-        { note: 'D3', noteValue: notes.indexOf('D3') },
-        { note: 'B2', noteValue: notes.indexOf('B2') },
+        { note: 'F#4', noteValue: NOTES.indexOf('F#4') },
+        { note: 'D#4', noteValue: NOTES.indexOf('D#4') },
+        { note: 'G#4', noteValue: NOTES.indexOf('G#4') },
+        { note: 'E4', noteValue: NOTES.indexOf('E4') },
+        { note: 'B3', noteValue: NOTES.indexOf('B3') },
+        { note: 'G#3', noteValue: NOTES.indexOf('G#3') },
+        { note: 'F#3', noteValue: NOTES.indexOf('F#3') },
+        { note: 'E3', noteValue: NOTES.indexOf('E3') },
+        { note: 'D3', noteValue: NOTES.indexOf('D3') },
+        { note: 'B2', noteValue: NOTES.indexOf('B2') },
     ],
     bass_VI: [
-        { note: 'E3', noteValue: notes.indexOf('E3') },
-        { note: 'B2', noteValue: notes.indexOf('B2') },
-        { note: 'G2', noteValue: notes.indexOf('G2') },
-        { note: 'D2', noteValue: notes.indexOf('D2') },
-        { note: 'A1', noteValue: notes.indexOf('A1') },
-        { note: 'E1', noteValue: notes.indexOf('E1') },
+        { note: 'E3', noteValue: NOTES.indexOf('E3') },
+        { note: 'B2', noteValue: NOTES.indexOf('B2') },
+        { note: 'G2', noteValue: NOTES.indexOf('G2') },
+        { note: 'D2', noteValue: NOTES.indexOf('D2') },
+        { note: 'A1', noteValue: NOTES.indexOf('A1') },
+        { note: 'E1', noteValue: NOTES.indexOf('E1') },
     ],
     guitar_baritone: [
-        { note: 'B3', noteValue: notes.indexOf('B3') },
-        { note: 'F#3', noteValue: notes.indexOf('F#3') },
-        { note: 'D3', noteValue: notes.indexOf('D3') },
-        { note: 'A2', noteValue: notes.indexOf('A2') },
-        { note: 'E2', noteValue: notes.indexOf('E2') },
-        { note: 'B1', noteValue: notes.indexOf('B1') },
-        { note: 'F#1', noteValue: notes.indexOf('F#1') },
-        { note: 'C#1', noteValue: notes.indexOf('C#1') },
+        { note: 'B3', noteValue: NOTES.indexOf('B3') },
+        { note: 'F#3', noteValue: NOTES.indexOf('F#3') },
+        { note: 'D3', noteValue: NOTES.indexOf('D3') },
+        { note: 'A2', noteValue: NOTES.indexOf('A2') },
+        { note: 'E2', noteValue: NOTES.indexOf('E2') },
+        { note: 'B1', noteValue: NOTES.indexOf('B1') },
+        { note: 'F#1', noteValue: NOTES.indexOf('F#1') },
+        { note: 'C#1', noteValue: NOTES.indexOf('C#1') },
     ],
 };
 
 export const STRING_RANGE = [1, 12]
 export const VALID_STRINGS = Array.from({length: STRING_RANGE[1] + 1 - STRING_RANGE[0]}, (_v, k) => k + STRING_RANGE[0])
 
-export const woundOverlap = [18, 24]
+export const WOUND_OVERLAP = [18, 24]
 
 export const PLAIN_CHAR = 'p'
 export const WOUND_CHAR = 'w'
@@ -397,11 +397,11 @@ export const DEFAULT_STRING_MATERIAL = {
     other: 'Daddario_other_BanjoXL',
 }
 
-export const serverURL = 'https://ideal-strings.onrender.com';
+export const SERVER_URL = 'https://ideal-strings.onrender.com';
 
 export const DECIMAL_POINTS = 2
 
-export const defaultSettings = {
+export const DEFAULT_SETTINGS = {
     weightedMode: true,
     darkMode: false,
     stringCoeff: 0,
@@ -410,13 +410,13 @@ export const defaultSettings = {
     referencePitch: REFERENCE_PITCH,
 }
 
-export const defaultStrings = {
+export const DEFAULT_STRING_COUNT = {
     guitar: 6,
     bass: 4,
     other: 4,
 }
 
-export const defaultScales = {
+export const DEFAULT_SCALES = {
     guitar: 25.5,
     bass: 34,
     other: 13,
@@ -432,7 +432,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "guitar",
-            strings: defaultTunings.guitar
+            strings: DEFAULT_TUNINGS.guitar
         },
         id: "guitar1-6",
     },
@@ -445,7 +445,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "guitar",
-            strings: defaultTunings.guitar_12
+            strings: DEFAULT_TUNINGS.guitar_12
         },
         id: "guitar1-12",
     },
@@ -458,7 +458,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "guitar",
-            strings: defaultTunings.guitar_10
+            strings: DEFAULT_TUNINGS.guitar_10
         },
         id: "guitar1-10",
     },
@@ -471,7 +471,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "guitar",
-            strings: defaultTunings.guitar_11
+            strings: DEFAULT_TUNINGS.guitar_11
         },
         id: "guitar1-11",
     },
@@ -484,7 +484,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "guitar",
-            strings: defaultTunings.guitar
+            strings: DEFAULT_TUNINGS.guitar
         },
         id: "acguitar1-6",
     },
@@ -497,7 +497,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "guitar",
-            strings: defaultTunings.guitar_12
+            strings: DEFAULT_TUNINGS.guitar_12
         },
         id: "acguitar1-12",
     },
@@ -510,7 +510,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "bass",
-            strings: defaultTunings.bass
+            strings: DEFAULT_TUNINGS.bass
         },
         id: "bass1-4",
     },
@@ -523,7 +523,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "bass",
-            strings: defaultTunings.bass
+            strings: DEFAULT_TUNINGS.bass
         },
         id: "bass2-4",
     },
@@ -536,7 +536,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "bass",
-            strings: defaultTunings.bass
+            strings: DEFAULT_TUNINGS.bass
         },
         id: "bass3-4",
     },
@@ -549,7 +549,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "bass",
-            strings: defaultTunings.bass
+            strings: DEFAULT_TUNINGS.bass
         },
         id: "bass4-4",
     },
@@ -562,7 +562,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "bass",
-            strings: defaultTunings.bass_6
+            strings: DEFAULT_TUNINGS.bass_6
         },
         id: "bass1-6",
     },
@@ -575,7 +575,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "bass",
-            strings: defaultTunings.bass_7
+            strings: DEFAULT_TUNINGS.bass_7
         },
         id: "bass1-7",
     },
@@ -588,7 +588,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "bass",
-            strings: defaultTunings.bass_8
+            strings: DEFAULT_TUNINGS.bass_8
         },
         id: "bass1-8",
     },
@@ -601,7 +601,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "bass",
-            strings: defaultTunings.bass_9
+            strings: DEFAULT_TUNINGS.bass_9
         },
         id: "bass1-9",
     },
@@ -614,7 +614,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "bass",
-            strings: defaultTunings.bass_12
+            strings: DEFAULT_TUNINGS.bass_12
         },
         id: "bass1-11",
     },
@@ -627,7 +627,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "Banjo G",
             type: "other",
-            strings: defaultTunings.other_banjo
+            strings: DEFAULT_TUNINGS.other_banjo
         },
         id: "banjo1",
     },
@@ -640,7 +640,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "Mandolin",
             type: "other",
-            strings: defaultTunings.other_mandolin
+            strings: DEFAULT_TUNINGS.other_mandolin
         },
         id: "mandolin1",
     },
@@ -653,7 +653,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "Pedal Steel E9",
             type: "other",
-            strings: defaultTunings.other_pedalsteel
+            strings: DEFAULT_TUNINGS.other_pedalsteel
         },
         id: "pedalsteel1",
     },
@@ -666,7 +666,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "Ukulele Soprano G",
             type: "other",
-            strings: defaultTunings.other_ukulele
+            strings: DEFAULT_TUNINGS.other_ukulele
         },
         id: "uke1",
     },
@@ -679,7 +679,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "guitar",
-            strings: defaultTunings.guitar
+            strings: DEFAULT_TUNINGS.guitar
         },
         id: "cguitar1",
     },
@@ -692,7 +692,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "guitar",
-            strings: defaultTunings.guitar
+            strings: DEFAULT_TUNINGS.guitar
         },
         id: "guitar2-6",
     },
@@ -705,7 +705,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "guitar",
-            strings: defaultTunings.guitar
+            strings: DEFAULT_TUNINGS.guitar
         },
         id: "guitar3-6",
     },
@@ -718,7 +718,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "guitar",
-            strings: defaultTunings.guitar
+            strings: DEFAULT_TUNINGS.guitar
         },
         id: "guitar4-6",
     },
@@ -731,7 +731,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "guitar",
-            strings: defaultTunings.guitar
+            strings: DEFAULT_TUNINGS.guitar
         },
         id: "guitar5-6",
     },
@@ -744,7 +744,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "guitar",
-            strings: defaultTunings.guitar
+            strings: DEFAULT_TUNINGS.guitar
         },
         id: "guitar6-6",
     },
@@ -757,7 +757,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "guitar",
-            strings: defaultTunings.guitar
+            strings: DEFAULT_TUNINGS.guitar
         },
         id: "guitar7-6",
     },
@@ -770,7 +770,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "E Standard",
             type: "guitar",
-            strings: defaultTunings.bass_VI
+            strings: DEFAULT_TUNINGS.bass_VI
         },
         id: "bassVI1",
     },
@@ -783,7 +783,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "B Standard",
             type: "guitar",
-            strings: defaultTunings.guitar_baritone
+            strings: DEFAULT_TUNINGS.guitar_baritone
         },
         id: "baritone1-6",
     },
@@ -796,7 +796,7 @@ export const INST_PRESETS: InstPreset[] = [
         tuning: {
             name: "B Standard",
             type: "guitar",
-            strings: defaultTunings.guitar_baritone
+            strings: DEFAULT_TUNINGS.guitar_baritone
         },
         id: "baritone2-6",
     },
@@ -806,60 +806,60 @@ export const INITIAL_TUNINGS: Tuning[] = [
     {
         id: 'guitar6estandard',
         name: 'E Standard',
-        strings: defaultTunings.guitar.slice(0, 6),
+        strings: DEFAULT_TUNINGS.guitar.slice(0, 6),
         type: 'guitar',
     },
     {
         id: 'guitar6dropd',
         name: 'Drop D',
-        strings: [...defaultTunings.guitar.slice(0, 5), { note: 'D2', noteValue: notes.indexOf('D2') }],
+        strings: [...DEFAULT_TUNINGS.guitar.slice(0, 5), { note: 'D2', noteValue: NOTES.indexOf('D2') }],
         type: 'guitar',
     },
     {
         id: 'bass4estandard',
         name: 'E Standard',
-        strings: defaultTunings.bass.slice(0, 4),
+        strings: DEFAULT_TUNINGS.bass.slice(0, 4),
         type: 'bass',
     },
     {
         id: 'bass5standard',
         name: '5 String Standard',
-        strings: defaultTunings.bass.slice(0, 5),
+        strings: DEFAULT_TUNINGS.bass.slice(0, 5),
         type: 'bass',
     },
     {
         id: 'bass4dropd',
         name: 'Drop D',
-        strings: [...defaultTunings.bass.slice(0, 3), { note: 'D1', noteValue: notes.indexOf('D1') }],
+        strings: [...DEFAULT_TUNINGS.bass.slice(0, 3), { note: 'D1', noteValue: NOTES.indexOf('D1') }],
         type: 'bass',
     },
     {
         id: 'banjo5g',
         name: 'Banjo G',
-        strings: defaultTunings.other_banjo.slice(0, 5),
+        strings: DEFAULT_TUNINGS.other_banjo.slice(0, 5),
         type: 'other',
     },
     {
         id: 'mandolin8g',
         name: 'Mandolin G',
-        strings: defaultTunings.other_mandolin.slice(0, 8),
+        strings: DEFAULT_TUNINGS.other_mandolin.slice(0, 8),
         type: 'other',
     },
     {
         id: 'pedalsteel10b9',
         name: 'Pedal Steel 10 String B9',
-        strings: defaultTunings.other_pedalsteel,
+        strings: DEFAULT_TUNINGS.other_pedalsteel,
         type: 'other',
     },
 ]
 
-export const defaultUser: UserData = {
+export const DEFAULT_USER: UserData = {
     username: 'CoolGuy',
     instruments: [],
     tunings: [],
     instPresets: [],
     tensionPresets: [],
-    settings: defaultSettings
+    settings: DEFAULT_SETTINGS
 }
 
 export const LOCAL_USERDATA_KEY = 'userData'
