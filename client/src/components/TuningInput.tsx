@@ -43,13 +43,9 @@ const TuningInput: React.FC<TuningInputProps> = ({
             setStringCount(editTuning.strings.length);
             setTitleText(`Editing ${editTuning.name}`);
             setButtonText('Save Changes');
+            setTunings(presetTunings ? presetTunings : []);
         } else {
             resetFields();
-        }
-        if (!presetTunings || !presetTunings.length){
-            setTunings([])
-        } else {
-            setTunings(presetTunings);
         }
     }, [isEdit]);
 
@@ -60,6 +56,7 @@ const TuningInput: React.FC<TuningInputProps> = ({
         setStringCount(6);
         setTitleText('New Tuning');
         setButtonText('Submit');
+        setTunings(presetTunings ? presetTunings : []);
     }
 
     const handleNoteChange = (index: number, note: string | number) => {

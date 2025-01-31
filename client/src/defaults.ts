@@ -294,21 +294,6 @@ export const woundOverlap = [18, 24]
 export const PLAIN_CHAR = 'p'
 export const WOUND_CHAR = 'w'
 
-export const stringTypeFactors = {
-    guitar: {
-        plain: {coeff: 2.215, power: 2},
-        wound: {coeff: 2.07, power: 1.97},
-    },
-    bass: {
-        plain: {coeff: 2.215, power: 2},
-        wound: {coeff: 2.939, power: 1.89},
-    },
-    other: {
-        plain: {coeff: 2.215, power: 2},
-        wound: {coeff: 2.07, power: 1.97},
-    },
-}
-
 export const STRING_MATERIAL_FACTORS: StringFactors = {
     Daddario_plain: {coeff: 2.21492927, power: 2.00004625},
     Daddario_guitar_XL: {coeff: 2.03048974, power: 1.97385195},
@@ -826,7 +811,7 @@ export const INITIAL_TUNINGS: Tuning[] = [
     },
     {
         id: 'guitar6dropd',
-        name: 'Dropped D',
+        name: 'Drop D',
         strings: [...defaultTunings.guitar.slice(0, 5), { note: 'D2', noteValue: notes.indexOf('D2') }],
         type: 'guitar',
     },
@@ -844,7 +829,7 @@ export const INITIAL_TUNINGS: Tuning[] = [
     },
     {
         id: 'bass4dropd',
-        name: 'Dropped D',
+        name: 'Drop D',
         strings: [...defaultTunings.bass.slice(0, 3), { note: 'D1', noteValue: notes.indexOf('D1') }],
         type: 'bass',
     },
