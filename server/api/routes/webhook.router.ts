@@ -14,7 +14,7 @@ webhookRouter.post(
     bodyParser.raw({ type: 'application/json' }),
     async function (req, res) {
         try {
-            const SIGNING_SECRET = process.env.CLERK_WEBHOOK_SECRET_KEY;
+            const SIGNING_SECRET = process.env.SIGNING_SECRET;
             if (!SIGNING_SECRET) {
                 throw new Error('Error: Please add SIGNING_SECRET from Clerk Dashboard to .env')
             }
