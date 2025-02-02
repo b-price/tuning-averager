@@ -1,4 +1,4 @@
-import {Instrument, InstPreset, Tuning, UserData, StringFactors, ExportText} from "../types.ts";
+import {Instrument, InstPreset, Tuning, UserData, StringFactors, ExportText, StringDisplayColors} from "../types.ts";
 
 export const APP_NAME = "Ideal Strings"
 
@@ -957,3 +957,12 @@ export const EXPORT_TEXT: ExportText = {
 
 export const TAPER_WARNING = " usually tapered; be sure to get the right string length. "
 export const LENGTH_WARNING = " could be too short for an instrument with scale length "
+
+export const HOME_STRING_DISPLAY_COLORS: StringDisplayColors = {
+    bgLight: "bg-zinc-300",
+    bgDark: "dark:bg-zinc-700",
+    bgLightAlt: `bg-zinc-200`,
+    bgDarkAlt: `dark:bg-zinc-800`,
+    textLight: `text-zinc-100`,
+    textDark: `dark:text-zinc-600`,
+}

@@ -4,7 +4,7 @@ import TuningInput from "./TuningInput.tsx";
 import InstrumentInput from "./InstrumentInput.tsx";
 import {
     DEFAULT_INST,
-    DEFAULT_TUNING,
+    DEFAULT_TUNING, HOME_STRING_DISPLAY_COLORS,
     INST_PRESETS,
     LOCAL_INSTS_KEY,
     LOCAL_TUNINGS_KEY,
@@ -30,7 +30,6 @@ import {
     tension,
     uwFromGauge,
 } from "../utils/calculate.ts";
-
 import {
     addInstrument,
     addTuning,
@@ -44,8 +43,6 @@ import {
 } from "../utils/serverFunctions.ts";
 import DeleteConfirm from "./DeleteConfirm.tsx";
 import { UserButton } from "@clerk/clerk-react";
-import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
 import AverageStringSet from "./AverageStringSet.tsx";
 import StringSets from "./StringSets.tsx";
 import Alert from "./Alert.tsx";
@@ -53,6 +50,7 @@ import { useMessage } from "../hooks/useMessage.ts";
 import ExportData from "./ExportData.tsx";
 import { Link } from "react-router-dom";
 import StringInfoDisplay from "./StringInfoDisplay.tsx";
+import LoadingSkeleton from "./LoadingSkeleton.tsx";
 
 interface HomeProps {
     userData: UserData;
@@ -141,72 +139,7 @@ const HomePage: React.FC<HomeProps> = ({
 
     if (isLoading || (userData === undefined && !localMode)) {
         return (
-            <SkeletonTheme
-                baseColor={
-                    window.matchMedia &&
-                    window.matchMedia("(prefers-color-scheme: dark)").matches
-                        ? "#444444"
-                        : "#cccccc"
-                }
-                highlightColor={
-                    window.matchMedia &&
-                    window.matchMedia("(prefers-color-scheme: dark)").matches
-                        ? "#666666"
-                        : "#eeeeee"
-                }
-            >
-                <div className="flex flex-col sm:p-6">
-                    <div className="flex items-center mb-4 gap-4">
-                        <Skeleton circle height={50} width={50} />
-                        <Skeleton height={30} width={150} />
-                    </div>
-                    <div className="flex flex-wrap gap-10">
-                        {/* Instruments Skeleton */}
-                        <div className="mb-7">
-                            <Skeleton height={30} width={200} />
-                            <Skeleton
-                                height={50}
-                                width={300}
-                                style={{ marginTop: "10px" }}
-                            />
-                            <Skeleton
-                                height={20}
-                                width={150}
-                                style={{ marginTop: "10px" }}
-                            />
-                            <Skeleton
-                                height={20}
-                                width={250}
-                                style={{ marginTop: "10px" }}
-                            />
-                            <Skeleton
-                                height={20}
-                                width={200}
-                                style={{ marginTop: "10px" }}
-                            />
-                        </div>
-                        {/* Tunings Skeleton */}
-                        <div className="mb-2">
-                            <Skeleton height={30} width={200} />
-                            <Skeleton
-                                height={50}
-                                width={300}
-                                style={{ marginTop: "10px" }}
-                            />
-                            <Skeleton
-                                height={20}
-                                width={150}
-                                style={{ marginTop: "10px" }}
-                            />
-                            <Skeleton
-                                height={20}
-                                width={250}
-                                style={{ marginTop: "10px" }}
-                            />
-                        </div>
-                    </div>
-                </div>
-            </SkeletonTheme>
+            <LoadingSkeleton />
         );
     }
 
@@ -924,24 +857,9 @@ const HomePage: React.FC<HomeProps> = ({
 
                                 {selectedInstrument.isMultiscale &&
                                 selectedInstrument.scales ? (
-                                    <div>
+                                    <div className="w-full">
                                         <strong>Scale Lengths (in.): </strong>
-                                        {/*{selectedInstrument.scales.map(*/}
-                                        {/*    (scale, index) => (*/}
-                                        {/*        <span key={index}>*/}
-                                        {/*            {round(*/}
-                                        {/*                scale,*/}
-                                        {/*                DECIMAL_POINTS,*/}
-                                        {/*            )}{" "}*/}
-                                        {/*            {index <*/}
-                                        {/*            selectedInstrument.strings -*/}
-                                        {/*                1*/}
-                                        {/*                ? "| "*/}
-                                        {/*                : ""}*/}
-                                        {/*        </span>*/}
-                                        {/*    ),*/}
-                                        {/*)}*/}
-                                        <div className="mt-1 mb-2">
+                                        <div className="mt-1 mb-2 justify-self-center">
                                             <StringInfoDisplay
                                                 info={selectedInstrument.scales}
                                                 bouts={getBouts(
@@ -949,6 +867,7 @@ const HomePage: React.FC<HomeProps> = ({
                                                     selectedInstrument.type,
                                                 )}
                                                 reversed={reversed}
+                                                colors={HOME_STRING_DISPLAY_COLORS}
                                             />
                                         </div>
                                     </div>
@@ -959,19 +878,9 @@ const HomePage: React.FC<HomeProps> = ({
                                     </p>
                                 )}
 
-                                <div>
+                                <div className="w-full">
                                     <strong>Target Tensions (lbs/in): </strong>
-                                    {/*{selectedInstrument.targetTension.map(*/}
-                                    {/*    (tension, index) => (*/}
-                                    {/*        <span key={index}>*/}
-                                    {/*            {round(tension, DECIMAL_POINTS)}{" "}*/}
-                                    {/*            {index < selectedInstrument.targetTension.length - 1*/}
-                                    {/*                ? "| "*/}
-                                    {/*                : ""}*/}
-                                    {/*        </span>*/}
-                                    {/*    ),*/}
-                                    {/*)}*/}
-                                    <div className="mt-1 mb-2">
+                                    <div className="mt-1 mb-2 justify-self-center">
                                         <StringInfoDisplay
                                             info={
                                                 selectedInstrument.targetTension
@@ -981,6 +890,7 @@ const HomePage: React.FC<HomeProps> = ({
                                                 selectedInstrument.type,
                                             )}
                                             reversed={reversed}
+                                            colors={HOME_STRING_DISPLAY_COLORS}
                                         />
                                     </div>
                                 </div>
@@ -1074,20 +984,10 @@ const HomePage: React.FC<HomeProps> = ({
                                     <strong>Type: </strong>
                                     {selectedTuning.strings.length}-string {capitalize(selectedTuning.type)}
                                 </p>
-                                {/*<ul className="mb-3">*/}
-                                {/*    {selectedTuning.strings.map(*/}
-                                {/*        (string, index) => (*/}
-                                {/*            <li key={index}>*/}
-                                {/*                <strong>{index + 1}: </strong>*/}
-                                {/*                {string.note}*/}
-                                {/*            </li>*/}
-                                {/*        ),*/}
-                                {/*    )}*/}
-                                {/*</ul>*/}
                                 <p>
                                     <strong>Strings: </strong>
                                 </p>
-                                <div className="mt-1 mb-2">
+                                <div className="mt-1 mb-2 flex justify-center">
                                     <StringInfoDisplay
                                         info={selectedTuning.strings.map(
                                             (s) => s.note,
@@ -1098,6 +998,7 @@ const HomePage: React.FC<HomeProps> = ({
                                         )}
                                         textStyle="font-semibold"
                                         reversed={reversed}
+                                        colors={HOME_STRING_DISPLAY_COLORS}
                                     />
                                 </div>
                             </div>

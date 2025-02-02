@@ -105,3 +105,12 @@ export type ExportSelection = "Instruments" | "Tunings" | "StringSets" | "String
 export type ExportText = {
     [option in ExportSelection]: string;
 };
+
+export interface StringDisplayColors {
+    bgLight: string;
+    bgDark: string;
+    bgLightAlt: string;
+    bgDarkAlt: string;
+    textLight: string;
+    textDark: string;
+}

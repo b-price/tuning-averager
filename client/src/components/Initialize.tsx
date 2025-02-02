@@ -10,6 +10,7 @@ import {
 import { getUser } from "../utils/serverFunctions.ts";
 import { useAuth, useUser, UserButton } from "@clerk/clerk-react";
 import Home from "./Home.tsx";
+import LoadingSkeleton from "./LoadingSkeleton.tsx";
 
 const Initialize: React.FC = () => {
     const { userId } = useAuth();
@@ -99,7 +100,7 @@ const Initialize: React.FC = () => {
     }, [user]);
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <LoadingSkeleton />;
     }
 
     if (error) {
