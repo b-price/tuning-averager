@@ -922,7 +922,7 @@ const HomePage: React.FC<HomeProps> = ({
 
                                 {selectedInstrument.isMultiscale &&
                                 selectedInstrument.scales ? (
-                                    <p>
+                                    <div>
                                         <strong>Scale Lengths (in.): </strong>
                                         {/*{selectedInstrument.scales.map(*/}
                                         {/*    (scale, index) => (*/}
@@ -942,11 +942,14 @@ const HomePage: React.FC<HomeProps> = ({
                                         <div className="mt-1 mb-2">
                                             <StringInfoDisplay
                                                 info={selectedInstrument.scales}
-                                                bouts={getBouts(selectedInstrument.strings, selectedInstrument.type)}
+                                                bouts={getBouts(
+                                                    selectedInstrument.strings,
+                                                    selectedInstrument.type,
+                                                )}
                                                 reversed
                                             />
                                         </div>
-                                    </p>
+                                    </div>
                                 ) : (
                                     <p>
                                         <strong>Scale Length: </strong>
@@ -954,7 +957,7 @@ const HomePage: React.FC<HomeProps> = ({
                                     </p>
                                 )}
 
-                                <p>
+                                <div>
                                     <strong>Target Tensions (lbs/in): </strong>
                                     {/*{selectedInstrument.targetTension.map(*/}
                                     {/*    (tension, index) => (*/}
@@ -968,12 +971,17 @@ const HomePage: React.FC<HomeProps> = ({
                                     {/*)}*/}
                                     <div className="mt-1 mb-2">
                                         <StringInfoDisplay
-                                            info={selectedInstrument.targetTension}
-                                            bouts={getBouts(selectedInstrument.strings, selectedInstrument.type)}
+                                            info={
+                                                selectedInstrument.targetTension
+                                            }
+                                            bouts={getBouts(
+                                                selectedInstrument.strings,
+                                                selectedInstrument.type,
+                                            )}
                                             reversed
                                         />
                                     </div>
-                                </p>
+                                </div>
 
                                 <label>
                                     <strong>Tunings:</strong>
@@ -1062,7 +1070,7 @@ const HomePage: React.FC<HomeProps> = ({
                             <div className="text-start">
                                 <p>
                                     <strong>Type: </strong>
-                                    {capitalize(selectedTuning.type)}
+                                    {selectedTuning.strings.length}-string {capitalize(selectedTuning.type)}
                                 </p>
                                 {/*<ul className="mb-3">*/}
                                 {/*    {selectedTuning.strings.map(*/}
@@ -1079,8 +1087,13 @@ const HomePage: React.FC<HomeProps> = ({
                                 </p>
                                 <div className="mt-1 mb-2">
                                     <StringInfoDisplay
-                                        info={selectedTuning.strings.map(s => s.note)}
-                                        bouts={getBouts(selectedTuning.strings.length, selectedTuning.type)}
+                                        info={selectedTuning.strings.map(
+                                            (s) => s.note,
+                                        )}
+                                        bouts={getBouts(
+                                            selectedTuning.strings.length,
+                                            selectedTuning.type,
+                                        )}
                                         textStyle="font-semibold"
                                         reversed
                                     />
