@@ -1,6 +1,7 @@
-import {Tuning} from "../../types.ts";
+import {InstType, Tuning} from "../../types.ts";
 import {
-    A4_OFFSET, DEFAULT_STRING_MATERIAL,
+    A4_OFFSET,
+    DEFAULT_STRING_MATERIAL,
     MAX_STRING_GAUGE,
     MIN_STRING_GAUGE,
     MULTISCALE_SPAN,
@@ -10,81 +11,91 @@ import {
     REFERENCE_PITCH,
     STRING_MATERIAL_FACTORS,
     WOUND_CHAR,
-    WOUND_OVERLAP
+    WOUND_OVERLAP,
 } from "../defaults.ts";
 
-export function stringAverage(tunings: Tuning[]){
+export function stringAverage(tunings: Tuning[]) {
     const sameType = checkStringMatch(tunings);
     if (!sameType) {
-        return ;
+        return;
     }
     const avNoteValues = [];
     const amountStrings = tunings[0].strings.length;
-    for (let i = 0; i < amountStrings; i++){
+    for (let i = 0; i < amountStrings; i++) {
         let sum = 0;
         tunings.forEach((tuning) => {
             sum += tuning.strings[i].noteValue;
-        })
+        });
         avNoteValues.push(sum / tunings.length);
     }
     return avNoteValues;
 }
 
-export function stringAverageUnweighted(tunings: Tuning[]){
+export function stringAverageUnweighted(tunings: Tuning[]) {
     if (!checkStringMatch(tunings)) {
-        return ;
+        return;
     }
     const avNoteValues = [];
     const amountStrings = tunings[0].strings.length;
-    for (let i = 0; i < amountStrings; i++){
+    for (let i = 0; i < amountStrings; i++) {
         let sum = 0;
         let unique = 0;
         const notes: number[] = [];
         tunings.forEach((tuning) => {
             const value = tuning.strings[i].noteValue;
-            if (!notes.includes(value)){
+            if (!notes.includes(value)) {
                 sum += value;
                 unique++;
             }
             notes.push(value);
-        })
+        });
         avNoteValues.push(sum / unique);
     }
     return avNoteValues;
 }
 
-export function convertToNote(noteValue: number){
-    if (noteValue < 0 || noteValue >= NOTES.length){
-        return {note: 'invalid', cents: 0, noteValue: noteValue};
+export function convertToNote(noteValue: number) {
+    if (noteValue < 0 || noteValue >= NOTES.length) {
+        return { note: "invalid", cents: 0, noteValue: noteValue };
     }
     const intNote = Math.floor(noteValue);
-    const cents = Math.round(((noteValue - intNote) * 100));
+    const cents = Math.round((noteValue - intNote) * 100);
 
-    return {note: NOTES[intNote], cents: cents, noteValue: noteValue};
+    return { note: NOTES[intNote], cents: cents, noteValue: noteValue };
 }
 
-function checkStringMatch(tunings: Tuning[]){
-    if(tunings.length <= 0){
+function checkStringMatch(tunings: Tuning[]) {
+    if (tunings.length <= 0) {
         return false;
     }
-    const numStrings = tunings.map(guitar => {
+    const numStrings = tunings.map((guitar) => {
         return [guitar.strings.length, guitar.type];
-    })
-    return numStrings.every(g => g[0] === numStrings[0][0]) &&
-        numStrings.every(g => g[1] === numStrings[0][1]);
+    });
+    return (
+        numStrings.every((g) => g[0] === numStrings[0][0]) &&
+        numStrings.every((g) => g[1] === numStrings[0][1])
+    );
 }
 
-export function getFrequency(noteValue: number, referencePitch = REFERENCE_PITCH) {
+export function getFrequency(
+    noteValue: number,
+    referencePitch = REFERENCE_PITCH,
+) {
     if (noteValue < 0 || referencePitch < 0) {
         return 0;
     }
     noteValue -= A4_OFFSET;
-    return referencePitch * (Math.pow(2, noteValue / 12))
+    return referencePitch * Math.pow(2, noteValue / 12);
 }
 
-export function getUnitWeight(noteValue: number, scale: number, tension: number, referencePitch = REFERENCE_PITCH) {
+export function getUnitWeight(
+    noteValue: number,
+    scale: number,
+    tension: number,
+    referencePitch = REFERENCE_PITCH,
+) {
     const frequency = getFrequency(noteValue, referencePitch);
-    if (frequency <= 0 || tension <= 0 || scale <= 0){
+    if (frequency <= 0 || tension <= 0 || scale <= 0) {
         return 0;
     }
     return (tension * 386.4) / Math.pow(2 * scale * frequency, 2);
@@ -103,23 +114,28 @@ export function stringGauge(uw: number, coefficient: number, power: number) {
     if (gauge > MAX_STRING_GAUGE) {
         return MAX_STRING_GAUGE;
     }
-    if (gauge < PRECISE_GAUGE){
+    if (gauge < PRECISE_GAUGE) {
         return Math.round(gauge * 2) / 2;
     }
 
     return Math.round(gauge);
 }
 
-export function tension(uw: number, noteValue: number, scale: number, referencePitch = REFERENCE_PITCH) {
+export function tension(
+    uw: number,
+    noteValue: number,
+    scale: number,
+    referencePitch = REFERENCE_PITCH,
+) {
     const frequency = getFrequency(noteValue, referencePitch);
-    if (frequency <= 0 || scale <= 0 || uw <= 0){
+    if (frequency <= 0 || scale <= 0 || uw <= 0) {
         return 0;
     }
-    return (uw * Math.pow(2 * scale * frequency, 2)) / 386.4
+    return (uw * Math.pow(2 * scale * frequency, 2)) / 386.4;
 }
 
 export function uwFromGauge(gauge: number, coefficient: number, power: number) {
-    return (coefficient * Math.pow(gauge, power)) / 10000000
+    return (coefficient * Math.pow(gauge, power)) / 10000000;
 }
 
 export function round(num: number, precision: number) {
@@ -129,33 +145,40 @@ export function round(num: number, precision: number) {
 
 export const capitalize = (word: string) => {
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-}
+};
 
 export const formatMaterial = (material: string) => {
-    return material.replace(/_[a-zA-Z]+_/, ` `).replace('-', ' ');
-}
+    return material.replace(/_[a-zA-Z]+_/, ` `).replace("-", " ");
+};
 
 export const getPlain = (material: string) => {
-    if (material === 'Kalium') return material;
-    if (STRING_MATERIAL_FACTORS[material] && STRING_MATERIAL_FACTORS[material].altPlain) {
+    if (material === "Kalium") return material;
+    if (
+        STRING_MATERIAL_FACTORS[material] &&
+        STRING_MATERIAL_FACTORS[material].altPlain
+    ) {
         return STRING_MATERIAL_FACTORS[material].altPlain;
     }
-    return material.split('_')[0] + '_plain'
-}
+    return material.split("_")[0] + "_plain";
+};
 
 export const coeffPower = (material: string, wound: boolean) => {
     if (!STRING_MATERIAL_FACTORS[material]) {
         return STRING_MATERIAL_FACTORS[DEFAULT_STRING_MATERIAL.guitar];
     }
-    const plain = wound? material : getPlain(material);
-    const coeff = wound ? STRING_MATERIAL_FACTORS[material].coeff : STRING_MATERIAL_FACTORS[plain].coeff;
-    const power = wound ? STRING_MATERIAL_FACTORS[material].power : STRING_MATERIAL_FACTORS[plain].power;
-    return {coeff: coeff, power: power};
-}
+    const plain = wound ? material : getPlain(material);
+    const coeff = wound
+        ? STRING_MATERIAL_FACTORS[material].coeff
+        : STRING_MATERIAL_FACTORS[plain].coeff;
+    const power = wound
+        ? STRING_MATERIAL_FACTORS[material].power
+        : STRING_MATERIAL_FACTORS[plain].power;
+    return { coeff: coeff, power: power };
+};
 
 export const getCents = (noteValue: number) => {
-    return Math.round(noteValue * 100) - (Math.round(noteValue) * 100);
-}
+    return Math.round(noteValue * 100) - Math.round(noteValue) * 100;
+};
 
 export const getPW = (gauge: number, wound: boolean) => {
     if (gauge >= WOUND_OVERLAP[0] && gauge <= WOUND_OVERLAP[1]) {
@@ -163,9 +186,13 @@ export const getPW = (gauge: number, wound: boolean) => {
     } else {
         return "";
     }
-}
+};
 
-export const getMultiscale = (scale: number, strings: number, span = MULTISCALE_SPAN) => {
+export const getMultiscale = (
+    scale: number,
+    strings: number,
+    span = MULTISCALE_SPAN,
+) => {
     if (strings === 1) return [scale];
     const scales = [];
     const gap = span / (strings - 1);
@@ -173,4 +200,12 @@ export const getMultiscale = (scale: number, strings: number, span = MULTISCALE_
         scales.push(i * gap + scale);
     }
     return scales;
+};
+
+export const getBouts = (strings: number, type: InstType) => {
+    if ((type === 'guitar' && strings <= 10) || strings < 8) return 1;
+    //if (((type === 'bass' || type === 'other') && strings === 8) || (type === 'bass' && strings === 10)) return 2;
+    if (type === 'bass' && strings >= 12) return 3;
+    //if (type === 'guitar' && strings >= 10) return 2;
+    return 2;
 }

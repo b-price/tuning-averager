@@ -1,12 +1,16 @@
 import { useState } from "react";
-import {MessageType} from "../../types.ts";
+import { MessageType } from "../../types.ts";
 
 export const useMessage = () => {
-    const [message, setMessage] = useState<string>('');
-    const [messageType, setMessageType] = useState<MessageType>('success');
+    const [message, setMessage] = useState<string>("");
+    const [messageType, setMessageType] = useState<MessageType>("success");
     const [show, setShow] = useState<boolean>(false);
 
-    const showMessage = (text: string, type: MessageType, time: number = 3000) => {
+    const showMessage = (
+        text: string,
+        type: MessageType,
+        time: number = 3000,
+    ) => {
         setMessage(text);
         setMessageType(type);
         setShow(true);
@@ -14,8 +18,8 @@ export const useMessage = () => {
             setTimeout(() => {
                 setShow(false);
                 setTimeout(() => {
-                    setMessage('');
-                    setMessageType('success');
+                    setMessage("");
+                    setMessageType("success");
                 }, 300); // Delay to match the fade-out duration
             }, time);
         }
@@ -24,8 +28,8 @@ export const useMessage = () => {
     const closeMessage = () => {
         setShow(false);
         setTimeout(() => {
-            setMessage('');
-            setMessageType('success');
+            setMessage("");
+            setMessageType("success");
         }, 300); // Delay to match the fade-out duration
     };
 

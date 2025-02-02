@@ -8,13 +8,13 @@ import {
     LOCAL_INSTS_KEY,
     LOCAL_TUNINGS_KEY,
     LOCAL_USERDATA_KEY,
-    REFERENCE_PITCH
+    REFERENCE_PITCH,
 } from "../defaults.ts";
 import { getUser, updateUser } from "../utils/serverFunctions.ts";
 import ToggleSwitch from "./ToggleSwitch.tsx";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import DeleteConfirm from "./DeleteConfirm.tsx";
-import {useMessage} from "../hooks/useMessage.ts";
+import { useMessage } from "../hooks/useMessage.ts";
 import Alert from "./Alert.tsx";
 
 const Settings: React.FC = () => {
@@ -23,7 +23,8 @@ const Settings: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS);
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
-    const { message, messageType, showMessage, show, closeMessage } = useMessage();
+    const { message, messageType, showMessage, show, closeMessage } =
+        useMessage();
 
     // on mount
     useEffect(() => {
@@ -118,54 +119,86 @@ const Settings: React.FC = () => {
 
     const handleWeightedModeSwitch = (checked: boolean) => {
         if (userId) {
-            updateUser({ settings: { ...settings, weightedMode: checked } }, user.id).then(() => {
+            updateUser(
+                { settings: { ...settings, weightedMode: checked } },
+                user.id,
+            ).then(() => {
                 setSettings({ ...settings, weightedMode: checked });
-                setUser({ ...user, settings: { ...settings, weightedMode: checked } });
+                setUser({
+                    ...user,
+                    settings: { ...settings, weightedMode: checked },
+                });
             });
         } else {
             try {
-                localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify({...user, settings: { ...settings, weightedMode: checked }}));
+                localStorage.setItem(
+                    LOCAL_USERDATA_KEY,
+                    JSON.stringify({
+                        ...user,
+                        settings: { ...settings, weightedMode: checked },
+                    }),
+                );
                 setSettings({ ...settings, weightedMode: checked });
-                setUser({ ...user, settings: { ...settings, weightedMode: checked } });
+                setUser({
+                    ...user,
+                    settings: { ...settings, weightedMode: checked },
+                });
             } catch (e) {
                 console.error(e);
             }
         }
-
     };
 
     const handleRefPitchChange = (pitch: number) => {
         if (pitch > 0 && pitch < 2000) {
             if (userId) {
-                updateUser({ settings: { ...settings, referencePitch: pitch } }, user.id).then(() => {
+                updateUser(
+                    { settings: { ...settings, referencePitch: pitch } },
+                    user.id,
+                ).then(() => {
                     setSettings({ ...settings, referencePitch: pitch });
-                    setUser({ ...user, settings: { ...settings, referencePitch: pitch } });
+                    setUser({
+                        ...user,
+                        settings: { ...settings, referencePitch: pitch },
+                    });
                 });
             } else {
                 try {
-                    localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify({ ...user, settings: { ...settings, referencePitch: pitch } }));
+                    localStorage.setItem(
+                        LOCAL_USERDATA_KEY,
+                        JSON.stringify({
+                            ...user,
+                            settings: { ...settings, referencePitch: pitch },
+                        }),
+                    );
                     setSettings({ ...settings, referencePitch: pitch });
-                    setUser({ ...user, settings: { ...settings, referencePitch: pitch } });
+                    setUser({
+                        ...user,
+                        settings: { ...settings, referencePitch: pitch },
+                    });
                 } catch (error) {
                     console.error(error);
                 }
             }
         }
-    }
+    };
 
     const deleteLocalData = () => {
         try {
-            localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify(DEFAULT_USER));
+            localStorage.setItem(
+                LOCAL_USERDATA_KEY,
+                JSON.stringify(DEFAULT_USER),
+            );
             localStorage.setItem(LOCAL_INSTS_KEY, JSON.stringify([]));
             localStorage.setItem(LOCAL_TUNINGS_KEY, JSON.stringify([]));
             setUser(DEFAULT_USER);
             setSettings(DEFAULT_SETTINGS);
-            showMessage('Local data deleted.', 'success');
+            showMessage("Local data deleted.", "success");
         } catch (e) {
             console.error(e);
-            showMessage('Could not delete local data.', 'error');
+            showMessage("Could not delete local data.", "error");
         }
-    }
+    };
 
     if (isLoading) {
         return <p className="text-center mt-4">Loading...</p>;
@@ -173,24 +206,31 @@ const Settings: React.FC = () => {
 
     return (
         <div className="container p-4 sm:p-6 sm:w-3/4 sm:max-w-3xl">
-            <h1 className="text-2xl font-bold mb-6 text-center sm:text-left">Settings</h1>
+            <h1 className="text-2xl font-bold mb-6 text-center sm:text-left">
+                Settings
+            </h1>
             <div className="grid gap-6 w-full mx-auto">
                 {/* Profile Settings */}
-                {userId ?
+                {userId ? (
                     <div className="flex flex-row items-center gap-4">
-                        <h2 className="text-xl font-semibold">Profile Settings →</h2>
+                        <h2 className="text-xl font-semibold">
+                            Profile Settings →
+                        </h2>
                         <UserButton />
                     </div>
-                    :
+                ) : (
                     <div className="flex items-center mb-4">
-                        <Link to={'/sign-up'}>
-                            <h1 className="text-2xl font-semibold dark:text-white">Sign up to save your settings!</h1>
+                        <Link to={"/sign-up"}>
+                            <h1 className="text-2xl font-semibold dark:text-white">
+                                Sign up to save your settings!
+                            </h1>
                         </Link>
                     </div>
-                }
+                )}
 
-
-                <h2 className="text-xl font-semibold sm:text-left">App Settings</h2>
+                <h2 className="text-xl font-semibold sm:text-left">
+                    App Settings
+                </h2>
                 {/* Weighted Mode */}
                 <ToggleSwitch
                     checked={settings.weightedMode}
@@ -200,31 +240,38 @@ const Settings: React.FC = () => {
                     <span className="ml-3 font-semibold">Weighted Mode</span>
                 </ToggleSwitch>
                 <p className="text-sm text-gray-600 dark:text-gray-400 text-left">
-                    If weighted mode is on, when the tunings of an instrument are averaged, how often a string is
-                    tuned to a note is taken into account. Otherwise, it is not.
+                    If weighted mode is on, when the tunings of an instrument
+                    are averaged, how often a string is tuned to a note is taken
+                    into account. Otherwise, it is not.
                 </p>
                 {/*Reference Pitch*/}
                 <div className="flex items-center">
-                    <label className="mr-3 font-semibold">Reference Pitch</label>
+                    <label className="mr-3 font-semibold">
+                        Reference Pitch
+                    </label>
                     <label className="mr-1">A4=</label>
                     <input
                         type="number"
                         value={settings.referencePitch || REFERENCE_PITCH}
                         step={1}
-                        onChange={(e) => handleRefPitchChange(parseFloat(e.target.value))}
+                        onChange={(e) =>
+                            handleRefPitchChange(parseFloat(e.target.value))
+                        }
                         className="mt-1 block w-1/3 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
                     <label className="px-1">hz</label>
                 </div>
                 {/*Local Mode Delete Data*/}
-                {!userId &&
+                {!userId && (
                     <div className="flex sm:justify-start justify-center">
                         <button
                             className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-400 focus:outline-none focus:ring-2"
                             onClick={() => setIsDeleteConfirmOpen(true)}
-                        >Delete Local Data</button>
+                        >
+                            Delete Local Data
+                        </button>
                     </div>
-                }
+                )}
 
                 {/*Theme*/}
                 {/*<h2 className="text-xl font-semibold sm:text-left">Theme</h2>*/}
@@ -245,8 +292,18 @@ const Settings: React.FC = () => {
                 {/*    </ToggleSwitch>*/}
                 {/*)}*/}
             </div>
-            <DeleteConfirm isOpen={isDeleteConfirmOpen} onClose={() => setIsDeleteConfirmOpen(false)} deleteFunction={deleteLocalData} />
-            <Alert show={show} message={message} type={messageType} onClose={closeMessage} style="mt-6 mb-4 justify-center"/>
+            <DeleteConfirm
+                isOpen={isDeleteConfirmOpen}
+                onClose={() => setIsDeleteConfirmOpen(false)}
+                deleteFunction={deleteLocalData}
+            />
+            <Alert
+                show={show}
+                message={message}
+                type={messageType}
+                onClose={closeMessage}
+                style="mt-6 mb-4 justify-center"
+            />
         </div>
     );
 };

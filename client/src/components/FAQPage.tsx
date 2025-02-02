@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { FAQS } from "../defaults.ts";
 
 const FAQPage: React.FC = () => {
@@ -25,7 +25,9 @@ const FAQPage: React.FC = () => {
                             </button>
                             <div
                                 className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                                    visibleIndex === index ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+                                    visibleIndex === index
+                                        ? "max-h-screen opacity-100"
+                                        : "max-h-0 opacity-0"
                                 }`}
                             >
                                 <p className="mt-1 mx-2 sm:text-lg">
@@ -41,4 +43,3 @@ const FAQPage: React.FC = () => {
 };
 
 export default FAQPage;
-

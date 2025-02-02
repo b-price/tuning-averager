@@ -1,5 +1,5 @@
 {
-  "name": "tuning-averager",
+  "name": "ideal-strings",
   "version": "1.0.0",
   "main": "api/index.ts",
   "scripts": {

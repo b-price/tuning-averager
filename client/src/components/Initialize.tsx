@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {Instrument, Tuning, UserData} from "../../types.ts";
+import { Instrument, Tuning, UserData } from "../../types.ts";
 import {
     DEFAULT_USER,
     INITIAL_TUNINGS,
     LOCAL_INSTS_KEY,
     LOCAL_TUNINGS_KEY,
-    LOCAL_USERDATA_KEY
+    LOCAL_USERDATA_KEY,
 } from "../defaults.ts";
 import { getUser } from "../utils/serverFunctions.ts";
 import { useAuth, useUser, UserButton } from "@clerk/clerk-react";
@@ -25,15 +25,28 @@ const Initialize: React.FC = () => {
         if (!userId || !isUserLoaded) {
             const localData = localStorage.getItem(LOCAL_USERDATA_KEY);
             const localStorageTunings = localStorage.getItem(LOCAL_TUNINGS_KEY);
-            const localStorageInstruments = localStorage.getItem(LOCAL_INSTS_KEY);
+            const localStorageInstruments =
+                localStorage.getItem(LOCAL_INSTS_KEY);
             if (localData) {
                 setCurrentUser(JSON.parse(localData));
-                setLocalTunings(localStorageTunings ? JSON.parse(localStorageTunings) : []);
-                setLocalInsts(localStorageInstruments ? JSON.parse(localStorageInstruments) : []);
+                setLocalTunings(
+                    localStorageTunings ? JSON.parse(localStorageTunings) : [],
+                );
+                setLocalInsts(
+                    localStorageInstruments
+                        ? JSON.parse(localStorageInstruments)
+                        : [],
+                );
             } else {
-                localStorage.setItem(LOCAL_USERDATA_KEY, JSON.stringify(DEFAULT_USER));
+                localStorage.setItem(
+                    LOCAL_USERDATA_KEY,
+                    JSON.stringify(DEFAULT_USER),
+                );
                 setCurrentUser(DEFAULT_USER);
-                localStorage.setItem(LOCAL_TUNINGS_KEY, JSON.stringify(INITIAL_TUNINGS));
+                localStorage.setItem(
+                    LOCAL_TUNINGS_KEY,
+                    JSON.stringify(INITIAL_TUNINGS),
+                );
                 setLocalTunings(INITIAL_TUNINGS);
             }
             setIsLocal(true);
@@ -57,7 +70,9 @@ const Initialize: React.FC = () => {
             })
             .catch((error) => {
                 console.error("Error fetching user data:", error);
-                setError("Unable to find data for user. Please check your account or try again later.");
+                setError(
+                    "Unable to find data for user. Please check your account or try again later.",
+                );
             })
             .finally(() => {
                 setIsLoading(false);
@@ -77,7 +92,7 @@ const Initialize: React.FC = () => {
                     prevUser.settings,
                     prevUser.instPresets,
                     prevUser.tensionPresets,
-                    prevUser.id
+                    prevUser.id,
                 );
             });
         }
@@ -99,7 +114,14 @@ const Initialize: React.FC = () => {
         );
     }
 
-    return <Home userData={currentUser} localMode={isLocal} localTunings={localTunings} localInstruments={localInsts}/>;
+    return (
+        <Home
+            userData={currentUser}
+            localMode={isLocal}
+            localTunings={localTunings}
+            localInstruments={localInsts}
+        />
+    );
 };
 
 export default Initialize;

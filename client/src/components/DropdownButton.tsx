@@ -1,4 +1,4 @@
-import React, {useEffect, ReactNode, useRef, useState} from "react";
+import React, { useEffect, ReactNode, useRef, useState } from "react";
 
 interface DropdownButtonProps {
     children: ReactNode;
@@ -6,16 +6,22 @@ interface DropdownButtonProps {
     buttonText: string;
 }
 
-const DropdownButton: React.FC<DropdownButtonProps> = ({ children, id, buttonText }) => {
-
+const DropdownButton: React.FC<DropdownButtonProps> = ({
+    children,
+    id,
+    buttonText,
+}) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                if (event.target && (event.target as HTMLElement).id !== id){
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target as Node)
+            ) {
+                if (event.target && (event.target as HTMLElement).id !== id) {
                     setIsDropdownOpen(false);
                 }
             }
@@ -36,17 +42,18 @@ const DropdownButton: React.FC<DropdownButtonProps> = ({ children, id, buttonTex
                 {buttonText}
             </button>
 
-
-            <div ref={dropdownRef}
-                 className={isDropdownOpen
-                     ? "mt-2 py-2 w-full dark:bg-gray-500 bg-white border border-gray-300 rounded-md shadow-lg z-10 overflow-hidden transition-all duration-500 ease-in-out max-h-screen"
-                     : "z-10 overflow-hidden transition-all duration-500 ease-in-out max-h-0"}
+            <div
+                ref={dropdownRef}
+                className={
+                    isDropdownOpen
+                        ? "mt-2 py-2 w-full dark:bg-gray-500 bg-white border border-gray-300 rounded-md shadow-lg z-10 overflow-hidden transition-all duration-500 ease-in-out max-h-screen"
+                        : "z-10 overflow-hidden transition-all duration-500 ease-in-out max-h-0"
+                }
             >
                 {children}
             </div>
-
         </div>
-    )
-}
+    );
+};
 
 export default DropdownButton;
