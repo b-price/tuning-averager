@@ -576,7 +576,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                             }
                         >
                             <span className="ml-3 text-sm font-medium">
-                                Use Average Tension
+                                Use Balanced Tension
                             </span>
                         </ToggleSwitch>
 
@@ -617,7 +617,7 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                             className={`transition-all duration-500 ease-in-out ${useAverageTension ? "opacity-100 max-h-screen" : "opacity-0 max-h-0 invisible"}`}
                         >
                             <label className="block text-sm font-medium">
-                                Average Tension
+                                Target Tension (per string)
                             </label>
                             <div className="flex items-center justify-center">
                                 <input

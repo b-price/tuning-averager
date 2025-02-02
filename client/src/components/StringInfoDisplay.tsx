@@ -20,7 +20,7 @@ const StringInfoDisplay: React.FC<StringInfoDisplayProps> = ({
             const bout = info
                 .map((inf, index) => ({ info: inf, string: index + 1 }))
                 .filter((_info, idx) => idx % bouts === i)
-            return reversed ? bout.reverse() : bout;
+            return reversed ? bout : bout.reverse();
           });
 
     return (

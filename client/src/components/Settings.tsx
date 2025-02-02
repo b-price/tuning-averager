@@ -149,6 +149,38 @@ const Settings: React.FC = () => {
         }
     };
 
+    const handleReverseStringSwitch = (checked: boolean) => {
+        if (userId) {
+            updateUser(
+                { settings: { ...settings, reverseStrings: checked } },
+                user.id,
+            ).then(() => {
+                setSettings({ ...settings, reverseStrings: checked });
+                setUser({
+                    ...user,
+                    settings: { ...settings, reverseStrings: checked },
+                });
+            });
+        } else {
+            try {
+                localStorage.setItem(
+                    LOCAL_USERDATA_KEY,
+                    JSON.stringify({
+                        ...user,
+                        settings: { ...settings, reverseStrings: checked },
+                    }),
+                );
+                setSettings({ ...settings, reverseStrings: checked });
+                setUser({
+                    ...user,
+                    settings: { ...settings, reverseStrings: checked },
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    };
+
     const handleRefPitchChange = (pitch: number) => {
         if (pitch > 0 && pitch < 2000) {
             if (userId) {
@@ -231,6 +263,13 @@ const Settings: React.FC = () => {
                 <h2 className="text-xl font-semibold sm:text-left">
                     App Settings
                 </h2>
+                <ToggleSwitch
+                    checked={settings.reverseStrings ? settings.reverseStrings : false}
+                    onChange={(e) => handleReverseStringSwitch(e.target.checked)}
+                    twStyle="flex flex-col gap-2"
+                >
+                    <span className="ml-3 font-semibold">Reverse String Order Display</span>
+                </ToggleSwitch>
                 {/* Weighted Mode */}
                 <ToggleSwitch
                     checked={settings.weightedMode}

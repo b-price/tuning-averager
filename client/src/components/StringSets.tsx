@@ -11,6 +11,7 @@ interface StringSetsProps {
     onClose: () => void;
     onDelete: (stringSet: StringSet) => void;
     onEdit: (stringSet: StringSet) => void;
+    reversed?: boolean;
 }
 
 const StringSets: React.FC<StringSetsProps> = ({
@@ -19,6 +20,7 @@ const StringSets: React.FC<StringSetsProps> = ({
     onClose,
     onDelete,
     onEdit,
+    reversed = false,
 }) => {
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const [setToDelete, setSetToDelete] = useState<StringSet | null>(null);
@@ -101,7 +103,7 @@ const StringSets: React.FC<StringSetsProps> = ({
                                                     instrument.type,
                                                 )}
                                                 textStyle="font-semibold"
-                                                reversed
+                                                reversed={reversed}
                                             />
                                         </td>
                                     </tr>

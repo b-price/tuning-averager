@@ -66,6 +66,7 @@ export class UserSettings {
         public darkMode: boolean,
         public useOSTheme: boolean,
         public referencePitch: number,
+        public reverseStrings?: boolean,
     ) {
     }
 }

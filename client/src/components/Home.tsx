@@ -87,12 +87,14 @@ const HomePage: React.FC<HomeProps> = ({
     const [isStringSetsOpen, setIsStringSetsOpen] = useState(false);
     const [isEdit, setIsEdit] = useState<boolean>(false);
     const [isExportOpen, setIsExportOpen] = useState(false);
+    const [reversed, setReversed] = useState(false);
     const { message, messageType, showMessage, show, closeMessage } =
         useMessage();
 
     //On mount
     useEffect(() => {
         setTensionPresets(userData.tensionPresets);
+        setReversed(userData.settings.reverseStrings ? userData.settings.reverseStrings : false);
         if (localMode) {
             setTunings(localTunings);
             setSelectedTuning(localTunings[0]);
@@ -946,7 +948,7 @@ const HomePage: React.FC<HomeProps> = ({
                                                     selectedInstrument.strings,
                                                     selectedInstrument.type,
                                                 )}
-                                                reversed
+                                                reversed={reversed}
                                             />
                                         </div>
                                     </div>
@@ -978,7 +980,7 @@ const HomePage: React.FC<HomeProps> = ({
                                                 selectedInstrument.strings,
                                                 selectedInstrument.type,
                                             )}
-                                            reversed
+                                            reversed={reversed}
                                         />
                                     </div>
                                 </div>
@@ -1095,7 +1097,7 @@ const HomePage: React.FC<HomeProps> = ({
                                             selectedTuning.type,
                                         )}
                                         textStyle="font-semibold"
-                                        reversed
+                                        reversed={reversed}
                                     />
                                 </div>
                             </div>
@@ -1188,6 +1190,7 @@ const HomePage: React.FC<HomeProps> = ({
                 instrument={selectedInstrument}
                 onDelete={handleDeleteStringSet}
                 onEdit={handleOpenEditStringSet}
+                reversed={reversed}
             />
             <ExportData
                 isOpen={isExportOpen}

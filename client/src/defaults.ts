@@ -408,6 +408,7 @@ export const DEFAULT_SETTINGS = {
     stringPower: 0,
     useOSTheme: true,
     referencePitch: REFERENCE_PITCH,
+    reverseStrings: false,
 }
 
 export const DEFAULT_STRING_COUNT = {
