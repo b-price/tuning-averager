@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from "react";
 
 interface ArrowSelectorProps {
-    options: string[] | number[];
-    value: string | number;
-    onChange: (value: string | number) => void;
+    min: number;
+    max: number;
+    step: number;
+    value: number;
+    onChange: (value: number) => void;
     input?: boolean;
     disabled?: boolean;
     errorState: boolean;
@@ -19,38 +21,30 @@ const ArrowSelector: React.FC<ArrowSelectorProps> = (
     }, [props.value]);
 
     const incrementValue = () => {
-        const currentIndex = [...props.options].indexOf(selectedValue);
-        if (currentIndex >= 0) {
-            const nextIndex = currentIndex === props.options.length - 1 ? currentIndex : currentIndex + 1;
-            const newValue = props.options[nextIndex];
-            setSelectedValue(newValue);
-            props.onChange(newValue);
-        } else {
-            const newValue = props.options[props.options.length -1];
-            setSelectedValue(newValue);
-            props.onChange(newValue)
-        }
+        const newValue = selectedValue + props.step;
+        incOrDec(newValue);
     }
 
     const decrementValue = () => {
-        const currentIndex = [...props.options].indexOf(selectedValue);
-        if (currentIndex >= 0) {
-            const nextIndex = currentIndex === 0 ? currentIndex : currentIndex -1;
-            const newValue = props.options[nextIndex];
+        const newValue = selectedValue - props.step;
+        incOrDec(newValue);
+    }
+
+    const incOrDec = (newValue: number) => {
+        if (newValue >= props.min && newValue <= props.max) {
             setSelectedValue(newValue);
             props.onChange(newValue);
-        } else {
-            const newValue = props.options[0];
-            setSelectedValue(newValue);
-            props.onChange(newValue)
+        } else if (selectedValue < props.min) {
+            setSelectedValue(props.min);
+            props.onChange(props.min);
+        } else if (selectedValue > props.max) {
+            setSelectedValue(props.max);
+            props.onChange(props.max);
         }
     }
 
     const changeValue = (value: string) => {
-        if (typeof props.value !== "number") {
-            setSelectedValue(value);
-            props.onChange(value);
-        } else if (Number.isFinite(+value)) {
+        if (Number.isFinite(+value)) {
             setSelectedValue(+value);
             props.onChange(+value);
         }

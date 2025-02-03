@@ -168,7 +168,7 @@ const TuningInput: React.FC<TuningInputProps> = ({
                                     <ArrowSelector
                                         key={str.noteValue}
                                         options={notes}
-                                        initialValue={str.note}
+                                        value={str.note}
                                         onChange={(note) =>
                                             handleNoteChange(index, note)
                                         }
@@ -189,7 +189,7 @@ const TuningInput: React.FC<TuningInputProps> = ({
                                 <ArrowSelector
                                     key={stringCount + "S"}
                                     options={VALID_STRINGS}
-                                    initialValue={stringCount}
+                                    value={stringCount}
                                     onChange={(count) =>
                                         handleStringCountChange(count, type)
                                     }
@@ -205,7 +205,7 @@ const TuningInput: React.FC<TuningInputProps> = ({
                                     options={[...Array(25).keys()].map(
                                         (i) => i - 12,
                                     )}
-                                    initialValue={transpose.current}
+                                    value={transpose.current}
                                     onChange={(value) => handleTranspose(value)}
                                 />
                             </div>

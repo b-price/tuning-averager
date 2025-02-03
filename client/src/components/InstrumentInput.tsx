@@ -1,4 +1,3 @@
-// InstrumentInput.tsx
 import React, { useState, useEffect } from "react";
 import {
     InstPreset,
@@ -23,6 +22,8 @@ import ToggleSwitch from "./ToggleSwitch.tsx";
 import DropdownButton from "./DropdownButton.tsx";
 import { useMessage } from "../hooks/useMessage.ts";
 import Alert from "./Alert.tsx";
+import ArrowSelectorHorizontal from "./ArrowSelectorHorizontal.tsx";
+import ArrowSelectorNumber from "./ArrowSelectorNumber.tsx";
 
 const defaultState = {
     name: "",
@@ -81,13 +82,20 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
     const [presetToDelete, setPresetToDelete] = useState<TensionPreset | null>(
         null,
     );
+    const [errorState, setErrorState] = useState({
+        name: false,
+        strings: false,
+        scale: false,
+        scales: Array.from({ length: strings }, () => false),
+        targetTension: Array.from({ length: strings }, () => false),
+        averageTension: false,
+    })
     const { message, messageType, showMessage, show, closeMessage } =
         useMessage();
 
     const setScale = (value: number) => {
-        if (value >= SCALE_LENGTH_RANGE[0] && value <= SCALE_LENGTH_RANGE[1]) {
-            setScaleInternal(value);
-        }
+        setScaleInternal(value);
+        setErrorState({...errorState, scale: value < SCALE_LENGTH_RANGE[0] || value > SCALE_LENGTH_RANGE[1] });
     };
 
     const resetFields = () => {
@@ -103,6 +111,14 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
         setButtonText("Submit");
         setMultiscale(false);
         setScales(defaultState.scales);
+        setErrorState({
+            name: false,
+            strings: false,
+            scale: false,
+            scales: Array.from({ length: strings }, () => false),
+            targetTension: Array.from({ length: strings }, () => false),
+            averageTension: false,
+        })
     };
 
     useEffect(() => {
@@ -124,13 +140,22 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
         }
     }, [isEdit]);
 
-    const handleTensionChange = (index: number, value: number) => {
-        if (
-            !isNaN(value) &&
-            value !== undefined &&
-            value > 0 &&
-            value < MAX_TENSION
-        ) {
+    useEffect(() => {
+        if (checkErrorState()) {
+            showMessage('Invalid input!', 'error', Infinity);
+        } else if (show && messageType === 'error') {
+            closeMessage();
+        }
+
+    }, [errorState]);
+
+    const checkErrorState = () => {
+        return Object.values(errorState).flat().includes(true);
+    }
+
+    const handleTensionChange = (value: number, index: number) => {
+        let error = true;
+        if (!isNaN(value)) {
             setTargetTension((prevTensions) => {
                 const newTensions = [...prevTensions];
                 newTensions[index] = value;
@@ -141,19 +166,22 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                     targetTension.reduce((a, b) => a + b, 0) /
                     targetTension.length;
                 setAverageTension(avg);
+                setErrorState({...errorState, averageTension: avg <= 0 || avg > MAX_TENSION})
             }
+            error = value <= 0 || value > MAX_TENSION;
         }
+        const newTensionErrors = [...errorState.targetTension];
+        newTensionErrors[index] = error;
+        setErrorState({...errorState, targetTension: newTensionErrors})
     };
 
     const handleAvTensionChange = (value: number) => {
-        if (
-            !isNaN(value) &&
-            value !== undefined &&
-            value > 0 &&
-            value < MAX_TENSION
-        ) {
+        let error = true;
+        if (!isNaN(value)) {
             setAverageTension(value);
+            error = value <= 0 || value > MAX_TENSION;
         }
+        setErrorState({...errorState, averageTension: error});
     };
 
     const handleAvTensionSwitch = (checked: boolean) => {
@@ -167,6 +195,10 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
         if (value >= STRING_RANGE[0] && value <= STRING_RANGE[1]) {
             setStrings(value);
             stringTypeChangeUpdate(value, type);
+            setErrorState({ ...errorState, strings: false });
+        } else {
+            setStrings(value);
+            setErrorState({ ...errorState, strings: true });
         }
     };
 
@@ -211,6 +243,8 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
     const handleSubmit = () => {
         if (name === "") {
             showMessage("Name is required!", "error");
+        } else if (checkErrorState()) {
+            showMessage('Cannot submit, please enter valid inputs!', 'error')
         } else {
             let finalTargetTension = targetTension;
             if (useAverageTension) {
@@ -321,11 +355,12 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
     };
 
     const handleMultiscaleChange = (value: number, index: number) => {
-        if (value >= SCALE_LENGTH_RANGE[0] && value <= SCALE_LENGTH_RANGE[1]) {
-            const newScales = [...scales];
-            newScales[index] = value;
-            setScales(newScales);
-        }
+        const newScalesErrors = [...errorState.scales];
+        const newScales = [...scales];
+        newScales[index] = value;
+        setScales(newScales);
+        newScalesErrors[index] = value < SCALE_LENGTH_RANGE[0] || value > SCALE_LENGTH_RANGE[1];
+        setErrorState({...errorState, scales: newScalesErrors});
     };
 
     const handleMultiscale = (checked: boolean) => {
@@ -397,19 +432,24 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                         </div>
 
                         {/* Number of Strings */}
-                        <div className="pb-2">
-                            <label className="block text-sm font-medium">
+                        <div className="pb-2 justify-items-center">
+                            <label className="block text-sm font-medium mb-1">
                                 Number of Strings
                             </label>
-                            <input
-                                type="number"
-                                value={strings}
-                                disabled={isEdit}
-                                onChange={(e) =>
-                                    handleStringChange(parseInt(e.target.value))
-                                }
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm justify-self-center"
-                            />
+                            <div className="w-3/4">
+                                <ArrowSelectorNumber
+                                    min={STRING_RANGE[0]}
+                                    max={STRING_RANGE[1]}
+                                    step={1}
+                                    value={strings}
+                                    onChange={(count) =>
+                                        handleStringChange(count)
+                                    }
+                                    disabled={isEdit}
+                                    errorState={errorState.strings}
+                                    input={true}
+                                />
+                            </div>
                         </div>
 
                         {/* Scale Length */}
@@ -434,28 +474,22 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                                     scales.map((length, index) => (
                                         <div
                                             key={index}
-                                            className="flex items-center justify-center"
+                                            className="flex items-center justify-center mt-1"
                                         >
                                             <label className="px-2">
                                                 {index + 1}:
                                             </label>
-                                            <input
-                                                type="number"
-                                                disabled={isEdit}
-                                                value={round(
-                                                    length,
-                                                    DECIMAL_POINTS + 1,
-                                                )}
-                                                step={0.125}
-                                                onChange={(e) =>
-                                                    handleMultiscaleChange(
-                                                        parseFloat(
-                                                            e.target.value,
-                                                        ),
-                                                        index,
-                                                    )
+                                            <ArrowSelectorHorizontal
+                                                min={SCALE_LENGTH_RANGE[0]}
+                                                max={SCALE_LENGTH_RANGE[1]}
+                                                step={scale < 30 ? 0.25 : 1}
+                                                value={round(length, DECIMAL_POINTS + 1)}
+                                                onChange={(len) =>
+                                                    handleMultiscaleChange(len, index)
                                                 }
-                                                className="mt-1 block w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                disabled={isEdit}
+                                                errorState={errorState.scales[index]}
+                                                input={true}
                                             />
                                             <label className="px-1">in.</label>
                                         </div>
@@ -465,18 +499,18 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                                 className={`transition-all duration-500 ease-in-out ${multiscale ? "opacity-0 max-h-0 invisible" : "opacity-100 max-h-screen"}`}
                             >
                                 {!multiscale && (
-                                    <div className="flex items-center justify-center">
-                                        <input
-                                            type="number"
-                                            disabled={isEdit}
-                                            value={scale}
+                                    <div className="flex items-center justify-center mt-1">
+                                        <ArrowSelectorHorizontal
+                                            min={SCALE_LENGTH_RANGE[0]}
+                                            max={SCALE_LENGTH_RANGE[1]}
                                             step={scale < 30 ? 0.25 : 1}
-                                            onChange={(e) =>
-                                                setScale(
-                                                    parseFloat(e.target.value),
-                                                )
+                                            value={round(scale, DECIMAL_POINTS + 1)}
+                                            onChange={(len) =>
+                                                setScale(len)
                                             }
-                                            className="mt-1 block w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            disabled={isEdit}
+                                            errorState={errorState.scale}
+                                            input={true}
                                         />
                                         <label className="px-1">in.</label>
                                     </div>
@@ -590,23 +624,21 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                             {targetTension.map((tension, index) => (
                                 <div
                                     key={index}
-                                    className="flex items-center justify-center"
+                                    className="flex items-center justify-center mt-1"
                                 >
                                     <label className="block text-sm font-medium mr-2">
                                         {index + 1}:
                                     </label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        step="0.2"
+                                    <ArrowSelectorHorizontal
+                                        min={0}
+                                        max={MAX_TENSION}
+                                        step={0.2}
                                         value={round(tension, DECIMAL_POINTS)}
-                                        onChange={(e) =>
-                                            handleTensionChange(
-                                                index,
-                                                parseFloat(e.target.value),
-                                            )
+                                        onChange={(ten) =>
+                                            handleTensionChange(ten, index)
                                         }
-                                        className="mt-1 block w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        errorState={errorState.targetTension[index]}
+                                        input={true}
                                     />
                                     <p className="ml-1">lbs.</p>
                                 </div>
@@ -619,21 +651,17 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                             <label className="block text-sm font-medium">
                                 Target Tension (per string)
                             </label>
-                            <div className="flex items-center justify-center">
-                                <input
-                                    type="number"
-                                    min="0"
-                                    step="0.2"
-                                    value={round(
-                                        averageTension,
-                                        DECIMAL_POINTS,
-                                    )}
-                                    onChange={(e) =>
-                                        handleAvTensionChange(
-                                            parseFloat(e.target.value),
-                                        )
+                            <div className="flex items-center justify-center mt-1">
+                                <ArrowSelectorHorizontal
+                                    min={0}
+                                    max={MAX_TENSION}
+                                    step={0.2}
+                                    value={round(averageTension, DECIMAL_POINTS)}
+                                    onChange={(ten) =>
+                                        handleAvTensionChange(ten)
                                     }
-                                    className="mt-1 block w-1/2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    errorState={errorState.averageTension}
+                                    input={true}
                                 />
                                 <p className="ml-1">lbs.</p>
                             </div>

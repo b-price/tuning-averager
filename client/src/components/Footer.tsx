@@ -54,7 +54,7 @@ const Footer: React.FC = () => {
                 </Link>
 
 
-                <ul className="flex flex-wrap items-center justify-end gap-y-2 gap-x-8 md:max-w-max max-w-52">
+                <ul className="flex flex-wrap items-center justify-between gap-y-2 gap-x-8 md:max-w-max max-w-52">
                     <li>
                         <Link to={"/faq"} className="">
                             FAQ

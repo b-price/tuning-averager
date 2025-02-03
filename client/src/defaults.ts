@@ -27,13 +27,18 @@ const halfStrings = Array.from({length: (PRECISE_GAUGE - MIN_STRING_GAUGE) * 2},
 export const STRING_GAUGES = [...halfStrings, ...intStrings]
 
 export const SCALE_LENGTH_RANGE = [10, 100]
+export const SCALE_STEPS = Array.from({length: (SCALE_LENGTH_RANGE[1] - SCALE_LENGTH_RANGE[0]) * 4}, (_v, k) => k / 4 + SCALE_LENGTH_RANGE[0])
 
 export const MIN_TAPER_GAUGE = 65
 export const LONG_THIN_GAUGE = 24
 export const GUITAR_WARNING_SCALE = 29
 
 export const MAX_TENSION = 1000
+export const TENSION_STEPS = Array.from({length: (MAX_TENSION) * 5}, (_v, k) => k / 4 + SCALE_LENGTH_RANGE[0])
 export const TENSILE_STRENGTH = 300000
+
+export const STRING_RANGE = [1, 12]
+export const VALID_STRINGS = Array.from({length: STRING_RANGE[1] + 1 - STRING_RANGE[0]}, (_v, k) => k + STRING_RANGE[0])
 
 export const DEFAULT_TUNING: Tuning = {
     id: '0',
@@ -285,9 +290,6 @@ export const DEFAULT_TUNINGS = {
         { note: 'C#1', noteValue: NOTES.indexOf('C#1') },
     ],
 };
-
-export const STRING_RANGE = [1, 12]
-export const VALID_STRINGS = Array.from({length: STRING_RANGE[1] + 1 - STRING_RANGE[0]}, (_v, k) => k + STRING_RANGE[0])
 
 export const WOUND_OVERLAP = [18, 24]
 

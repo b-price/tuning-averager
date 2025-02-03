@@ -341,7 +341,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({
                                     <ArrowSelector
                                         key={index + noteObjects[index].note}
                                         options={NOTES}
-                                        initialValue={noteObjects[index].note}
+                                        value={noteObjects[index].note}
                                         onChange={(note) =>
                                             handleNotesChange(index, note)
                                         }
@@ -370,7 +370,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({
                                     <ArrowSelector
                                         key={index + gauge}
                                         options={STRING_GAUGES}
-                                        initialValue={gauge}
+                                        value={gauge}
                                         onChange={(newGauge) =>
                                             handleStringGaugeChange(
                                                 index,
