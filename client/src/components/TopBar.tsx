@@ -9,9 +9,9 @@ interface TopBarProps {
 
 const TopBar: React.FC<TopBarProps> = ({ linkURL }) => {
     return (
-        <div className="flex items-center justify-between my-4">
+        <div className="flex items-center justify-between mt-4 mx-6">
             <Link to="/">
-                <h1 className="mx-4 dark:text-gray-200 dark:hover:text-gray-100 text-3xl md:text-4xl">
+                <h1 className="text-4xl">
                     {APP_NAME}
                 </h1>
             </Link>
@@ -19,11 +19,11 @@ const TopBar: React.FC<TopBarProps> = ({ linkURL }) => {
             {linkURL ? (
                 <Link
                     to={linkURL}
-                    className="text-indigo-500 hover:text-indigo-400"
+                    className=""
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
+                        viewBox="0 0 21 22"
                         className="size-16 fill-current"
                     >
                         <path

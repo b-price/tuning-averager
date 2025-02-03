@@ -781,7 +781,7 @@ const HomePage: React.FC<HomeProps> = ({
             {localMode ? (
                 <div className="flex items-center mb-4">
                     <Link to={"/sign-up"}>
-                        <h1 className="text-2xl font-semibold dark:text-white">
+                        <h1 className="text-xl font-semibold">
                             Sign up to save your instruments and tunings!
                         </h1>
                     </Link>
@@ -793,9 +793,9 @@ const HomePage: React.FC<HomeProps> = ({
                 </div>
             )}
 
-            <div className="flex flex-wrap gap-10">
+            <div className="flex justify-center flex-wrap gap-10 mb-3">
                 {/*Instruments*/}
-                <div className="mb-7">
+                <div className="">
                     {/*Instrument Selection*/}
                     <label
                         htmlFor="instrument-select"
@@ -932,14 +932,14 @@ const HomePage: React.FC<HomeProps> = ({
                                 onClick={handleOpenGetAv}
                                 disabled={instruments.length < 1}
                             >
-                                Get Av. String Set
+                                Ideal String Set
                             </button>
                         )}
                     </div>
                 </div>
 
                 {/*Tunings*/}
-                <div className="mb-2">
+                <div className="">
                     <label
                         htmlFor="tuning-select"
                         className="block text-xl font-semibold"
@@ -1022,7 +1022,7 @@ const HomePage: React.FC<HomeProps> = ({
                                     instruments.length < 1 || tunings.length < 1
                                 }
                             >
-                                Add to Current Inst.
+                                Add to Instrument
                             </button>
                         )}
                     </div>

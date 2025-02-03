@@ -16,6 +16,7 @@ import { Link } from "react-router-dom";
 import DeleteConfirm from "./DeleteConfirm.tsx";
 import { useMessage } from "../hooks/useMessage.ts";
 import Alert from "./Alert.tsx";
+import LoadingSkeleton from "./LoadingSkeleton.tsx";
 
 const Settings: React.FC = () => {
     const { userId } = useAuth();
@@ -233,11 +234,11 @@ const Settings: React.FC = () => {
     };
 
     if (isLoading) {
-        return <p className="text-center mt-4">Loading...</p>;
+        return <LoadingSkeleton />;
     }
 
     return (
-        <div className="container p-4 sm:p-6 sm:w-3/4 sm:max-w-3xl">
+        <div className="flex flex-col p-6 mx-4 my-4 sm:mx-0">
             <h1 className="text-2xl font-bold mb-6 text-center sm:text-left">
                 Settings
             </h1>
@@ -251,9 +252,9 @@ const Settings: React.FC = () => {
                         <UserButton />
                     </div>
                 ) : (
-                    <div className="flex items-center mb-4">
+                    <div className="flex items-center mb-4 justify-center sm:justify-start">
                         <Link to={"/sign-up"}>
-                            <h1 className="text-2xl font-semibold dark:text-white">
+                            <h1 className="text-xl font-semibold">
                                 Sign up to save your settings!
                             </h1>
                         </Link>
@@ -278,7 +279,7 @@ const Settings: React.FC = () => {
                 >
                     <span className="ml-3 font-semibold">Weighted Mode</span>
                 </ToggleSwitch>
-                <p className="text-sm text-gray-600 dark:text-gray-400 text-left">
+                <p className="text-sm text-gray-600 dark:text-gray-400 text-left max-w-2xl">
                     If weighted mode is on, when the tunings of an instrument
                     are averaged, how often a string is tuned to a note is taken
                     into account. Otherwise, it is not.

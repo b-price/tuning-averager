@@ -19,7 +19,7 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: rgba(255, 255, 255, 0.87);
   text-decoration: inherit;
 }
 a:hover {
@@ -49,6 +49,7 @@ button {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+
 }
 button:hover {
   border-color: #646cff;
@@ -62,8 +63,8 @@ button:disabled {
 }
 
 input, select {
-  border: 1px solid #ffffff;
-  background: #1a1a1a;
+  border: 1px solid ;
+  background: #242424;
 }
 
 .modal, .x-button {
@@ -73,17 +74,19 @@ input, select {
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
+    color: #27272A;
     background-color: #ffffff;
   }
+  a {
+    color: #27272A;
+  }
   a:hover {
-    color: #818cf8;
+    color: #6366F1;
   }
   button {
     background-color: #f9f9f9;
   }
   input, select {
-    border-color: #213547;
     background: #ffffff;
   }
   .modal, .x-button {
