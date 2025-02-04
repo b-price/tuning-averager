@@ -64,6 +64,10 @@ const TuningInput: React.FC<TuningInputProps> = ({
         }
     }, [isEdit]);
 
+    useEffect(() => {
+        setTunings(presetTunings ? presetTunings : tunings)
+    }, [presetTunings]);
+
     const resetFields = () => {
         setStrings(INST_PRESETS[0].tuning.strings.slice(0, 6));
         setName("");
@@ -72,6 +76,7 @@ const TuningInput: React.FC<TuningInputProps> = ({
         setTitleText("New Tuning");
         setButtonText("Submit");
         setTunings(presetTunings ? presetTunings : []);
+        setTranspose({ prev: 0, current: 0 });
     };
 
     const handleNoteChange = (index: number, note: string | number) => {
