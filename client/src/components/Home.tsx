@@ -857,7 +857,7 @@ const HomePage: React.FC<HomeProps> = ({
 
                                 {selectedInstrument.isMultiscale &&
                                 selectedInstrument.scales ? (
-                                    <div className="w-full">
+                                    <div className="w-full grid">
                                         <strong>Scale Lengths (in.): </strong>
                                         <div className="mt-1 mb-2 justify-self-center">
                                             <StringInfoDisplay
@@ -878,7 +878,7 @@ const HomePage: React.FC<HomeProps> = ({
                                     </p>
                                 )}
 
-                                <div className="w-full">
+                                <div className="w-full grid">
                                     <strong>Target Tensions (lbs/in): </strong>
                                     <div className="mt-1 mb-2 justify-self-center">
                                         <StringInfoDisplay

@@ -432,11 +432,11 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                         </div>
 
                         {/* Number of Strings */}
-                        <div className="pb-2 justify-items-center">
+                        <div className="pb-0 grid">
                             <label className="block text-sm font-medium mb-1">
                                 Number of Strings
                             </label>
-                            <div className="w-2/3">
+                            <div className=" justify-self-center w-2/3">
                                 <ArrowSelectorNumber
                                     min={STRING_RANGE[0]}
                                     max={STRING_RANGE[1]}
@@ -453,16 +453,18 @@ const InstrumentInput: React.FC<InstrumentInputProps> = ({
                         </div>
 
                         {/* Scale Length */}
-
-                        <ToggleSwitch
-                            checked={multiscale}
-                            onChange={(e) => handleMultiscale(e.target.checked)}
-                            disabled={isEdit}
-                        >
+                        <div className="flex justify-center mt-0">
+                            <ToggleSwitch
+                                checked={multiscale}
+                                onChange={(e) => handleMultiscale(e.target.checked)}
+                                disabled={isEdit}
+                            >
                             <span className="ml-3 text-sm font-medium">
                                 Multiscale
                             </span>
-                        </ToggleSwitch>
+                            </ToggleSwitch>
+                        </div>
+
                         <div>
                             <div
                                 className={`transition-all duration-500 ease-in-out ${multiscale ? "opacity-100 max-h-screen" : "opacity-0 max-h-0 invisible"}`}
