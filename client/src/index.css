@@ -67,6 +67,10 @@ input, select {
   background: #242424;
 }
 
+.modalText {
+  background: #1f2937; /*TW gray-800*/
+}
+
 .modal, .x-button {
   background-color: #4b5563;
 }
@@ -75,7 +79,7 @@ input, select {
 @media (prefers-color-scheme: light) {
   :root {
     color: #27272A;
-    background-color: #ffffff;
+    background-color: #f5f5f5;
   }
   a {
     color: #27272A;
@@ -86,10 +90,10 @@ input, select {
   button {
     background-color: #f9f9f9;
   }
-  input, select {
+  input, select, .modalText {
     background: #ffffff;
   }
   .modal, .x-button {
-    background-color: #f0f0f0;
+    background-color: #e6e6e6;
   }
 }

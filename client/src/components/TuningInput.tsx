@@ -5,9 +5,11 @@ import Modal from "./Modal.tsx";
 import { capitalize } from "../utils/calculate.ts";
 import {
     DEFAULT_STRING_COUNT,
-    INST_PRESETS,
-    VALID_STRINGS,
+    INST_PRESETS, MAX_TRANSPOSE, STRING_RANGE,
 } from "../defaults.ts";
+import ArrowSelectorNumber from "./ArrowSelectorNumber.tsx";
+import {useMessage} from "../hooks/useMessage.ts";
+import Alert from "./Alert.tsx";
 
 interface TuningInputProps {
     notes: string[];
@@ -45,6 +47,8 @@ const TuningInput: React.FC<TuningInputProps> = ({
     );
     const [titleText, setTitleText] = useState("New Tuning");
     const [buttonText, setButtonText] = useState("Submit");
+    const { message, messageType, showMessage, show, closeMessage } =
+        useMessage();
 
     useEffect(() => {
         if (isEdit && editTuning) {
@@ -78,19 +82,23 @@ const TuningInput: React.FC<TuningInputProps> = ({
     };
 
     const handleSubmit = () => {
-        const submittedTuning: Tuning = {
-            name,
-            strings,
-            type,
-        };
-        if (isEdit && editTuning) {
-            submittedTuning.id = editTuning.id;
-            onEdit(submittedTuning, submittedTuning);
+        if (name === "") {
+            showMessage("Name is required!", "error");
         } else {
-            onSubmit(submittedTuning);
+            const submittedTuning: Tuning = {
+                name,
+                strings,
+                type,
+            };
+            if (isEdit && editTuning) {
+                submittedTuning.id = editTuning.id;
+                onEdit(submittedTuning, submittedTuning);
+            } else {
+                onSubmit(submittedTuning);
+            }
+            onClose();
+            resetFields();
         }
-        onClose();
-        resetFields();
     };
 
     const handleStringCountChange = (
@@ -153,9 +161,9 @@ const TuningInput: React.FC<TuningInputProps> = ({
                 {/*Title*/}
                 <h2 className="text-2xl font-bold mb-6">{titleText}</h2>
                 {/* Desktop Columns */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-0 sm:gap-4">
                     {/* Column 1: String Notes */}
-                    <div>
+                    <div className="sm:order-1 order-2">
                         <label className="block text-sm font-medium mb-2">
                             Strings
                         </label>
@@ -172,6 +180,7 @@ const TuningInput: React.FC<TuningInputProps> = ({
                                         onChange={(note) =>
                                             handleNoteChange(index, note)
                                         }
+                                        errorState={false}
                                     />
                                 </div>
                             ))}
@@ -179,112 +188,144 @@ const TuningInput: React.FC<TuningInputProps> = ({
                     </div>
 
                     {/* Column 2: String Count, Transpose, Instrument, Preset, Tuning Name */}
-                    <div className="sm:col-span-2">
+                    <div className="sm:col-span-2 sm:order-2 order-1">
                         <div className="flex justify-between">
                             {/* String Count/Transpose */}
                             <div className="mb-4 flex-grow px-2 w-full sm:w-1/2">
                                 <label className="block text-sm font-medium mb-2">
                                     String Count
                                 </label>
-                                <ArrowSelector
-                                    key={stringCount + "S"}
-                                    options={VALID_STRINGS}
+                                <ArrowSelectorNumber
+                                    min={STRING_RANGE[0]}
+                                    max={STRING_RANGE[1]}
+                                    step={1}
                                     value={stringCount}
                                     onChange={(count) =>
                                         handleStringCountChange(count, type)
                                     }
                                     disabled={isEdit}
+                                    errorState={false}
                                 />
                             </div>
                             <div className="mb-4 flex-grow px-2 w-full sm:w-1/2">
                                 <label className="block text-sm font-medium mb-2">
                                     Transpose
                                 </label>
-                                <ArrowSelector
-                                    key={transpose.current + "T"}
-                                    options={[...Array(25).keys()].map(
-                                        (i) => i - 12,
-                                    )}
+                                <ArrowSelectorNumber
+                                    min={-MAX_TRANSPOSE}
+                                    max={MAX_TRANSPOSE}
+                                    step={1}
                                     value={transpose.current}
                                     onChange={(value) => handleTranspose(value)}
+                                    errorState={false}
                                 />
                             </div>
                         </div>
-                        {/*Instrument Type*/}
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium">
-                                Instrument
-                            </label>
-                            <select
-                                value={type}
-                                onChange={(e) => {
-                                    handleTypeChange(
-                                        e.target.value as InstType,
-                                    );
-                                }}
-                                className="mt-2 mx-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                disabled={isEdit}
-                            >
-                                <option value="guitar">Guitar</option>
-                                <option value="bass">Bass</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        {/*Preset*/}
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium">
-                                Preset
-                            </label>
-                            <select
-                                onChange={handlePresetChange}
-                                disabled={
-                                    !presetTunings || presetTunings.length === 0
-                                }
-                                className="mt-1 mx-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            >
-                                {isEdit && editTuning
-                                    ? tunings
-                                          .filter(
-                                              (tuning) =>
-                                                  tuning.type ===
-                                                      editTuning.type &&
-                                                  tuning.strings.length ===
-                                                      editTuning.strings.length,
-                                          )
-                                          .map((t) => (
+
+                        <div className="">
+                            {/*Instrument Type*/}
+                            <div className="mb-4 flex flex-col justify-center">
+                                <label className="block text-sm font-medium">
+                                    Instrument
+                                </label>
+                                <select
+                                    value={type}
+                                    onChange={(e) => {
+                                        handleTypeChange(
+                                            e.target.value as InstType,
+                                        );
+                                    }}
+                                    className="mt-2 mx-2 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm modalText"
+                                    disabled={isEdit}
+                                >
+                                    <option value="guitar">Guitar</option>
+                                    <option value="bass">Bass</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            {/*Preset*/}
+                            <div className="mb-4 flex flex-col justify-center">
+                                <label className="block text-sm font-medium">
+                                    Preset
+                                </label>
+                                <select
+                                    onChange={handlePresetChange}
+                                    disabled={
+                                        !presetTunings ||
+                                        presetTunings.length === 0
+                                    }
+                                    className="mt-1 mx-2 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm modalText"
+                                >
+                                    {isEdit && editTuning
+                                        ? tunings
+                                              .filter(
+                                                  (tuning) =>
+                                                      tuning.type ===
+                                                          editTuning.type &&
+                                                      tuning.strings.length ===
+                                                          editTuning.strings
+                                                              .length,
+                                              )
+                                              .map((t) => (
+                                                  <option
+                                                      key={t.id}
+                                                      value={t.id}
+                                                  >
+                                                      {capitalize(t.type)}:{" "}
+                                                      {t.name}
+                                                  </option>
+                                              ))
+                                        : tunings.map((t) => (
                                               <option key={t.id} value={t.id}>
                                                   {capitalize(t.type)}: {t.name}
                                               </option>
-                                          ))
-                                    : tunings.map((t) => (
-                                          <option key={t.id} value={t.id}>
-                                              {capitalize(t.type)}: {t.name}
-                                          </option>
-                                      ))}
-                            </select>
+                                          ))}
+                                </select>
+                            </div>
+                            {/*Name*/}
+                            <div className="mb-8 flex flex-col justify-center">
+                                <label className="block text-sm font-medium">
+                                    Tuning Name
+                                </label>
+                                <input
+                                    type="text"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    placeholder="Tuning Name"
+                                    className="mx-2 mt-1 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm modalText"
+                                />
+                            </div>
+                            {/*Submit*/}
+                            <button
+                                onClick={handleSubmit}
+                                className="bg-indigo-500 text-white m-2 px-4 py-2 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2 hidden sm:flex justify-self-center justify-center w-3/4"
+                            >
+                                {buttonText}
+                            </button>
                         </div>
-                        {/*Name*/}
-                        <div className="mb-8">
-                            <label className="block text-sm font-medium">
-                                Tuning Name
-                            </label>
-                            <input
-                                type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                placeholder="Tuning Name"
-                                className="mx-2 mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            />
-                        </div>
-                        {/*Submit*/}
+                    </div>
+                    <div className="order-3 flex">
+                        <button
+                            onClick={onClose}
+                            className="bg-gray-500 text-white m-2 px-4 py-2 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 flex sm:hidden justify-self-center justify-center w-full"
+                        >
+                            Close
+                        </button>
                         <button
                             onClick={handleSubmit}
-                            className="w-full bg-indigo-500 text-white m-2 px-4 py-2 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2"
+                            className="bg-indigo-500 text-white m-2 px-4 py-2 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2 flex sm:hidden justify-self-center justify-center w-full"
                         >
                             {buttonText}
                         </button>
                     </div>
                 </div>
+                <Alert
+                    show={show}
+                    message={message}
+                    type={messageType}
+                    onClose={closeMessage}
+                    style="mt-4"
+                />
             </div>
         </Modal>
     );

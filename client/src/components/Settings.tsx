@@ -17,6 +17,7 @@ import DeleteConfirm from "./DeleteConfirm.tsx";
 import { useMessage } from "../hooks/useMessage.ts";
 import Alert from "./Alert.tsx";
 import LoadingSkeleton from "./LoadingSkeleton.tsx";
+import ArrowSelectorHorizontal from "./ArrowSelectorHorizontal.tsx";
 
 const Settings: React.FC = () => {
     const { userId } = useAuth();
@@ -290,14 +291,13 @@ const Settings: React.FC = () => {
                         Reference Pitch
                     </label>
                     <label className="mr-1">A4=</label>
-                    <input
-                        type="number"
-                        value={settings.referencePitch || REFERENCE_PITCH}
+                    <ArrowSelectorHorizontal
+                        min={1}
+                        max={2000}
                         step={1}
-                        onChange={(e) =>
-                            handleRefPitchChange(parseFloat(e.target.value))
-                        }
-                        className="mt-1 block w-1/3 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        value={settings.referencePitch || REFERENCE_PITCH}
+                        onChange={(pitch) => handleRefPitchChange(pitch)}
+                        errorState={false}
                     />
                     <label className="px-1">hz</label>
                 </div>

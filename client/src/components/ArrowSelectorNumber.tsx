@@ -65,7 +65,7 @@ const ArrowSelector: React.FC<ArrowSelectorProps> = (
                         value={selectedValue}
                         readOnly
                         disabled
-                        className="dark:bg-gray-700 dark:text-gray-400 bg-gray-200 text-gray-500 text-center font-semibold py-1.5 px-4 border-0 border-gray-600 rounded-none w-full"
+                        className="dark:bg-gray-700 dark:text-gray-400 bg-gray-200 text-gray-500 text-center font-semibold py-1.5 px-0 border-0 border-gray-600 rounded-none w-full"
                     />
                     <button
                         className="dark:bg-gray-800 dark:text-gray-400 text-gray-500 bg-gray-300 font-bold py-0.5 px-4 rounded-t-none w-full "
@@ -88,7 +88,7 @@ const ArrowSelector: React.FC<ArrowSelectorProps> = (
                         readOnly={!props.input}
                         onChange={(e) => changeValue(e.target.value)}
                         className={
-                            `dark:bg-gray-700 bg-gray-200 text-center font-semibold py-1.5 px-4 rounded-none w-full ${props.errorState ? "border-y-0 border-red-500" : "border-0"}`
+                            `dark:bg-gray-700 bg-gray-200 text-center font-semibold py-1.5 px-0 rounded-none w-full ${props.errorState ? "border-y-0 border-red-500" : "border-0"}`
                         }
                     />
                     <button

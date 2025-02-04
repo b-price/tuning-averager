@@ -10,7 +10,6 @@ import {
 } from "../utils/calculate.ts";
 import {
     NOTES,
-    STRING_GAUGES,
     WOUND_CHAR,
     PLAIN_CHAR,
     REFERENCE_PITCH,
@@ -22,11 +21,12 @@ import {
     DEFAULT_SCALES,
     STRING_MATERIAL_FACTORS,
     DEFAULT_STRING_MATERIAL,
-    DEFAULT_INST,
+    DEFAULT_INST, MIN_STRING_GAUGE, MAX_STRING_GAUGE, PRECISE_GAUGE, MAX_DISPLAY_TENSION,
 } from "../defaults.ts";
 import ArrowSelector from "./ArrowSelector.tsx";
 import { useMessage } from "../hooks/useMessage.ts";
 import Alert from "./Alert.tsx";
+import ArrowSelectorNumber from "./ArrowSelectorNumber.tsx";
 
 interface AverageStringSetProps {
     stringSet: StringSet;
@@ -58,6 +58,10 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({
     const [stringMaterial, setStringMaterial] = useState<string>(
         stringSet.stringMaterial || DEFAULT_STRING_MATERIAL[instrument.type],
     );
+    const [errorState, setErrorState] = useState({
+        cents: Array.from({ length: stringSet.gauges.length }, () => false),
+        gauge: Array.from({ length: stringSet.gauges.length }, () => false),
+    });
     const { message, messageType, showMessage, show, closeMessage } =
         useMessage();
 
@@ -128,6 +132,9 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({
             noteObjects[stringIndex].noteValue,
             stringMaterial,
         );
+        const newGaugeErrors = [...errorState.gauge];
+        newGaugeErrors[stringIndex] = gauge < MIN_STRING_GAUGE || gauge > MAX_STRING_GAUGE;
+        setErrorState({...errorState, gauge: newGaugeErrors});
     };
 
     const handleCentsChange = (stringIndex: number, cents: number) => {
@@ -151,6 +158,10 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({
                 stringMaterial,
             );
         }
+
+        const newCentsErrors = [...errorState.cents];
+        newCentsErrors[stringIndex] = cents < 0 || cents > 99;
+        setErrorState({...errorState, cents: newCentsErrors});
     };
 
     const adjustTension = (
@@ -166,7 +177,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({
             const material = coeffPower(strMaterial, woundState);
             setTensions((prevTensions) => {
                 const newTensions = [...prevTensions];
-                newTensions[stringIndex] = tension(
+                const newTension = tension(
                     uwFromGauge(
                         gauge,
                         material.coeff,
@@ -176,6 +187,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({
                     instrument.scale,
                     referencePitch,
                 );
+                newTensions[stringIndex] = newTension < MAX_DISPLAY_TENSION ? newTension : MAX_DISPLAY_TENSION;
                 return newTensions;
             });
         }
@@ -277,7 +289,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            className="mt-1 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            className="mt-1 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm modalText"
                         />
                     </div>
                     <div className="justify-items-center">
@@ -299,7 +311,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({
                             onChange={(e) =>
                                 handleMaterialChange(e.target.value)
                             }
-                            className="mt-1 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            className="mt-1 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm modalText"
                             value={stringMaterial}
                         >
                             {Object.keys(STRING_MATERIAL_FACTORS)
@@ -345,38 +357,42 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({
                                         onChange={(note) =>
                                             handleNotesChange(index, note)
                                         }
+                                        errorState={false}
                                     />
                                 </div>
                                 <p>+</p>
-                                <input
-                                    type="number"
-                                    min="0"
-                                    max="99"
-                                    step="10"
-                                    value={noteObjects[index].cents}
-                                    onChange={(e) =>
-                                        handleCentsChange(
-                                            index,
-                                            parseFloat(e.target.value),
-                                        )
-                                    }
-                                    className="mt-1 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                />
+                                <div className="w-3/4 scale-90">
+                                    <ArrowSelectorNumber
+                                        key={index + 'C'}
+                                        min={0}
+                                        max={99}
+                                        step={10}
+                                        value={noteObjects[index].cents}
+                                        onChange={(val) =>
+                                            handleCentsChange(index, val)
+                                        }
+                                        errorState={errorState.cents[index]}
+                                        input
+                                    />
+                                </div>
                                 <p>¢</p>
                             </div>
 
                             <div className="flex items-center justify-end">
                                 <div className="sm:w-3/4 scale-90">
-                                    <ArrowSelector
+                                    <ArrowSelectorNumber
                                         key={index + gauge}
-                                        options={STRING_GAUGES}
+                                        min={MIN_STRING_GAUGE}
+                                        max={MAX_STRING_GAUGE}
+                                        step={gauge < PRECISE_GAUGE ? 0.5 : 1}
                                         value={gauge}
                                         onChange={(newGauge) =>
                                             handleStringGaugeChange(
                                                 index,
-                                                newGauge as number,
+                                                newGauge,
                                             )
                                         }
+                                        errorState={errorState.gauge[index]}
                                     />
                                 </div>
 
@@ -423,6 +439,13 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({
                     </button>
 
                     <button
+                        className="bg-gray-500 text-white m-1 px-4 py-2 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 block md:hidden"
+                        onClick={onClose}
+                    >
+                        Close
+                    </button>
+
+                    <button
                         className="bg-indigo-500 text-white m-2 px-4 py-2 rounded-md hover:bg-indigo-400 focus:outline-none focus:ring-2"
                         onClick={handleSubmit}
                     >
@@ -432,7 +455,7 @@ const AverageStringSet: React.FC<AverageStringSetProps> = ({
                                 : "Add String Set to Instrument"}
                         </span>
                         <span className="block md:hidden">
-                            {isEdit ? "Edit String Set" : "Add Set to Inst."}
+                            {isEdit ? "Edit String Set" : "Add Set to Instrument"}
                         </span>
                     </button>
                 </div>

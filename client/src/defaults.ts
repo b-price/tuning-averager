@@ -34,11 +34,14 @@ export const LONG_THIN_GAUGE = 24
 export const GUITAR_WARNING_SCALE = 29
 
 export const MAX_TENSION = 1000
+export const MAX_DISPLAY_TENSION = 99999999
 export const TENSION_STEPS = Array.from({length: (MAX_TENSION) * 5}, (_v, k) => k / 4 + SCALE_LENGTH_RANGE[0])
 export const TENSILE_STRENGTH = 300000
 
 export const STRING_RANGE = [1, 12]
 export const VALID_STRINGS = Array.from({length: STRING_RANGE[1] + 1 - STRING_RANGE[0]}, (_v, k) => k + STRING_RANGE[0])
+
+export const MAX_TRANSPOSE = 12
 
 export const DEFAULT_TUNING: Tuning = {
     id: '0',
