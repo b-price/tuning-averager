@@ -10,6 +10,7 @@ import {
 import ArrowSelectorNumber from "./ArrowSelectorNumber.tsx";
 import {useMessage} from "../hooks/useMessage.ts";
 import Alert from "./Alert.tsx";
+import {useAuth} from "@clerk/clerk-react";
 
 interface TuningInputProps {
     notes: string[];
@@ -47,8 +48,10 @@ const TuningInput: React.FC<TuningInputProps> = ({
     );
     const [titleText, setTitleText] = useState("New Tuning");
     const [buttonText, setButtonText] = useState("Submit");
+    const [immutable, setImmutable] = useState<boolean>(false);
     const { message, messageType, showMessage, show, closeMessage } =
         useMessage();
+    const { userId } = useAuth();
 
     useEffect(() => {
         if (isEdit && editTuning) {
@@ -59,6 +62,7 @@ const TuningInput: React.FC<TuningInputProps> = ({
             setTitleText(`Editing ${editTuning.name}`);
             setButtonText("Save Changes");
             setTunings(presetTunings ? presetTunings : []);
+            setImmutable(editTuning.immutable ? editTuning.immutable : false);
         } else {
             resetFields();
         }
@@ -77,6 +81,7 @@ const TuningInput: React.FC<TuningInputProps> = ({
         setButtonText("Submit");
         setTunings(presetTunings ? presetTunings : []);
         setTranspose({ prev: 0, current: 0 });
+        setImmutable(false);
     };
 
     const handleNoteChange = (index: number, note: string | number) => {
@@ -94,6 +99,7 @@ const TuningInput: React.FC<TuningInputProps> = ({
                 name,
                 strings,
                 type,
+                immutable,
             };
             if (isEdit && editTuning) {
                 submittedTuning.id = editTuning.id;
@@ -300,6 +306,22 @@ const TuningInput: React.FC<TuningInputProps> = ({
                                     className="mx-2 mt-1 block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm modalText"
                                 />
                             </div>
+                            {/*Admin for public tunings*/}
+                            {userId === import.meta.env.ADMIN_USER_ID && (
+                                <div>
+                                    <input
+                                        type="checkbox"
+                                        checked={immutable}
+                                        onChange={(e) =>
+                                            setImmutable(e.target.checked)
+                                        }
+                                    />
+                                    <label className="block text-sm font-medium">
+                                        Immutable
+                                    </label>
+                                </div>
+                            )}
+
                             {/*Submit*/}
                             <button
                                 onClick={handleSubmit}

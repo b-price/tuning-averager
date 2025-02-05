@@ -36,9 +36,7 @@ export const STRING_RANGE = [1, 12]
 
 export const MAX_TRANSPOSE = 12
 
-export const TUNINGS_EXPANSION_IDS = [
-
-]
+export const EXPANSION_PACK_NAME = 'Tunings Expansion'
 
 export const DEFAULT_TUNING: Tuning = {
     id: '0',

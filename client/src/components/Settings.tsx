@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { UserButton } from "@clerk/clerk-react";
 import { useAuth } from "@clerk/clerk-react";
-import { UserData, UserSettings } from "../../types.ts";
+import {Tuning, UserData, UserSettings} from "../../types.ts";
 import {
     DEFAULT_SETTINGS,
-    DEFAULT_USER,
+    DEFAULT_USER, EXPANSION_PACK_NAME,
     LOCAL_INSTS_KEY,
     LOCAL_TUNINGS_KEY,
     LOCAL_USERDATA_KEY,
     REFERENCE_PITCH,
 } from "../defaults.ts";
-import { getUser, updateUser } from "../utils/serverFunctions.ts";
+import {getPublicTunings, getUser, updateUser} from "../utils/serverFunctions.ts";
 import ToggleSwitch from "./ToggleSwitch.tsx";
 import { Link } from "react-router-dom";
 import DeleteConfirm from "./DeleteConfirm.tsx";
@@ -18,13 +18,15 @@ import { useMessage } from "../hooks/useMessage.ts";
 import Alert from "./Alert.tsx";
 import LoadingSkeleton from "./LoadingSkeleton.tsx";
 import ArrowSelectorHorizontal from "./ArrowSelectorHorizontal.tsx";
+import {TUNING_EXPANSION_IDS} from "../tuningExpansion.ts";
 
 const Settings: React.FC = () => {
     const { userId } = useAuth();
     const [user, setUser] = useState<UserData>(DEFAULT_USER);
     const [isLoading, setIsLoading] = useState(true);
     const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS);
-    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+    const [isDeleteDataConfirmOpen, setIsDeleteDataConfirmOpen] = useState(false);
+    const [isDeleteTuningExpOpen, setIsDeleteTuningExpOpen] = useState(false);
     const { message, messageType, showMessage, show, closeMessage } =
         useMessage();
 
@@ -217,6 +219,114 @@ const Settings: React.FC = () => {
         }
     };
 
+    const addTuningsExpansion = () => {
+        if (!settings.hasTuningExpansion) {
+            if (userId) {
+                updateUser(
+                    { tunings: [...user.tunings, ...TUNING_EXPANSION_IDS] },
+                    userId,
+                )
+                    .then(() => {
+                        setUser({
+                            ...user,
+                            tunings: [...user.tunings, ...TUNING_EXPANSION_IDS],
+                            settings: {
+                                ...user.settings,
+                                hasTuningExpansion: true,
+                            },
+                        });
+                        setSettings({ ...settings, hasTuningExpansion: true });
+                        showMessage(`${EXPANSION_PACK_NAME} added!`, "success");
+                    })
+                    .catch((e) => {
+                        console.error(e);
+                        showMessage(`${EXPANSION_PACK_NAME} could not be added.`, `error`);
+                    });
+            } else {
+                    getPublicTunings().then((response) => {
+                        if (response) {
+                            const localTunings = localStorage.getItem(LOCAL_TUNINGS_KEY);
+                            const updatedTunings = localTunings
+                                ? [...JSON.parse(localTunings), ...response.data]
+                                : [...response.data];
+                            localStorage.setItem(
+                                LOCAL_TUNINGS_KEY,
+                                JSON.stringify(updatedTunings),
+                            );
+                            localStorage.setItem(
+                                LOCAL_USERDATA_KEY,
+                                JSON.stringify({
+                                    ...user,
+                                    settings: { ...settings, hasTuningExpansion: true },
+                                }),
+                            );
+                            setSettings({ ...settings, hasTuningExpansion: true });
+                            setUser({
+                                ...user,
+                                settings: { ...settings, hasTuningExpansion: true },
+                            });
+                            showMessage(`${EXPANSION_PACK_NAME} added!`, "success");
+                        }
+                    }).catch((e) => {
+                        console.error(e);
+                        showMessage(`Cannot add ${EXPANSION_PACK_NAME}.`, `error`);
+                    })
+            }
+        }
+    }
+
+    const removeTuningsExpansion = () => {
+        if (settings.hasTuningExpansion) {
+            if (userId) {
+                const updatedTuningIDs = user.tunings.filter(id => !TUNING_EXPANSION_IDS.includes(id));
+                updateUser(
+                    { tunings: updatedTuningIDs },
+                    userId,
+                )
+                    .then(() => {
+                        setUser({
+                            ...user,
+                            tunings: updatedTuningIDs,
+                            settings: {
+                                ...user.settings,
+                                hasTuningExpansion: false,
+                            },
+                        });
+                        setSettings({ ...settings, hasTuningExpansion: false });
+                        showMessage(`${EXPANSION_PACK_NAME} removed.`, "success");
+                    })
+                    .catch((e) => {
+                        console.error(e);
+                        showMessage(`${EXPANSION_PACK_NAME} could not be removed.`, `error`);
+                    });
+            } else {
+                const localTunings = localStorage.getItem(LOCAL_TUNINGS_KEY);
+                if (localTunings)  {
+                    const updatedTunings = JSON.parse(localTunings).filter((tuning: Tuning) => !tuning.id || !TUNING_EXPANSION_IDS.includes(tuning.id));
+                    localStorage.setItem(
+                        LOCAL_TUNINGS_KEY,
+                        JSON.stringify(updatedTunings),
+                    );
+                    showMessage(`${EXPANSION_PACK_NAME} removed`, "success");
+                } else {
+                    showMessage(`${EXPANSION_PACK_NAME} does not exist in your account.`, "warning");
+                }
+                localStorage.setItem(
+                    LOCAL_USERDATA_KEY,
+                    JSON.stringify({
+                        ...user,
+                        settings: { ...settings, hasTuningExpansion: false },
+                    }),
+                );
+                setSettings({ ...settings, hasTuningExpansion: false });
+                setUser({
+                    ...user,
+                    settings: { ...settings, hasTuningExpansion: false },
+                });
+            }
+        }
+    }
+
     const deleteLocalData = () => {
         try {
             localStorage.setItem(
@@ -266,11 +376,19 @@ const Settings: React.FC = () => {
                     App Settings
                 </h2>
                 <ToggleSwitch
-                    checked={settings.reverseStrings ? settings.reverseStrings : false}
-                    onChange={(e) => handleReverseStringSwitch(e.target.checked)}
+                    checked={
+                        settings.reverseStrings
+                            ? settings.reverseStrings
+                            : false
+                    }
+                    onChange={(e) =>
+                        handleReverseStringSwitch(e.target.checked)
+                    }
                     twStyle="flex flex-col gap-2"
                 >
-                    <span className="ml-3 font-semibold">Reverse String Order Display</span>
+                    <span className="ml-3 font-semibold">
+                        Reverse String Order Display
+                    </span>
                 </ToggleSwitch>
                 {/* Weighted Mode */}
                 <ToggleSwitch
@@ -301,12 +419,47 @@ const Settings: React.FC = () => {
                     />
                     <label className="px-1">hz</label>
                 </div>
+                {settings.hasTuningExpansion ? (
+                    <div>
+                        <div className="flex sm:justify-start justify-center mb-4">
+                            <button
+                                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-400 focus:outline-none focus:ring-2"
+                                onClick={() => setIsDeleteTuningExpOpen(true)}
+                            >
+                                Delete {EXPANSION_PACK_NAME}
+                            </button>
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 text-left max-w-2xl">
+                            Removes all expansion pack tunings from your
+                            account, and your instruments!
+                        </p>
+                    </div>
+                ) : (
+                    <div>
+                        <div className="flex sm:justify-start justify-center mb-4">
+                            <button
+                                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-400 focus:outline-none focus:ring-2"
+                                onClick={addTuningsExpansion}
+                            >
+                                Add {EXPANSION_PACK_NAME}
+                            </button>
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 text-left max-w-2xl">
+                            Adds {TUNING_EXPANSION_IDS.length} tunings to your
+                            list of tunings! Includes all popular alternate
+                            tunings for bass, guitar, and other stringed
+                            instruments, along with some weirder tunings from
+                            Sonic Youth, Soundgarden, My Bloody Valentine, and
+                            more.
+                        </p>
+                    </div>
+                )}
                 {/*Local Mode Delete Data*/}
                 {!userId && (
                     <div className="flex sm:justify-start justify-center">
                         <button
                             className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-400 focus:outline-none focus:ring-2"
-                            onClick={() => setIsDeleteConfirmOpen(true)}
+                            onClick={() => setIsDeleteDataConfirmOpen(true)}
                         >
                             Delete Local Data
                         </button>
@@ -333,9 +486,14 @@ const Settings: React.FC = () => {
                 {/*)}*/}
             </div>
             <DeleteConfirm
-                isOpen={isDeleteConfirmOpen}
-                onClose={() => setIsDeleteConfirmOpen(false)}
+                isOpen={isDeleteDataConfirmOpen}
+                onClose={() => setIsDeleteDataConfirmOpen(false)}
                 deleteFunction={deleteLocalData}
+            />
+            <DeleteConfirm
+                isOpen={isDeleteTuningExpOpen}
+                onClose={() => setIsDeleteTuningExpOpen(false)}
+                deleteFunction={removeTuningsExpansion}
             />
             <Alert
                 show={show}

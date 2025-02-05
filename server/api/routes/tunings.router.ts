@@ -18,9 +18,9 @@ tuningsRouter.get("/", async (_req: Request, res: Response) => {
     }
 });
 
-tuningsRouter.get("/ids/", async (_req: Request, res: Response) => {
+tuningsRouter.get("/immutable/", async (_req: Request, res: Response) => {
     try {
-        const tunings = (await collections?.tunings?.find({}).project({ _id: 1 }).toArray()) as Tuning[];
+        const tunings = (await collections?.tunings?.find({immutable: true}).toArray()) as Tuning[];
         res.status(200).send(tunings);
     } catch (error) {
         if (error instanceof Error) {

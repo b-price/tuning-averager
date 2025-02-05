@@ -4,6 +4,7 @@ export class Tuning {
         public strings: GuitarString[],
         public type: InstType,
         public id?: string,
+        public immutable?: boolean,
     ) {
     }
 }
@@ -67,6 +68,7 @@ export class UserSettings {
         public useOSTheme: boolean,
         public referencePitch: number,
         public reverseStrings?: boolean,
+        public hasTuningExpansion?: boolean,
     ) {
     }
 }

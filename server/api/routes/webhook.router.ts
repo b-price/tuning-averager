@@ -63,7 +63,8 @@ webhookRouter.post(
                     let instIDs: string[] = [];
                     if (tunings.length && collections.tunings) {
                         for (const tuning of tunings) {
-                            const dbTuningID = await collections.tunings.insertOne(tuning)
+                            if (tuning.immutable) console.log(tuning.id)
+                            const dbTuningID = tuning.immutable ? tuning.id : await collections.tunings.insertOne(tuning)
                                 .then(result => result.insertedId.toString())
                                 .catch(e => console.log(e));
                             if (dbTuningID && tuning.id) {
@@ -103,6 +104,7 @@ webhookRouter.post(
                             useOSTheme: true,
                             referencePitch: 440,
                             reverseStrings: false,
+                            hasTuningExpansion: false,
                         }
                     };
                     const result = await collections?.users?.insertOne(newUser);

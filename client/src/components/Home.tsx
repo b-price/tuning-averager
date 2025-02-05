@@ -4,7 +4,7 @@ import TuningInput from "./TuningInput.tsx";
 import InstrumentInput from "./InstrumentInput.tsx";
 import {
     DEFAULT_INST,
-    DEFAULT_TUNING, HOME_STRING_DISPLAY_COLORS,
+    DEFAULT_TUNING, EXPANSION_PACK_NAME, HOME_STRING_DISPLAY_COLORS,
     INST_PRESETS,
     LOCAL_INSTS_KEY,
     LOCAL_TUNINGS_KEY,
@@ -328,6 +328,10 @@ const HomePage: React.FC<HomeProps> = ({
 
     // Tuning functions
     const onUpdateTuning = async (changes: object, updatedTuning: Tuning) => {
+        if (updatedTuning.immutable && userData.id !== import.meta.env.ADMIN_USER_ID){
+            showMessage(`Cannot edit tunings from ${EXPANSION_PACK_NAME}. Use Preset and save changes as a new tuning.`, 'error');
+            return
+        }
         const updatedInstruments: Instrument[] = [];
         let currentInstHasTuning = false;
         let currentInst: Instrument | null = null;
@@ -443,7 +447,7 @@ const HomePage: React.FC<HomeProps> = ({
         }
     };
 
-    const handleDeleteTuning = (tuningID?: string) => {
+    const handleDeleteTuning = (tuningID?: string, immutable = false) => {
         const updatedInstruments: Instrument[] = [];
         const instsToUpdate: Instrument[] = [];
         let currentInstHasTuning = false;
@@ -496,7 +500,7 @@ const HomePage: React.FC<HomeProps> = ({
                 showMessage("Tuning could not be deleted.", "error");
             }
         } else {
-            deleteTuning(tuningID)
+            deleteTuning(tuningID, immutable)
                 .then(() =>
                     updateUser(
                         {

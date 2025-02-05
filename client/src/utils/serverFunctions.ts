@@ -119,10 +119,14 @@ export const updateTuning = async (changes: object, tuningID?: string) => {
     }
 };
 
-export const deleteTuning = async (tuningID?: string) => {
+export const deleteTuning = async (tuningID?: string, immutable = false) => {
     try {
         if (!tuningID) {
             throw new Error("No tuning id found.");
+        }
+        if (immutable) {
+            console.log("Immutable tuning.")
+            return Promise.resolve()
         }
         const response = await axios.delete(
             `${SERVER_URL}/tunings/${tuningID}`,
@@ -134,6 +138,17 @@ export const deleteTuning = async (tuningID?: string) => {
         }
     }
 };
+
+export const getPublicTunings = async () => {
+    try {
+        const response = await axios.get(`${SERVER_URL}/tunings/immutable/`);
+        return response;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            console.log(error.response);
+        }
+    }
+}
 
 // instruments CRUD
 export const getInstruments = async (data?: {
