@@ -18,6 +18,17 @@ tuningsRouter.get("/", async (_req: Request, res: Response) => {
     }
 });
 
+tuningsRouter.get("/ids/", async (_req: Request, res: Response) => {
+    try {
+        const tunings = (await collections?.tunings?.find({}).project({ _id: 1 }).toArray()) as Tuning[];
+        res.status(200).send(tunings);
+    } catch (error) {
+        if (error instanceof Error) {
+            res.status(500).send(error.message);
+        }
+    }
+});
+
 tuningsRouter.get("/:id", async (req: Request, res: Response) => {
     const id = req?.params?.id;
 
