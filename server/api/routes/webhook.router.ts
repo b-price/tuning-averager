@@ -4,6 +4,7 @@ import {Webhook} from "svix";
 import {Tuning, UserData} from "../types";
 import {collections} from "../services/database.service";
 import {ObjectId} from "mongodb";
+import {TUNING_EXPANSION_IDS} from "../tuningExpansion";
 
 export const webhookRouter = express.Router();
 
@@ -116,7 +117,8 @@ webhookRouter.post(
                     const userData = await collections?.users?.findOne(query);
                     // Delete the user's tunings and instruments
                     if (userData) {
-                        const tuningsToDelete = userData.tunings.map(t => new ObjectId(t));
+                        const tuningsFiltered = userData.tunings.filter(t => !TUNING_EXPANSION_IDS.includes(t));
+                        const tuningsToDelete = tuningsFiltered.map(t => new ObjectId(t));
                         const instsToDelete = userData.instruments.map(i => new ObjectId(i));
                         const tDeleteResult = tuningsToDelete.length ? await collections?.tunings?.deleteMany({_id: {$in: tuningsToDelete}}) : null;
                         const iDeleteResult = instsToDelete.length ? await collections?.instruments?.deleteMany({_id: {$in: instsToDelete}}) : null;

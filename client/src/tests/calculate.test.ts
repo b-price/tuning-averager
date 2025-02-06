@@ -14,7 +14,7 @@ import {
     coeffPower,
     getPW,
     getMultiscale,
-    stringAverageUnweighted,
+    stringAverageUnweighted, getBouts,
 } from "../utils/calculate";
 import {
     MAX_STRING_GAUGE,
@@ -380,4 +380,21 @@ describe("App Calculation Functions", () => {
             expect(getMultiscale(24, 1, 2)).toStrictEqual([24]);
         });
     });
+
+    describe("getBouts", () => {
+        it("returns the amount of bouts depending on inst type and string count", () => {
+            expect(getBouts(1, 'guitar')).toBe(1);
+            expect(getBouts(9, 'guitar')).toBe(1);
+            expect(getBouts(10, 'guitar')).toBe(2);
+            expect(getBouts(11, 'guitar')).toBe(2);
+            expect(getBouts(4, 'bass')).toBe(1);
+            expect(getBouts(8, 'bass')).toBe(2);
+            expect(getBouts(12, 'bass')).toBe(3);
+            expect(getBouts(9, 'bass')).toBe(1);
+            expect(getBouts(10, 'bass')).toBe(2);
+            expect(getBouts(8, 'other')).toBe(2);
+            expect(getBouts(9, 'other')).toBe(2);
+            expect(getBouts(1, 'other')).toBe(1);
+        })
+    })
 });

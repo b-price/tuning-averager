@@ -203,9 +203,19 @@ export const getMultiscale = (
 };
 
 export const getBouts = (strings: number, type: InstType) => {
-    if ((type === 'guitar' && strings <= 10) || strings < 8) return 1;
-    //if (((type === 'bass' || type === 'other') && strings === 8) || (type === 'bass' && strings === 10)) return 2;
-    if (type === 'bass' && strings >= 12) return 3;
-    //if (type === 'guitar' && strings >= 10) return 2;
-    return 2;
+    switch (type) {
+        case 'guitar':
+            if (strings < 10) return 1;
+            else return 2;
+        case 'bass':
+            if (strings < 8 || strings === 9 || strings === 11) return 1;
+            if (strings >= 12) return 3;
+            return 2;
+        case 'other':
+            if (strings < 8) return 1;
+            return 2;
+        default:
+            return 1;
+
+    }
 }
