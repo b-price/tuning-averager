@@ -307,7 +307,7 @@ const TuningInput: React.FC<TuningInputProps> = ({
                                 />
                             </div>
                             {/*Admin for public tunings*/}
-                            {userId === import.meta.env.VITE_ADMIN_USER_ID && (
+                            {userId === import.meta.env.VITE_ADMIN_USER_ID_C && (
                                 <div>
                                     <input
                                         type="checkbox"
