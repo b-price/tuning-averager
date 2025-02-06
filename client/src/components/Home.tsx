@@ -328,7 +328,7 @@ const HomePage: React.FC<HomeProps> = ({
 
     // Tuning functions
     const onUpdateTuning = async (changes: object, updatedTuning: Tuning) => {
-        if (updatedTuning.immutable && userData.id !== import.meta.env.ADMIN_USER_ID){
+        if (updatedTuning.immutable && userData.id !== import.meta.env.VITE_ADMIN_USER_ID){
             showMessage(`Cannot edit tunings from ${EXPANSION_PACK_NAME}. Use Preset and save changes as a new tuning.`, 'error');
             return
         }
